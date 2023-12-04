@@ -31,7 +31,6 @@ class UserFirestore {
   static Future<void> createUser() async{
   final myUid = await UserFirestore.insertNewAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
   if(myUid != null) {                     //DB上に自分のユーザーアカウントが確認できたなら・・・
-    RoomFirestore.createRoom(myUid);      //add({})メソッドのマップ処理を用いて２人１組の部屋を作って
     Shared_Prefes.setUid(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する
   }
 
@@ -50,7 +49,7 @@ class UserFirestore {
   }
 
                                                                      //ここまでがログイン時のアカウントを作成する処理の記述
-   static Stream<QuerySnapshot>? fetchUnmatchedUser(){   //ここからが取得する処理の記述
+   static Stream<QuerySnapshot>? fetchUnmatchedUsers(){   //ここからが取得する処理の記述
   //List<QueryDocumentSnapshotはFirestoreから取得した各ドキュメントのデータを表すオブジェクト
     try {                                                            //通信が走るのでtry tatchでエラーハンドリング
     return _userCollection.where('matched_status', isEqualTo: false).limit(1).snapshots();
