@@ -5,7 +5,7 @@ import 'room_firestore.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/widgets.dart';
 
-class Userfirestore {
+class UserFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore.instance;
       //FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
   static final _userCollection = _firebasefirestoreInstance.collection('user');
@@ -29,7 +29,7 @@ class Userfirestore {
 
 
   static Future<void> createUser() async{
-  final myUid = await Userfirestore.insertNewAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
+  final myUid = await UserFirestore.insertNewAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
   if(myUid != null) {                     //DB上に自分のユーザーアカウントが確認できたなら・・・
     RoomFirestore.createRoom(myUid);      //add({})メソッドのマップ処理を用いて２人１組の部屋を作って
     Shared_Prefes.setUid(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する

@@ -14,7 +14,7 @@ void main() async{
   );  
   await Shared_Prefes.setPrefsInstance();  //端末へのユーザーデータ保存メソッドを使うため、それを定義してるクラス「Shared_Prefes」のインスタンスをまず生成
   String? uid = Shared_Prefes.fetchUid(); //fetchuid()で端末にユーザー情報が保存されてるかどうか、戻り値を確認して
-  if(uid == null) await Userfirestore.createUser();  //戻り値が空、つまり保存データがなければ、createUserを実行して、DBへのアカウント情報のプッシュ、トークルーム作成、端末へのuidの保存を行う
+  if(uid == null) await UserFirestore.createUser();  //戻り値が空、つまり保存データがなければ、createUserを実行して、DBへのアカウント情報のプッシュ、トークルーム作成、端末へのuidの保存を行う
   // await RoomFirestore.fetchJoinedRooms();
   runApp(const MyApp());
 }
