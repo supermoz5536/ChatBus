@@ -26,13 +26,14 @@ final TextEditingController controller = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       appBar: AppBar(
-        title: const Text('Waiting Room'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
+        title: const Text('Waiting Room'),
         ),  
 
       body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
         children: [                           //Stackウィジェットのchildren
-          StreamBuilder<QuerySnapshot>(       //？？？？？<QuerySnapshot>の意味は？
-            stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId),  //widgetは、statefulwidgetクラスのプロパティにアクセスするために必要なキーワード
+          StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
+                                              //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
+            stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
             builder: (context, snapshot) {
               if (snapshot.hasData) {              
                 return Padding(
