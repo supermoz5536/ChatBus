@@ -26,7 +26,7 @@ final TextEditingController controller = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       appBar: AppBar(
-        title: Text(widget.talkRoom.talkUser.name),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
+        title: const Text('Waiting Room'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
         ),  
 
       body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
@@ -89,16 +89,16 @@ final TextEditingController controller = TextEditingController();
                   color: Colors.white,
                   height: 68,
                 child: Row(children: [
-                   Expanded(child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField( 
-                      controller: controller,               //columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-                      decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 10),
-                      border: OutlineInputBorder(),
-                    ),
-                    ),
-                  )), 
+                  //  Expanded(child: Padding(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   child: TextField( 
+                  //     controller: controller,               //columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                  //     decoration: const InputDecoration(
+                  //     contentPadding: EdgeInsets.only(left: 10),
+                  //     border: OutlineInputBorder(),
+                  //   ),
+                  //   ),
+                  // )), 
                   IconButton (onPressed: () async {
                     await RoomFirestore.sendMessage(
                       roomId: widget.talkRoom.roomId, 
