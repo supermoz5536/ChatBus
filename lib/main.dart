@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/page/top_page.dart';
+import 'package:udemy_copy/page/wait_room_page.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TopPage(),
+      home: const WaitRoomPage(),
     );
   }
 }
