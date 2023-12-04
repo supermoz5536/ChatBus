@@ -45,6 +45,9 @@ final TextEditingController controller = TextEditingController();
                         reverse: true,                             //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (conxtext, index){    //ListViewの定型パターン
+                        if(index == 0){
+                          return ListTile(title: Text('ChatBusシステムです。最初に利用規約の話をしますね。'),);
+                        }
                       
                           final doc = snapshot.data!.docs[index];  //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
@@ -102,11 +105,11 @@ final TextEditingController controller = TextEditingController();
                   //   ),
                   // )), 
                   IconButton (onPressed: () async {
-                    await RoomFirestore.sendMessage(
-                      roomId: widget.talkRoom.roomId, 
-                      message: controller.text
-                      );
-                      controller.clear();
+                    // await RoomFirestore.sendMessage(
+                    //   roomId: widget.talkRoom.roomId, 
+                    //   message: controller.text
+                    //   );
+                    //   controller.clear();
                   }, icon: Icon(Icons.send))
                 ],
                 ),
