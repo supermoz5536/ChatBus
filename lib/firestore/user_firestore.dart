@@ -38,10 +38,10 @@ class UserFirestore {
 }
 
                                                                      //ここまでがログイン時のアカウントを作成する処理の記述
-   static Future<List<QueryDocumentSnapshot>?> fetchUsers() async{   //ここからが取得する処理の記述
+   static Future<List<QueryDocumentSnapshot>?> fetchUnmatchedUsers() async{   //ここからが取得する処理の記述
   //List<QueryDocumentSnapshotはFirestoreから取得した各ドキュメントのデータを表すオブジェクト
     try {                                                            //通信が走るのでtry tatchでエラーハンドリング
-    final snapshot = await _userCollection.get();
+    final snapshot = await _userCollection.where('matched_status', isEqualTo: false).get();
     return snapshot.docs; 
     } catch(e) {
       print('ユーザー情報の取得失敗 ===== $e');

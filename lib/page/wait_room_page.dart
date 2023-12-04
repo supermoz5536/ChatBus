@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
+import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
@@ -33,7 +34,7 @@ final TextEditingController controller = TextEditingController();
         children: [                           //Stackウィジェットのchildren
           StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
                                               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
-            stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
+            stream: UserFirestore.fetchUnmatchedUsers(''),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
             builder: (context, snapshot) {
               if (snapshot.hasData) {              
                 return Padding(
