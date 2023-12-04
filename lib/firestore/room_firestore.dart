@@ -13,18 +13,12 @@ class RoomFirestore {
 
 
 
-  static Future<void> createRoom(String myUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
+  static Future<void> createRoom(String myUid, String talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
 try{
-    final docs = await UserFirestore.fetchUsers();  //usersコレクションのスナップショットからドキュメントデータの取得
-    if(docs == null) return;                //usersコレクションに、登録されてるユーザーが誰もいない場合、を一応考慮してnullエラーを避ける
-    docs.forEach((doc) async{               //forEachはDartのループ関数。https://youtu.be/G9ATdNpsB9c?si=ne1cQixcC0xKJieC
-      if(doc.id == myUid) return;           //①各ドキュメントのidが、自分のidと一致する場合は何もしない。
       await _roomCollection.add({           //②一致しない場合は、roomコレクションにドキュメント（＝room）を加える
-                                            //awaitを使用することで、この操作が完了するまで次の操作（次のユーザーに対するルームの作成）を待つことができる
-        'jointed_user': [doc.id, myUid],
+        'jointed_user': [myUid, talkUserUid],
         'created time': Timestamp.now(),
       });
-     }); 
 }catch(e){
 print('ルーム作成失敗 ===== &e');
 }
