@@ -7,17 +7,16 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
-class TalkRoomPage extends StatefulWidget {      
-  final TalkRoom talkRoom;                         
-  const TalkRoomPage(this.talkRoom, {super.key});  //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
+class WaitRoomPage extends StatefulWidget {                            
+  const WaitRoomPage({super.key});  //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
 //10,11行で、TalkRoomPageクラスのインスタンス変数に、ルームの基本情報型を備えた変数talkRoomが設定された
 //画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
   @override
-  State<TalkRoomPage> createState() => _TalkRoomPageState();
+  State<WaitRoomPage> createState() => _WaitRoomPageState();
 }
 
-class _TalkRoomPageState extends State<TalkRoomPage> {
+class _WaitRoomPageState extends State<WaitRoomPage> {
 final TextEditingController controller = TextEditingController();
 
  
@@ -143,3 +142,5 @@ class _MyWidgetState extends State<MyWidget> {
   }
   
 }
+
+
