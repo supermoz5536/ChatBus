@@ -34,7 +34,7 @@ final TextEditingController controller = TextEditingController();
         children: [                           //Stackウィジェットのchildren
           StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
                                               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
-            stream: UserFirestore.fetchUnmatchedUsers(''),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
+            stream: UserFirestore.fetchUnmatchedUsers(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
             builder: (context, snapshot) {
               if (snapshot.hasData) {              
                 return Padding(
