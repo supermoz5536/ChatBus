@@ -15,7 +15,7 @@ class RoomFirestore {
 
   static Future<void> createRoom(String myUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
 try{
-    final docs = await UserFirestore.fetchUnmatchedUsers();  //usersコレクションのスナップショットからドキュメントデータの取得
+    final docs = await UserFirestore.fetchUsers();  //usersコレクションのスナップショットからドキュメントデータの取得
     if(docs == null) return;                //usersコレクションに、登録されてるユーザーが誰もいない場合、を一応考慮してnullエラーを避ける
     docs.forEach((doc) async{               //forEachはDartのループ関数。https://youtu.be/G9ATdNpsB9c?si=ne1cQixcC0xKJieC
       if(doc.id == myUid) return;           //①各ドキュメントのidが、自分のidと一致する場合は何もしない。
