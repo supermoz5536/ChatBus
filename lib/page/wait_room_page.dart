@@ -35,7 +35,7 @@ final TextEditingController controller = TextEditingController();
           StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
                                               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
             stream: UserFirestore.fetchUnmatchedUsers(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
-            builder: (context, snapshot) {
+            builder: (context, snapshot) {          //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
               if (snapshot.hasData) {              
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
