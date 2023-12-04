@@ -50,10 +50,10 @@ class UserFirestore {
   }
 
                                                                      //ここまでがログイン時のアカウントを作成する処理の記述
-   static Stream<QuerySnapshot>? fetchUnmatchedUsers(){   //ここからが取得する処理の記述
+   static Stream<QuerySnapshot>? fetchUnmatchedUser(){   //ここからが取得する処理の記述
   //List<QueryDocumentSnapshotはFirestoreから取得した各ドキュメントのデータを表すオブジェクト
     try {                                                            //通信が走るのでtry tatchでエラーハンドリング
-    return _userCollection.where('matched_status', isEqualTo: false).snapshots();
+    return _userCollection.where('matched_status', isEqualTo: false).limit(1).snapshots();
    
     } catch(e) {
       print('ユーザー情報の取得失敗 ===== $e');
