@@ -14,13 +14,25 @@ class WaitRoomPage extends StatefulWidget {
 //画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
   @override
-  State<WaitRoomPage> createState() => _WaitRoomPageState();
+  State<WaitRoomPage> createState() => _WaitRoomPageState();    //「stateクラス」として「_WaitRoomPageState()」を定義 
+                                                                //「stateクラス」＝StatefulWifetを継承したWidfetの状態を管理するクラス
 }
 
-class _WaitRoomPageState extends State<WaitRoomPage> {
-final TextEditingController controller = TextEditingController();
+class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
 
- 
+  String? myUid;
+
+  @override                                                     //追加機能の記述部分であることの明示
+  void initState() {                                            //関数の呼び出し（initStateはFlutter標準メソッド）
+    super.initState();                                          //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+    UserFirestore.insertNewAccount()                            //自分のユーザー情報をDBへ書き込み
+    .then((String? uid) {                                       //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+      setState(() {myUid = uid;});                              //状態変数myUidに、非同期処理の結果（uid）を設定
+    });
+  }
+  //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+  //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+  //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,7 @@ final TextEditingController controller = TextEditingController();
               if (snapshot.hasData) {   
                   var talkUser = snapshot.data!.docs.first;
                   var talkUserUid = talkUser.id;      
-                  RoomFirestore.createRoom(myUid, talkUserUid);
+                  RoomFirestore.createRoom(myUid!, talkUserUid);
                            
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
