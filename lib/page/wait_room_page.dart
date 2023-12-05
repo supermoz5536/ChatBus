@@ -47,11 +47,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
           StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
                                               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
             stream: UserFirestore.fetchUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
-            builder: (context, snapshot) {          //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
+            builder: (context, snapshot) {               //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
               if (snapshot.hasData) {   
                   var talkUser = snapshot.data!.docs.first;
                   var talkUserUid = talkUser.id;      
-                  RoomFirestore.createRoom(myUid!, talkUserUid);
+                  RoomFirestore.createRoom(myUid!, talkUserUid);    //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
                            
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
@@ -60,7 +60,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         shrinkWrap: true,                          //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
                         reverse: true,                             //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length + 1,
-                        itemBuilder: (conxtext, index){    //ListViewの定型パターン
+                        itemBuilder: (conxtext, index){            //ListViewの定型パターン
                         if(index == 0){
                           return Padding(
                             padding: const EdgeInsets.all(20),
@@ -75,9 +75,9 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                           );
                         }
                       
-                          final doc = snapshot.data!.docs[index - 1];  //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
+                          final doc = snapshot.data!.docs[index - 1];                            //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
-                          final Message message = Message(     //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
+                          final Message message = Message(                                       //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
                               message: data['message'], 
                               isMe: Shared_Prefes.fetchUid() == data['sender_id'], //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
                               sendTime: data['send_time']
@@ -87,7 +87,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
                      return Padding( //メッセージ吹き出し部分
                         padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
-                        child: Row(                        //bodyのx軸を担当してると考える
+                        child: Row(  //bodyのx軸を担当してると考える
                             crossAxisAlignment: CrossAxisAlignment.end,
                             textDirection: message.isMe ? TextDirection.rtl : TextDirection.ltr,
                               children: [
