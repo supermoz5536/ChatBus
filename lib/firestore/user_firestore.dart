@@ -12,24 +12,38 @@ class UserFirestore {
       //上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
 
 
-  static Future<String?> insertNewAccount() async{     //ここにユーザーを作成する処理（関数）を書く
-    try {                                              // エラーを検知する記述：ここにはエラーが発生する可能性のあるコードを書く
-    final newDoc = await _userCollection.add({         //時間のかかる処理なのでawaitにする //_userCollectionというfirestoreのコレクションに新しい情報を追加してる
-        'name': '名無し',      //初期値に'名無し'を設定
-        'image_Path': 'https://www.kewpie.co.jp/ingredients/cat_assets/img/fruits/apple/photo01.jpg'
-});   
-      print('アカウント作成完了');
-        return newDoc.id;
+  static Future<String?> getAccount() async{          //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
+  String? myUid = Shared_Prefes.fetchUid();
+    QuerySnapshot querySnapshot = await _userCollection
+            .where('users', isEqualTo: myUid)         //.whereは特定の条件に一致するドキュメントを検索（クエリ）するメソッド
+            .get();    
 
-      } catch (e) {
-      print('アカウント作成失敗 ===== &e'); // ここではエラー（例外）をどのように処理するかを定義する
-      return null;
-    }
+    if(querySnapshot == myUid) {                      //DB上に端末保存idと同じidがある場合 → そのまま使えばいい
+       return myUid;                                  //fetchUid()で呼び出した端末保存uidをそのまま出力
+                                     
+    }else{       
+                                                      //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
+    final newDoc = await _userCollection.add({        //新規アカウント作成
+        'name': '名無し',     
+        'image_Path': 'https://www.kewpie.co.jp/ingredients/cat_assets/img/fruits/apple/photo01.jpg'
+    });   
+            print('アカウント作成完了');
+        Shared_Prefes.setUid(newDoc.id);   //端末のuid更新完了
+            print('端末のuid更新完了');
+        return newDoc.id;                             
   }
+}
+
+
+    //   } catch (e) {
+    //   print('アカウント作成失敗 ===== &e'); // ここではエラー（例外）をどのように処理するかを定義する
+    //   return null;
+    // }
+  
 
 
   static Future<void> createUser() async{
-  final myUid = await UserFirestore.insertNewAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
+  final myUid = await UserFirestore.getAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
   if(myUid != null) {                     //DB上に自分のユーザーアカウントが確認できたなら・・・
     Shared_Prefes.setUid(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する
   }

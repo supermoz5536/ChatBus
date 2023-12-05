@@ -25,7 +25,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
   @override                                                     //追加機能の記述部分であることの明示
   void initState() {                                            //関数の呼び出し（initStateはFlutter標準メソッド）
     super.initState();                                          //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-    UserFirestore.insertNewAccount()                            //自分のユーザー情報をDBへ書き込み
+    UserFirestore.getAccount()                            //自分のユーザー情報をDBへ書き込み
     .then((String? uid) {                                       //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
       setState(() {myUid = uid;});                              //状態変数myUidに、非同期処理の結果（uid）を設定
     });
