@@ -37,7 +37,9 @@ final TextEditingController controller = TextEditingController();
             stream: UserFirestore.fetchUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
             builder: (context, snapshot) {          //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
               if (snapshot.hasData) {   
-
+                  var talkUser = snapshot.data!.docs.first;
+                  var talkUserUid = talkUser.id;      
+                  RoomFirestore.createRoom(myUid, talkUserUid);
                            
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
