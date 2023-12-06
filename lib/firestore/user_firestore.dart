@@ -11,25 +11,27 @@ class UserFirestore {
       //上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
 
 
-  static Future<String?> getAccount() async{          //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
-  String? SharedPrefesUid = Shared_Prefes.fetchUid();
-    QuerySnapshot querySnapshot = await _userCollection
-            .where('users', isEqualTo: SharedPrefesUid)         //.whereは特定の条件に一致するドキュメントを検索（クエリ）するメソッド
-            .get();    
+  static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
+        String? SharedPrefesUid = Shared_Prefes.fetchUid();       //端末保存uidの取得
+ DocumentSnapshot docIdSnapshot = await _userCollection.doc(SharedPrefesUid).get(); //SharedPrefesUidと一致するドキュメントIDを取得
+                //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納
 
-    if(querySnapshot == SharedPrefesUid) {                      //DB上に端末保存idと同じidがある場合 → そのまま使えばいい
-       return SharedPrefesUid;                                  //fetchUid()で呼び出した端末保存uidをそのまま出力
-                                     
-    }else{       
-                                                      //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
-    final newDoc = await _userCollection.add({        //新規アカウント作成
-        'matched_status': 'false',
-        'room_id': 'null',
-    });   
+    if(docIdSnapshot.id == SharedPrefesUid) {                    //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
+        print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
+        return SharedPrefesUid;                                  //fetchUid()で呼び出した端末保存uidをそのまま出力                                     
+   }else{                                                        //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
+      final newDoc = await _userCollection.add({               //DB上に新規アカウント作成
+            'matched_status': 'false',
+            'room_id': 'null',
+      });        
+        Shared_Prefes.setUid(newDoc.id);                         //端末のuid更新完了
+
             print('アカウント作成完了');
-        Shared_Prefes.setUid(newDoc.id);   //端末のuid更新完了
             print('端末のuid更新完了');
-        return newDoc.id;                             
+            print('最新の端末保存uid ${newDoc.id}');          
+
+        return newDoc.id;  
+
   }
 }
 
@@ -65,10 +67,12 @@ class UserFirestore {
    static Stream<QuerySnapshot>? fetchUnmatchedUser(){   //ここからが取得する処理の記述
   //List<QueryDocumentSnapshotはFirestoreから取得した各ドキュメントのデータを表すオブジェクト
     try {                                                            //通信が走るのでtry tatchでエラーハンドリング
-    return _userCollection.where('matched_status', isEqualTo: false).limit(1).snapshots();
+    return _userCollection.where('matched_status', isEqualTo: false)
+                          .limit(1)
+                          .snapshots();
    
     } catch(e) {
-      print('ユーザー情報の取得失敗 ===== $e');
+      print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
       return null;
     }
   }
