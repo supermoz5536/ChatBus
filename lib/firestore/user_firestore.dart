@@ -75,6 +75,13 @@ class UserFirestore {
     }
   }
 
+  static updateTalkuser(String talkuserUid, bool matchedStatus){
+    return _userCollection.doc('talkuserUid').update({'matched_status': matchedStatus});
+  }
+
+  //ユーザーコレクションから相手のドキュメントを取得
+  //取得したドキュメントをマップに変換
+  //該当の項目を更新
 
 //fetchUsers()がDB上の全ユーザーデータを取得する関数なので、自分のデータだけを取得して出力する関数を作る
 //「端末画面の自分のアイコンをタップすると、DBから自分のデータを取得してプロフィールページを表示する」といったアクションに利用できる関数

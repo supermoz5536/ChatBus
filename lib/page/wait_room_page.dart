@@ -50,8 +50,10 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
             builder: (context, snapshot) {               //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
               if (snapshot.hasData) {   
                   var talkUser = snapshot.data!.docs.first;
-                  var talkUserUid = talkUser.id;      
-                  RoomFirestore.createRoom(myUid!, talkUserUid);    //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                  var talkUserUid = talkUser.id;  
+                  Future<String?> roomId = RoomFirestore.createRoom(myUid!, talkUserUid);    //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                  UserFirestore.updateTalkuser(talkUserUid, true);                           //ここで相手ドキュメントを「matched_status == true」に更新
+
                            
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
