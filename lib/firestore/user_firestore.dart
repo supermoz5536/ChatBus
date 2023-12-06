@@ -14,11 +14,27 @@ class UserFirestore {
   static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
         String? SharedPrefesUid = Shared_Prefes.fetchUid();       //端末保存uidの取得
  DocumentSnapshot docIdSnapshot = await _userCollection.doc(SharedPrefesUid).get(); //SharedPrefesUidと一致するドキュメントIDを取得
-                //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納
+        
+                                                                                    //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納
+          if (SharedPrefesUid == null) {
+                  print('既存の端末uid = 未登録');
+        } else {
+                  print('既存の端末uid = ${SharedPrefesUid}');
+                }  
 
-    if(docIdSnapshot.id == SharedPrefesUid) {                    //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
+           
+           if (docIdSnapshot.id != SharedPrefesUid) {
+                  print('DB上のuid = 未登録');
+        } else {
+                  print('DB上のuid = ${docIdSnapshot.id}');
+                }  
+            
+
+    if(docIdSnapshot.id != null 
+     && SharedPrefesUid != null 
+     && docIdSnapshot.id == SharedPrefesUid ) {    //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
         print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
-        return SharedPrefesUid;                                  //fetchUid()で呼び出した端末保存uidをそのまま出力                                     
+        return SharedPrefesUid;                                  //fetchUid()で呼び出した端末保存uidをそのまま出力                                    ΩΩ 
    }else{                                                        //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
       final newDoc = await _userCollection.add({               //DB上に新規アカウント作成
             'matched_status': 'false',
