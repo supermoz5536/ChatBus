@@ -51,8 +51,15 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
               if (snapshot.hasData) {   
                   var talkUser = snapshot.data!.docs.first;
                   var talkUserUid = talkUser.id;  
-                  Future<String?> roomId = RoomFirestore.createRoom(myUid!, talkUserUid);    //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                           //ここで相手ドキュメントを「matched_status == true」に更新
+                  Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                                  roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
+                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
+                  });
+                      //ここからtalk_room_page.dartのTalkRoomPageクラスをインスタンス化して画面遷移
+
+
+
+
 
                            
                 return Padding(
