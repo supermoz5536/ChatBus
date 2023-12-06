@@ -23,8 +23,6 @@ class UserFirestore {
     }else{       
                                                       //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
     final newDoc = await _userCollection.add({        //新規アカウント作成
-        'name': '名無し',     
-        'image_Path': 'https://www.kewpie.co.jp/ingredients/cat_assets/img/fruits/apple/photo01.jpg',
         'matched_status': 'false',
         'room_id': 'null',
     });   
