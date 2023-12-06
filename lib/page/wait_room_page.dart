@@ -52,7 +52,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                   var talkUser = snapshot.data!.docs.first;
                   var talkUserUid = talkUser.id;  
                   Future<String?> roomId = RoomFirestore.createRoom(myUid!, talkUserUid);    //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                  UserFirestore.updateTalkuser(talkUserUid, true);                           //ここで相手ドキュメントを「matched_status == true」に更新
+                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                           //ここで相手ドキュメントを「matched_status == true」に更新
 
                            
                 return Padding(
