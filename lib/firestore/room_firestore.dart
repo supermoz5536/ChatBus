@@ -13,16 +13,19 @@ class RoomFirestore {
 
 
 
-  static Future<void> createRoom(String myUid, String talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
+  static Future<String?> createRoom(String myUid, String talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
 try{
-      await _roomCollection.add({           //②一致しない場合は、roomコレクションにドキュメント（＝room）を加える
+  DocumentReference docRef = await _roomCollection.add({
         'jointed_user': [myUid, talkUserUid],
         'created time': Timestamp.now(),
       });
-}catch(e){
-print('ルーム作成失敗 ===== &e');
-}
+      return docRef.id;
+
+  }catch(e){
+    print('ルーム作成失敗 ===== &e');
+    return null;
   }
+}
 
 
 

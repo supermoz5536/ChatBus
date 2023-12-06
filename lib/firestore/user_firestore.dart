@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
 import '../utils/shared_prefs.dart';
-import 'room_firestore.dart';
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/widgets.dart';
 
