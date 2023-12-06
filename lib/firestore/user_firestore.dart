@@ -75,8 +75,11 @@ class UserFirestore {
     }
   }
 
-  static updateTalkuser(String talkuserUid, bool matchedStatus){
-    return _userCollection.doc('talkuserUid').update({'matched_status': matchedStatus});
+  static updateTalkuser(String talkuserUid, String? roomId, bool matchedStatus){
+    return _userCollection.doc('talkuserUid').update({
+      'matched_status': matchedStatus,
+      'roomId': roomId,
+      });
   }
 
   //ユーザーコレクションから相手のドキュメントを取得
