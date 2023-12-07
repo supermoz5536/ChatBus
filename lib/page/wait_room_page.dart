@@ -28,10 +28,10 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
     UserFirestore.getAccount()                 //自分のユーザー情報をDBへ書き込み
                  .then((String? uid) {         //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
                  setState(() {myUid = uid;});  //状態変数myUidに、非同期処理の結果（uid）を設定
-                 if(myUid == null) {
+          if(myUid == null) {
                   print('wait_room_page.dartの初期取得myUid = null');
 
-                 }else{
+          }else{
                   print('wait_room_page.dartの初期取得myUid = $myUid');
 
     UserFirestore.getUnmatchedUser(myUid)      //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
@@ -41,11 +41,13 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                   print('wait_room_page.dartの初期取得talkUserUid = null');
                  }else{
                   print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
-                 }
-               });
-           }
-         });                 
-  }
+
+    RoomFirestore.createRoom(myUid, talkUserUid);              
+               }
+              });
+          }  
+        });                 
+    }
              
    
    

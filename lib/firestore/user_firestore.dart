@@ -84,20 +84,17 @@ class UserFirestore {
   static Future<String?> getUnmatchedUser(String? myUid) async{   
     // try {     
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
+                                                                               .limit(4)
                                                                                .get();
-
-          print('aaaaaa');            
+        
           print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
 
-          // DocumentSnapshot docSnapshotFirst = querySnapshot.docs[0];
-          // DocumentSnapshot docSnapshotSecond = querySnapshot.docs[1];
-
-          // print(docSnapshotFirst.id);
-          // print(docSnapshotSecond.id);
-
           if (querySnapshot.docs.isNotEmpty) {
-             DocumentSnapshot docSnapshotFirst = querySnapshot.docs[0];
-             DocumentSnapshot docSnapshotSecond = querySnapshot.docs[1];
+
+             List<DocumentSnapshot> docs = querySnapshot.docs;
+                                    docs.shuffle();
+             DocumentSnapshot docSnapshotFirst = docs[0];
+             DocumentSnapshot docSnapshotSecond = docs[1];
 
 
                if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
@@ -113,7 +110,6 @@ class UserFirestore {
  
              }else{   
                   print('No document was found');
-
              }                                                         
           
 
