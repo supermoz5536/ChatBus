@@ -20,18 +20,43 @@ class WaitRoomPage extends StatefulWidget {
 class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
 
   String? myUid;
+  String? talkUserUid;
 
-  @override                              //追加機能の記述部分であることの明示
-  void initState() {                     //関数の呼び出し（initStateはFlutter標準メソッド）
-    super.initState();                   //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-    UserFirestore.getAccount()           //自分のユーザー情報をDBへ書き込み
-    .then((String? uid) {                //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-      setState(() {myUid = uid;});       //状態変数myUidに、非同期処理の結果（uid）を設定
-    });
+  @override                                    //追加機能の記述部分であることの明示
+  void initState() {                           //関数の呼び出し（initStateはFlutter標準メソッド）
+    super.initState();                         //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+    UserFirestore.getAccount()                 //自分のユーザー情報をDBへ書き込み
+                 .then((String? uid) {         //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+                 setState(() {myUid = uid;});  //状態変数myUidに、非同期処理の結果（uid）を設定
+                 if(myUid == null) {
+                  print('wait_room_page.dartの初期取得myUid = null');
+
+                 }else{
+                  print('wait_room_page.dartの初期取得myUid = $myUid');
+
+    UserFirestore.getUnmatchedUser(myUid)      //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
+                 .then((String? uid){
+                 setState(() {talkUserUid = uid;});
+                 if(talkUserUid == null) {
+                  print('wait_room_page.dartの初期取得talkUserUid = null');
+                 }else{
+                  print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
+                 }
+               });
+           }
+         });                 
   }
+             
+   
+   
+
+  
   //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
   //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
   //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,15 +70,15 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
         children: [                           //Stackウィジェットのchildren
           StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
                                               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
-            stream: UserFirestore.fetchUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
+            stream: UserFirestore.streamUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
             builder: (context, snapshot) {               //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
               if (snapshot.hasData) {   
                   var talkUser = snapshot.data!.docs.first;
                   var talkUserUid = talkUser.id;  
-                  Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                                  roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
-                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
-                  });
+                  // Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                  //                 roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
+                  // UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
+                  // });
                       //ここからtalk_room_page.dartのTalkRoomPageクラスをインスタンス化して画面遷移
 
 

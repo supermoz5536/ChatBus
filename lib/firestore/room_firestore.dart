@@ -13,7 +13,7 @@ class RoomFirestore {
 
 
 
-  static Future<String?> createRoom(String myUid, String talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
+  static Future<String?> createRoom(String? myUid, String? talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
 try{
   DocumentReference docRef = await _roomCollection.add({
         'jointed_user': [myUid, talkUserUid],
