@@ -94,7 +94,6 @@ class UserFirestore {
              List<DocumentSnapshot> docs = querySnapshot.docs;
                                     docs.shuffle();
              DocumentSnapshot docSnapshotFirst = docs[0];
-             DocumentSnapshot docSnapshotSecond = docs[1];
 
 
                if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
@@ -102,6 +101,7 @@ class UserFirestore {
                  return null;}
 
                if(querySnapshot.docs.length >= 2 && docSnapshotFirst.id == myUid){    //取得データ数2以上だが、First[0]が自分の場合→ Second[1]のuidを返す
+             DocumentSnapshot docSnapshotSecond = docs[1];
                   print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
                  return docSnapshotSecond.id;}      
                                                                         

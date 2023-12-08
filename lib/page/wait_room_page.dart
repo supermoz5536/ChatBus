@@ -6,6 +6,18 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 
+//initstate()の実行に時間が掛かって、Widget build()の本体の実行が先走ってる。
+
+//if(DB上にマッチング相手が：いる場合)
+//① iniState()のtalkUserUidの取得通信が完了する前に、talkUserUid ==null として 本体のWidget builder()が走る
+//② iniState()のtalkUserUidの取得通信が完了して、iniState()内でcreateRoom()まで完了する
+//③ iniState()のtalkUserUidの取得が完了したので、body部分の if(talkUserUid == null) に該当せず、list[0][1]は描画されない
+
+//if(DB上にマッチング相手が：いない場合)
+//① talkUserUid ==nullで 本体のWidget builder()が走る
+//②if(snapshot.hasData)がtrueになるまで、list[0][1]が描画される
+
+
 
 class WaitRoomPage extends StatefulWidget {                            
   const WaitRoomPage({super.key});  //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
@@ -39,14 +51,19 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                  setState(() {talkUserUid = uid;});
                  if(talkUserUid == null) {
                   print('wait_room_page.dartの初期取得talkUserUid = null');
+
                  }else{
                   print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
 
     RoomFirestore.createRoom(myUid, talkUserUid);  
 
+                      //相手のユーザー情報書き換え
+                      //ここで画面遷移
+                      //talk_room_page.dartのTalkRoomPageクラスをインスタンス化
 
+                }
                }
-              });
+             );
           }  
         });                 
     }
@@ -69,35 +86,27 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
       body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
         children: [                           //Stackウィジェットのchildren
-          StreamBuilder<QuerySnapshot>(       //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
-                                              //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている
+        if(talkUserUid == null)
+                                                          //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
+              StreamBuilder<QuerySnapshot>(               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている                                              
             stream: UserFirestore.streamUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
-            builder: (context, snapshot) {               //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
-              if (snapshot.hasData) {   
-                  var talkUser = snapshot.data!.docs.first;
-                  var talkUserUid = talkUser.id;  
-                  // Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                  //                 roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
-                  // UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
-                  // });
-                      //ここからtalk_room_page.dartのTalkRoomPageクラスをインスタンス化して画面遷移
+            builder: (context, snapshot) {                //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
+                                                           //snapshot.notHasDataの時、
 
-
-
-
-
-                           
-                return Padding(
-                    padding: const EdgeInsets.only(bottom: 60.0),
+                                         
+                return Padding(padding: const EdgeInsets.only(bottom: 60.0),             
                     child: ListView.builder(                       //ListViewは、スクロール可能なリストを表示するためのウィジェット
                         physics: RangeMaintainingScrollPhysics(),  //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true,                          //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
-                        reverse: false,                             //スクロールがした始まりで上に滑っていく設定になる
+                        reverse: false,                            //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length + 1,
                         itemBuilder: (conxtext, index){            //ListViewの定型パターン
+                        //ListView.builderの基本設定パラメーター
 
 
-                        if(index == 0){
+
+
+                        if(index == 0){                            //ひとまず、利用規約の表示
                           return Padding(
                             padding: const EdgeInsets.all(20),
                             child: Container(    //[0]の吹き出し部分を、コンテナで表示
@@ -117,11 +126,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                                   '・出会いを目的にした利用はしないでね\n'
                                                   '・個人情報を相手に教えないでね\n'
                                                   '楽しい時間をすごための約束だよ(・Д・)b\n',      
-                                   ),)),
+                             ),)),
                           );
                         }
 
-
+                                             //streamが流れてこない間は、検索中の表示
                         if(index == 1){
                           return Padding(
                             padding: const EdgeInsets.all(20),
@@ -134,55 +143,30 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                               
                               child: ListTile(title: //コンテナのchild部分に、[1]のメッセージを表示
                                          Text('チャット相手を検索中だよ〜！'),)),
+                                         
                           );
-                        }                        
+                        }
+                        
+
+                  if (snapshot.hasData) {                        //streamが流れてきたら、ルーム作成と画面遷移
+                     var talkUser = snapshot.data!.docs.first;
+                  var talkUserUid = talkUser.id;  
+                  Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                                  roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
+                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
+                  });
 
 
+                      //ここで画面遷移
+                      //talk_room_page.dartのTalkRoomPageクラスをインスタンス化
+                   }
 
-                          //doc情報に配列番号を付して、
-                          //配列番号ごとに
-                          //取得したdoc情報から抽出するmessage情報を
-                          //Messageクラスのmessageインスタンス変数代入して、各messageをインスタンス化する
-                          //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある                                            
-                          final doc = snapshot.data!.docs[index - 1];                            //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
-                          final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
-                          final Message message = Message(                                       //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
-                              message: data['message'], 
-                              isMe: Shared_Prefes.fetchUid() == data['sender_id'],               //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
-                              sendTime: data['send_time']
-                              );
-
-
-
-
-                          //配列番号継続した状態で
-                          //messageの背景＝吹き出し部分の設定
-                     return Padding( 
-                        padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
-                        child: Row(  //bodyのx軸を担当してると考える
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            textDirection: message.isMe ? TextDirection.rtl : TextDirection.ltr,
-                              children: [
-                          Container(
-                            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),    //この書き方で今表示可能な画面幅を取得できる
-                            decoration: BoxDecoration(
-                              color: message.isMe ? Colors.green : Colors.white,
-                              borderRadius: BorderRadius.circular(15)),
-                            padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                                child: Text(message.message)),   //index番目のメッセージをreturn
-                                       Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate())),
-                                        //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
-                                        //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
-                  ],  
-                 ),
-                );
+                                      
                }),
-              );
-                 } else {
-                  return Center(child: Text('メッセージがありません'),);
-              }
-            }
-          ),
+              ); 
+            }),
+
+
 
 
           Column(            //仮面下部の文字入力部分をColumnで構成
@@ -223,3 +207,10 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
     );
   }  
 }
+
+
+
+
+
+   
+            
