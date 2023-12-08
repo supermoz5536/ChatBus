@@ -42,7 +42,9 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                  }else{
                   print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
 
-    RoomFirestore.createRoom(myUid, talkUserUid);              
+    RoomFirestore.createRoom(myUid, talkUserUid);  
+
+
                }
               });
           }  
@@ -50,13 +52,10 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
     }
              
    
-   
-
   
   //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
   //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
   //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
-
 
 
 
@@ -96,31 +95,40 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         reverse: true,                             //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length + 1,
                         itemBuilder: (conxtext, index){            //ListViewの定型パターン
+
+
                         if(index == 0){
                           return Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Container(
+                            child: Container(    //[0]の吹き出し部分を、コンテナで表示
                               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),    //この書き方で今表示可能な画面幅を取得できる
                               decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(15)),
                               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               
-                              child: ListTile(title: Text('ChatBusシステムです。最初に利用規約の話をしますね。'),)),
+                              child: ListTile(title: //コンテナのchild部分に、[0]のメッセージを表示
+                                         Text('ChatBusシステムです。最初に利用規約の話をしますね。'),)),
                           );
                         }
-                      
+
+                          //doc情報に配列番号を付して、
+                          //配列番号ごとに
+                          //取得したdoc情報から抽出するmessage情報を
+                          //Messageクラスのmessageインスタンス変数代入して、各messageをインスタンス化する
+                          //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある                                            
                           final doc = snapshot.data!.docs[index - 1];                            //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
                           final Message message = Message(                                       //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
                               message: data['message'], 
-                              isMe: Shared_Prefes.fetchUid() == data['sender_id'], //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
+                              isMe: Shared_Prefes.fetchUid() == data['sender_id'],               //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
                               sendTime: data['send_time']
-                              //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
-                              //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある                                            
                               );
 
-                     return Padding( //メッセージ吹き出し部分
+
+                          //配列番号継続した状態で
+                          //messageの背景＝吹き出し部分の設定
+                     return Padding( 
                         padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
                         child: Row(  //bodyのx軸を担当してると考える
                             crossAxisAlignment: CrossAxisAlignment.end,

@@ -110,6 +110,7 @@ class UserFirestore {
  
              }else{   
                   print('No document was found');
+                  return null;
              }                                                         
           
 
