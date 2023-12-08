@@ -92,7 +92,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     child: ListView.builder(                       //ListViewは、スクロール可能なリストを表示するためのウィジェット
                         physics: RangeMaintainingScrollPhysics(),  //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true,                          //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
-                        reverse: true,                             //スクロールがした始まりで上に滑っていく設定になる
+                        reverse: false,                             //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length + 1,
                         itemBuilder: (conxtext, index){            //ListViewの定型パターン
 
@@ -107,10 +107,37 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                               borderRadius: BorderRadius.circular(15)),
                               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               
-                              child: ListTile(title: //コンテナのchild部分に、[0]のメッセージを表示
-                                         Text('ChatBusシステムです。最初に利用規約の話をしますね。'),)),
+                              child: const ListTile(title: //コンテナのchild部分に、[0]のメッセージを表示
+                                         Text( style: TextStyle(
+                                               fontSize: 17, 
+                                               color: Colors.white,  ),
+                                                  'どもー。ChatBusシステムです(・Д・)ﾉ\n'
+                                                  '最初に[利用規約]のお話をさせてね！\n'
+                                                  '・相手を不快にさせるような発言はしないでね\n'
+                                                  '・出会いを目的にした利用はしないでね\n'
+                                                  '・個人情報を相手に教えないでね\n'
+                                                  '楽しい時間をすごための約束だよ(・Д・)b\n',      
+                                   ),)),
                           );
                         }
+
+
+                        if(index == 1){
+                          return Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Container(    //[0]の吹き出し部分を、コンテナで表示
+                              constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),    //この書き方で今表示可能な画面幅を取得できる
+                              decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(15)),
+                              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                              
+                              child: ListTile(title: //コンテナのchild部分に、[1]のメッセージを表示
+                                         Text('チャット相手を検索中だよ〜！'),)),
+                          );
+                        }                        
+
+
 
                           //doc情報に配列番号を付して、
                           //配列番号ごとに
@@ -124,6 +151,8 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                               isMe: Shared_Prefes.fetchUid() == data['sender_id'],               //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
                               sendTime: data['send_time']
                               );
+
+
 
 
                           //配列番号継続した状態で
