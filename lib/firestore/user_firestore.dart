@@ -30,15 +30,18 @@ class UserFirestore {
                 }  
             
 
-    if(docIdSnapshot.id != null 
+  
+    if(docIdSnapshot.id != null                                       // ignore: unnecessary_null_comparison
      && SharedPrefesUid != null 
      && docIdSnapshot.id == SharedPrefesUid ) {                       //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
         print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
         return SharedPrefesUid;                                       //fetchUid()で呼び出した端末保存uidをそのまま出力                                    ΩΩ 
+
    }else{                                                             //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
       final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
             'matched_status': false,
             'room_id': 'null',
+
       });        
         Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
 

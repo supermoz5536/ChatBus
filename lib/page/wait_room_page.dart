@@ -34,13 +34,15 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
   String? talkUserUid;
 
 
-  //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-  //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-  //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
+    //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+    //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+    //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
     @override                                         //追加機能の記述部分であることの明示
     void initState() {                                //関数の呼び出し（initStateはFlutter標準メソッド）
       super.initState();                              //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
       
+
+
       
 
         //■起動時に1度行うマッチング処理
@@ -80,6 +82,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                   );
                 }  
           });   
+
 
 
 
@@ -166,8 +169,8 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                                   '・相手を不快にさせるような発言はしないでね\n'
                                                   '・出会いを目的にした利用はしないでね\n'
                                                   '・個人情報を相手に教えないでね\n'
-                                                  '楽しい時間をすごための約束だよ(・Д・)b\n',      
-                             ),)),
+                                                  '楽しい時間をすごための約束だよ(・Д・)b\n'),
+                              )),
                           );
                         }
 
@@ -184,10 +187,16 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                               borderRadius: BorderRadius.circular(15)),
                               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               
-                              child: ListTile(title:              //コンテナのchild部分に、[1]のメッセージを表示
-                                         Text('チャット相手を検索中だよ〜！'),)),                                        
+                              child: const ListTile(title:              //コンテナのchild部分に、[1]のメッセージを表示
+                                         Text('チャット相手を検索中だよ〜！'),
+                              )),                                        
                           );
                         }
+
+
+                          return null;
+
+
                    }),
                  ), 
 
