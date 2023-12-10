@@ -27,13 +27,13 @@ final TextEditingController controller = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       appBar: AppBar(
-        title: Text(widget.talkRoom.talkUser.name),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
+        title: Text('トークルーム'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
         ),  
 
       body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
         children: [                           //Stackウィジェットのchildren
           StreamBuilder<QuerySnapshot>(       //？？？？？<QuerySnapshot>の意味は？
-            stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId),  //widgetは、statefulwidgetクラスのプロパティにアクセスするために必要なキーワード
+            stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId!),  //widgetは、statefulwidgetクラスのプロパティにアクセスするために必要なキーワード
             builder: (context, snapshot) {
               if (snapshot.hasData) {              
                 return Padding(
@@ -102,7 +102,7 @@ final TextEditingController controller = TextEditingController();
                   )), 
                   IconButton (onPressed: () async {
                     await RoomFirestore.sendMessage(
-                      roomId: widget.talkRoom.roomId, 
+                      roomId: widget.talkRoom.roomId!, 
                       message: controller.text
                       );
                       controller.clear();

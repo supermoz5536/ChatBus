@@ -56,24 +56,22 @@ class _TopPageState extends State<TopPage> {
                               height: 70,
                               child: Row(       //ユーザーの画像、名前、最後のメッセージが横に表示されるようにするためrow
                                 children: [      //childrenプロパティにwidgetを書くと、どんどん横に配置されてく
-                                  Padding(       //ユーザー画像
-                                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                                    child: CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: talkRooms[index].talkUser.ImagePath == null
-                                      ? null
-                                      : NetworkImage(talkRooms[index].talkUser.ImagePath!)),
-                                  ),
+                                  // Padding(       //ユーザー画像
+                                  //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                  //   child: CircleAvatar(
+                                  //     radius: 30,
+                                  //     backgroundImage: talkRooms[index].talkUser.ImagePath == null
+                                  //     ? null
+                                  //     : NetworkImage(talkRooms[index].talkUser.ImagePath!)),
+                                  // ),
                                   Column(  //ユーザー名とその下に最後のメッセージ
                                     crossAxisAlignment: CrossAxisAlignment.start,    
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children:[
-                                          Text(talkRooms[index].talkUser.name, style: const TextStyle(
+                                          Text('トーク相手の名前', style: const TextStyle(
                                             fontSize: 16, 
                                             fontWeight:FontWeight.bold),),
-                                          Text(talkRooms[index].lastMessage ?? '', style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.black),),
+
                                   ],
                                 )
                               ],

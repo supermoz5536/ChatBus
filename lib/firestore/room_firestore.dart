@@ -48,8 +48,8 @@ talkUserUid = id;                                           //一致しない場
   if(talkUser == null) return null;
   final talkRoom = TalkRoom(             //インスタンス変数を代入して、個々のTalkRoomをインスタンス化
     roomId: doc.id,                                     
-    talkUser: talkUser,                              
-    lastMessage: data['lastMessage']                
+                              
+           
     );      
   talkRooms.add(talkRoom);                            
 }  

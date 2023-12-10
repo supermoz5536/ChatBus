@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
-import 'package:udemy_copy/model/massage.dart';
-import 'package:udemy_copy/utils/shared_prefs.dart';
+import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/page/talk_room_page.dart';
+
 
 //initstate()の実行に時間が掛かって、Widget build()の本体の実行が先走ってる。
 
@@ -30,49 +30,94 @@ class WaitRoomPage extends StatefulWidget {
 }
 
 class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
-
   String? myUid;
   String? talkUserUid;
 
-  @override                                    //追加機能の記述部分であることの明示
-  void initState() {                           //関数の呼び出し（initStateはFlutter標準メソッド）
-    super.initState();                         //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-    UserFirestore.getAccount()                 //自分のユーザー情報をDBへ書き込み
-                 .then((String? uid) {         //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-                 setState(() {myUid = uid;});  //状態変数myUidに、非同期処理の結果（uid）を設定
-          if(myUid == null) {
-                  print('wait_room_page.dartの初期取得myUid = null');
 
-          }else{
-                  print('wait_room_page.dartの初期取得myUid = $myUid');
-
-    UserFirestore.getUnmatchedUser(myUid)      //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
-                 .then((String? uid){
-                 setState(() {talkUserUid = uid;});
-                 if(talkUserUid == null) {
-                  print('wait_room_page.dartの初期取得talkUserUid = null');
-
-                 }else{
-                  print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
-
-    RoomFirestore.createRoom(myUid, talkUserUid);  
-
-                      //相手のユーザー情報書き換え
-                      //ここで画面遷移
-                      //talk_room_page.dartのTalkRoomPageクラスをインスタンス化
-
-                }
-               }
-             );
-          }  
-        });                 
-    }
-             
-   
-  
   //initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
   //このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
   //initState()とは　https://sl.bing.net/ivIFfFUd6Vo
+    @override                                         //追加機能の記述部分であることの明示
+    void initState() {                                //関数の呼び出し（initStateはFlutter標準メソッド）
+      super.initState();                              //親クラスの初期化処理　  //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+      
+      
+
+        //■起動時に1度行うマッチング処理
+          UserFirestore.getAccount()                  //自分のユーザー情報をDBへ書き込み
+                      .then((String? uid) {           //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+                      setState(() {myUid = uid;});    //状態変数myUidに、非同期処理の結果（uid）を設定
+                if(myUid == null) {
+                        print('wait_room_page.dartの初期取得myUid = null');
+
+                }else{
+                        print('wait_room_page.dartの初期取得myUid = $myUid');
+
+          UserFirestore.getUnmatchedUser(myUid)      //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
+                      .then((String? uid){
+                      setState(() {talkUserUid = uid;});
+                      if(talkUserUid == null) {
+                        print('wait_room_page.dartの初期取得talkUserUid = null');
+
+                      }else{
+                        print('wait_room_page.dartの初期取得talkUserUid = $talkUserUid');
+
+                        Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                                        roomIdFuture.then((roomId){                     //roomIdの取得通信を確認(.then)してから
+                        UserFirestore.updateTalkuser(myUid, roomId, true);              //自分のroom_idの更新
+                        UserFirestore.updateTalkuser(talkUserUid, roomId, true);        //相手のroom_idの更新
+                        TalkRoom talkRoom = TalkRoom(roomId: roomId);                   //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+
+                        Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                          context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                            MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
+                              builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
+                            ),
+                           );
+                        });
+                      }
+                    }
+                  );
+                }  
+          });   
+
+
+
+
+      //■「マッチングする側」としてのstream処理
+      UserFirestore.streamUnmatchedUser()?.listen((snapshot) {
+      
+                    QueryDocumentSnapshot? doc = snapshot.docs.first;               //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
+                            TalkRoom talkRoom = TalkRoom(roomId: doc['room_id']);  //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                                                                     
+                    Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                      context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                        MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
+                          builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
+                ),
+              );
+              });
+
+
+
+
+      //■「マッチングされる側」としてのstream処理
+      //DocumentSnapshot<Map<String, dynamic>>>型として、snapshotからのデータ取得対応が必要
+      UserFirestore.streamMyDoc(myUid)?.listen((snapshot) {
+      
+                    Map<String, dynamic>? doc = snapshot.data();
+                            TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);  //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                                                                     
+                    Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                      context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                        MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
+                          builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
+                ),
+              );
+              });
+  }// initState
+
+
 
 
 
@@ -84,39 +129,35 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
         title: const Text('Waiting Room'),
         ),  
 
-      body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
-        children: [                           //Stackウィジェットのchildren
-        if(talkUserUid == null)
-                                                          //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
-              StreamBuilder<QuerySnapshot>(               //<QuerySnapshot>は、その関数において、「uerySnapshot型のデータを扱いますよ」とStreambuilderに伝えている                                              
-            stream: UserFirestore.streamUnmatchedUser(),  //何のドキュメントのsnapshotが必要か？ → usersCollectionの「matchedステータスがfalseのユーザー」
-            builder: (context, snapshot) {                //contextは、StreanBuilderの位置情報を宣言してるらしい、固定値でOK //snapshotはstreamに設定したエリアのsnapshotの意味。
-                                                           //snapshot.notHasDataの時、
-
-                                         
-                return Padding(padding: const EdgeInsets.only(bottom: 60.0),             
-                    child: ListView.builder(                       //ListViewは、スクロール可能なリストを表示するためのウィジェット
-                        physics: RangeMaintainingScrollPhysics(),  //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
-                        shrinkWrap: true,                          //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
-                        reverse: false,                            //スクロールがした始まりで上に滑っていく設定になる
-                        itemCount: snapshot.data!.docs.length + 1,
-                        itemBuilder: (conxtext, index){            //ListViewの定型パターン
-                        //ListView.builderの基本設定パラメーター
+      body: Stack(                                           //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
+        children: [                                          //Stackウィジェットのchildren
+        
+        if(talkUserUid == null)                              //Streambuilderは、データが更新されると、新しいスナップショットを取得し、builder関数を再度呼び出してUIを更新する
+                                        
+          Padding(padding: const EdgeInsets.only(bottom: 60.0),             
+            child: ListView.builder(                         //ListViewは、スクロール可能なリストを表示するためのウィジェット
+                physics: RangeMaintainingScrollPhysics(),    //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
+                shrinkWrap: true,                            //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
+                reverse: false,                              //スクロールがした始まりで上に滑っていく設定になる
+                itemCount: 2,
+                itemBuilder: (conxtext, index){              
+                //ListView.builderの基本設定パラメーター
+                //ListViewの定型パターン
 
 
 
 
-                        if(index == 0){                            //ひとまず、利用規約の表示
+                        if(index == 0){                          
                           return Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Container(    //[0]の吹き出し部分を、コンテナで表示
+                            child: Container(                    //[0]の吹き出し部分を、コンテナで表示
                               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),    //この書き方で今表示可能な画面幅を取得できる
                               decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(15)),
                               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               
-                              child: const ListTile(title: //コンテナのchild部分に、[0]のメッセージを表示
+                              child: const ListTile(title:       //コンテナのchild部分に、[0]のメッセージを表示
                                          Text( style: TextStyle(
                                                fontSize: 17, 
                                                color: Colors.white,  ),
@@ -130,41 +171,30 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                           );
                         }
 
-                                             //streamが流れてこない間は、検索中の表示
+
+
+                                          
                         if(index == 1){
                           return Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Container(    //[0]の吹き出し部分を、コンテナで表示
+                            child: Container(                    //[0]の吹き出し部分を、コンテナで表示
                               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),    //この書き方で今表示可能な画面幅を取得できる
                               decoration: BoxDecoration(
                               color: Colors.green,
                               borderRadius: BorderRadius.circular(15)),
                               padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               
-                              child: ListTile(title: //コンテナのchild部分に、[1]のメッセージを表示
-                                         Text('チャット相手を検索中だよ〜！'),)),
-                                         
+                              child: ListTile(title:              //コンテナのchild部分に、[1]のメッセージを表示
+                                         Text('チャット相手を検索中だよ〜！'),)),                                        
                           );
                         }
-                        
-
-                  if (snapshot.hasData) {                        //streamが流れてきたら、ルーム作成と画面遷移
-                     var talkUser = snapshot.data!.docs.first;
-                  var talkUserUid = talkUser.id;  
-                  Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkUserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                                  roomIdFuture.then((roomId){                                          //①roomIdの取得通信を確認(.then)してから
-                  UserFirestore.updateTalkuser(talkUserUid, roomId, true);                             //②相手ユーザーのドキュメント情報に書き込み
-                  });
+                   }),
+                 ), 
 
 
-                      //ここで画面遷移
-                      //talk_room_page.dartのTalkRoomPageクラスをインスタンス化
-                   }
 
-                                      
-               }),
-              ); 
-            }),
+          
+
 
 
 
@@ -202,7 +232,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
               // )
             ],
           )
-        ],
+        ],                         
       ),
     );
   }  

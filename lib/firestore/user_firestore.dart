@@ -126,10 +126,9 @@ class UserFirestore {
   }
 
 
-                                                                     //ここまでがログイン時のアカウントを作成する処理の記述
+   //QuerySnapshot型について　→  https://sl.bing.net/bQeSPlCC23w                                                                     
    static Stream<QuerySnapshot>? streamUnmatchedUser(){   //ここからが取得する処理の記述
-  //List<QueryDocumentSnapshotはFirestoreから取得した各ドキュメントのデータを表すオブジェクト
-    try {                                                            //通信が走るのでtry tatchでエラーハンドリング
+    try {                                                         
     return _userCollection.where('matched_status', isEqualTo: false)
                           .limit(1)
                           .snapshots();
@@ -140,16 +139,40 @@ class UserFirestore {
     }
   }
 
-  static updateTalkuser(String talkuserUid, String? roomId, bool matchedStatus){
+
+
+
+
+  static updateTalkuser(String? talkuserUid, String? roomId, bool matchedStatus){
     return _userCollection.doc(talkuserUid).update({
       'matched_status': matchedStatus,
-      'roomId': roomId,
+      'room_Id': roomId,
       });
   }
-
   //ユーザーコレクションから相手のドキュメントを取得
   //取得したドキュメントをマップに変換
   //該当の項目を更新
+
+
+
+
+//DocumentSnapshot型について　→  https://sl.bing.net/bQeSPlCC23w
+static Stream<DocumentSnapshot<Map<String, dynamic>>>? streamMyDoc(String? myUid){
+try {                                                         
+    return _userCollection.doc(myUid).snapshots();
+   
+    } catch(e) {
+      print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
+      return null;
+    }
+  }
+
+
+//stream用に、自分のドキュメント情報の'matched_status'に snapshotsを設定
+//'matched_status'の
+
+
+
 
 //fetchUsers()がDB上の全ユーザーデータを取得する関数なので、自分のデータだけを取得して出力する関数を作る
 //「端末画面の自分のアイコンをタップすると、DBから自分のデータを取得してプロフィールページを表示する」といったアクションに利用できる関数
