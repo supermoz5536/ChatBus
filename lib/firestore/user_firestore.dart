@@ -12,45 +12,52 @@ class UserFirestore {
 
 
   static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
-        String? SharedPrefesUid = Shared_Prefes.fetchUid();       //端末保存uidの取得
- DocumentSnapshot docIdSnapshot = await _userCollection.doc(SharedPrefesUid).get(); //SharedPrefesUidと一致するドキュメントIDを取得
-                //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納        
-                                                                                  
-          if (SharedPrefesUid == null) {                                            //出力状況のハンドリング
-                  print('既存の端末uid = 未登録');
-        } else {
-                  print('既存の端末uid = ${SharedPrefesUid}');
-                }  
+         String? sharedPrefesUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
 
-           
-           if (docIdSnapshot.id != SharedPrefesUid) {                               //出力状況のハンドリング
-                  print('DB上のuid = 未登録');
-        } else {
-                  print('DB上のuid = ${docIdSnapshot.id}');
-                }  
+         if(sharedPrefesUid == null){ //端末保存uidが「無い」場合
+             print('既存の端末uid = 未登録');
+                  final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
+                        'matched_status': false,
+                        'room_id': 'null',
+                  });        
+                    Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
+                        print('アカウント作成完了');
+                        print('端末のuid更新完了');
+                        print('最新の端末保存uid ${newDoc.id}');          
+                    return newDoc.id;                         
+          }
+          
+          
+           if(sharedPrefesUid.isNotEmpty) { //端末保存uidが「有る」場合
+             print('既存の端末uid = ${sharedPrefesUid}');
+         DocumentSnapshot? docIdSnapshot = await _userCollection.doc(sharedPrefesUid).get(); //SharedPrefesUidと一致するドキュメントIDを取得
+                         //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納        
+   
             
+                  if (docIdSnapshot.exists){             
+                      print('DB上のuid = ${docIdSnapshot.id}');
+                  } else {
+                      print('DB上のuid = 未登録');    
+                          }  
+                  
 
-  
-    if(docIdSnapshot.id != null                                       // ignore: unnecessary_null_comparison
-     && SharedPrefesUid != null 
-     && docIdSnapshot.id == SharedPrefesUid ) {                       //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
-        print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
-        return SharedPrefesUid;                                       //fetchUid()で呼び出した端末保存uidをそのまま出力                                    ΩΩ 
+      
+                if(docIdSnapshot.id == sharedPrefesUid ) {                       //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
+                    print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
+                    return sharedPrefesUid;                                       //fetchUid()で呼び出した端末保存uidをそのまま出力                                    ΩΩ 
 
-   }else{                                                             //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
-      final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
-            'matched_status': false,
-            'room_id': 'null',
+                }else{                                                             //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
+                  final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
+                        'matched_status': false,
+                        'room_id': 'null',
+                  });        
+                    Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
+                        print('アカウント作成完了');
+                        print('端末のuid更新完了');
+                        print('最新の端末保存uid ${newDoc.id}');          
+                    return newDoc.id;  
 
-      });        
-        Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
-
-            print('アカウント作成完了');
-            print('端末のuid更新完了');
-            print('最新の端末保存uid ${newDoc.id}');          
-
-        return newDoc.id;  
-
+  }
   }
 }
 
@@ -130,15 +137,15 @@ class UserFirestore {
 
 
    //QuerySnapshot型について　→  https://sl.bing.net/bQeSPlCC23w                                                                     
-   static Stream<QuerySnapshot>? streamUnmatchedUser(){   //ここからが取得する処理の記述
+   static Stream<QuerySnapshot<Object>> streamUnmatchedUser(String myUid){   //ここからが取得する処理の記述
     try {                                                         
-    return _userCollection.where('matched_status', isEqualTo: false)
-                          .limit(1)
-                          .snapshots();
-   
+        return _userCollection.where('matched_status', isEqualTo: false)
+                              .where(FieldPath.documentId, isNotEqualTo: myUid)
+                              .limit(1)
+                              .snapshots();
     } catch(e) {
-      print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
-      return null;
+        print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
+        return const Stream<QuerySnapshot<Object>>.empty();  // 空のストリームを返す
     }
   }
 
@@ -146,11 +153,13 @@ class UserFirestore {
 
 
 
-  static updateTalkuser(String? talkuserUid, String? roomId, bool matchedStatus){
-    return _userCollection.doc(talkuserUid).update({
-      'matched_status': matchedStatus,
-      'room_Id': roomId,
+  static updateDocField(String? talkuserUid, String? roomId, bool matchedStatus){
+    if(talkuserUid != null){
+      return _userCollection.doc(talkuserUid).update({
+        'matched_status': matchedStatus,
+        'room_Id': roomId,
       });
+    }
   }
   //ユーザーコレクションから相手のドキュメントを取得
   //取得したドキュメントをマップに変換
@@ -160,13 +169,14 @@ class UserFirestore {
 
 
 //DocumentSnapshot型について　→  https://sl.bing.net/bQeSPlCC23w
-static Stream<DocumentSnapshot<Map<String, dynamic>>>? streamMyDoc(String? myUid){
+static Stream<DocumentSnapshot<Map<String, dynamic>>> streamMyDoc(String? myUid){
 try {                                                         
-    return _userCollection.doc(myUid).snapshots();
+      return _userCollection.doc(myUid).snapshots();
    
     } catch(e) {
       print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
-      return null;
+      return const Stream<DocumentSnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す      
+
     }
   }
 
