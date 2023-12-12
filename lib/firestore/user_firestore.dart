@@ -18,7 +18,7 @@ class UserFirestore {
              print('既存の端末uid = 未登録');
                   final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
                         'matched_status': false,
-                        'room_id': 'null',
+                        'room_id': 'none',
                   });        
                     Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
                         print('アカウント作成完了');
@@ -49,7 +49,7 @@ class UserFirestore {
                 }else{                                                             //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
                   final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
                         'matched_status': false,
-                        'room_id': 'null',
+                        'room_id': 'none',
                   });        
                     Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
                         print('アカウント作成完了');
