@@ -95,16 +95,31 @@ class UserFirestore {
     // try {     
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
                                                                                .where(FieldPath.documentId, isNotEqualTo: myUid)
-                                                                               .limit(4)
+                                                                               .limit(4) 
                                                                                .get();
+                                                                               //黄色五角形エラーが出るが問題ない（.getの取得doc数 == 0の時に表示される模様）
         
-          print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
+             print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
+
+
+          if(querySnapshot.docs.isEmpty){
+             print('マッチング可能な相手がDB上に0人');
+             return null;
+            }
+
 
           if (querySnapshot.docs.isNotEmpty) {
 
              List<DocumentSnapshot> docs = querySnapshot.docs;
                                     docs.shuffle();
+
              DocumentSnapshot docSnapshotFirst = docs[0];
+             print("Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
+             return docSnapshotFirst.id;
+             }    
+
+             return null;
+           }           
 
 
               //  if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
@@ -114,15 +129,11 @@ class UserFirestore {
             //    if(querySnapshot.docs.length >= 2 && docSnapshotFirst.id == myUid){    //取得データ数2以上だが、First[0]が自分の場合→ Second[1]のuidを返す
             //  DocumentSnapshot docSnapshotSecond = docs[1];
             //       print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
-            //      return docSnapshotSecond.id;}      
+            //      return docSnapshotSecond.id;}    
+  
+
                                                                         
-                  print("Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
-                 return docSnapshotFirst.id;
- 
-             }else{   
-                  print('No document was found');
-                  return null;
-             }                                                         
+                                                       
           
 
 
@@ -134,19 +145,22 @@ class UserFirestore {
     //   print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
     //   return null;
     // }
-  }
+
 
 
    //QuerySnapshot型について　→  https://sl.bing.net/bQeSPlCC23w                                                                     
    static Stream<QuerySnapshot<Object>> streamUnmatchedUser(String myUid){   //ここからが取得する処理の記述
     try {                                                         
-        return _userCollection.where('matched_status', isEqualTo: false)
-                              .where(FieldPath.documentId, isNotEqualTo: myUid)
+        return _userCollection.where(FieldPath.documentId, isNotEqualTo: myUid)
+                              .where('matched_status', isEqualTo: false)
                               .limit(1)
-                              .snapshots();
+                              .snapshots();                              
+
     } catch(e) {
-        print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
+        print('streamによる、matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
+        print('streamによる、matched_statusがfalseのユーザー情報の取得失敗 ===== テスト表示');
         return const Stream<QuerySnapshot<Object>>.empty();  // 空のストリームを返す
+        
     }
   }
 
