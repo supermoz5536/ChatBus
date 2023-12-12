@@ -94,6 +94,7 @@ class UserFirestore {
   static Future<String?> getUnmatchedUser(String? myUid) async{   
     // try {     
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
+                                                                               .where(FieldPath.documentId, isNotEqualTo: myUid)
                                                                                .limit(4)
                                                                                .get();
         
@@ -106,14 +107,14 @@ class UserFirestore {
              DocumentSnapshot docSnapshotFirst = docs[0];
 
 
-               if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
-                  print('No matched_status false was found');
-                 return null;}
+              //  if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
+              //     print('No matched_status false was found');
+              //    return null;}
 
-               if(querySnapshot.docs.length >= 2 && docSnapshotFirst.id == myUid){    //取得データ数2以上だが、First[0]が自分の場合→ Second[1]のuidを返す
-             DocumentSnapshot docSnapshotSecond = docs[1];
-                  print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
-                 return docSnapshotSecond.id;}      
+            //    if(querySnapshot.docs.length >= 2 && docSnapshotFirst.id == myUid){    //取得データ数2以上だが、First[0]が自分の場合→ Second[1]のuidを返す
+            //  DocumentSnapshot docSnapshotSecond = docs[1];
+            //       print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
+            //      return docSnapshotSecond.id;}      
                                                                         
                   print("Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
                  return docSnapshotFirst.id;
