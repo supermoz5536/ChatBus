@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
@@ -32,7 +34,10 @@ class WaitRoomPage extends StatefulWidget {
 class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
   String? myUid;
   String? talkuserUid;
-  String? none;
+  StreamSubscription? unmatchedUserSubscription;
+  StreamSubscription? myDocSubscription;
+  
+
   
 
 
@@ -68,6 +73,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     UserFirestore.updateDocField(myUid!, roomId, true);              //自分のroom_idの更新
                     UserFirestore.updateDocField(talkuserUid!, roomId, true);        //相手のroom_idの更新
                     TalkRoom talkRoom = TalkRoom(roomId: roomId);                   //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                    print('streamを使わない場合の「トークルームの作成」実行'); 
 
                     Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                     context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
@@ -97,7 +103,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                               Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid, talkuserDoc.id);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
                                               roomIdFuture.then((roomId){                     //roomIdの取得通信を確認(.then)してから
                           
-                              UserFirestore.updateDocField(myUid!, roomId, true);              //自分のroom_idの更新
+                          print('「自分がマッチングする場合」のmyUid == $myUid');
+                          print('「自分がマッチングする場合」のtalkuserUid == ${talkuserDoc.id}');                          
+                          print('「自分がマッチングする場合」のroomId == $roomId');
+
+                              UserFirestore.updateDocField(myUid, roomId, true);              //自分のroom_idの更新
                               UserFirestore.updateDocField(talkuserDoc.id, roomId, true);                       
                               TalkRoom talkRoom = TalkRoom(roomId: roomId);  //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意                                               
 
@@ -110,7 +120,9 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     );  
                     }          
                     });
-                    } 
+                    
+                    }
+                    
                         
                     });
                     
@@ -121,7 +133,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                       myDocStream.listen((snapshot) {              
                        // if (snapshot.data()!.isNotEmpty) {
                           if (snapshot.data()!.isNotEmpty    //TESTドキュメントを避けるために必要
-                           && snapshot.data()!['room_id'] == none) {  
+                           && snapshot.data()!['room_id'] != 'none') {  
 
                             print('「自分がマッチングされた場合」のstream処理開始');
                               Map<String, dynamic>? doc = snapshot.data();
