@@ -94,6 +94,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
 
                         //■「自分がマッチングする場合」のstream処理
+                        unmatchedUserSubscription =
                         unmatchedUserStream.listen((snapshot) {  //talkuserUid ==null の文脈なので、talkuseUidがnullでないことを教えてほうがいい
                           // if (await myDocStream.isEmpty == true) {
                          if (snapshot.docs.isNotEmpty) {     //stream開始時、一度実行される検索における空検索の可能性を除外
@@ -119,17 +120,16 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                       ),
                     );  
                     }          
-                    });
-                    
-                    }
-                    
-                        
-                    });
+                    });     
+                    }                                  
+                    });//■「自分がマッチングする場合」のstream処理
+                    unmatchedUserSubscription!.cancel();
                     
 
 
                       
                       //■「自分がマッチングされた場合」のstream処理              
+                      myDocSubscription = 
                       myDocStream.listen((snapshot) {              
                        // if (snapshot.data()!.isNotEmpty) {
                           if (snapshot.data()!.isNotEmpty    //TESTドキュメントを避けるために必要
@@ -151,6 +151,8 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     }                         
                     }        
                     }); //■「マッチングされる場合」のstream処理
+                    myDocSubscription!.cancel();
+
                   } //■streamを使わない場合の「トークルームの作成」「画面遷移」
                });          
              });   
