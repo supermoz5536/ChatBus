@@ -162,7 +162,7 @@ class UserFirestore {
 
 
 
-   static Future<void> getUserField(String uid) async{   //ここからが取得する処理の記述
+   static Future<void> getUserField(String? uid) async{   //ここからが取得する処理の記述
      await _userCollection.doc(uid).get();
      }
 

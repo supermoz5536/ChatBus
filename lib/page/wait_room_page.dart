@@ -102,11 +102,13 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
                           QueryDocumentSnapshot talkuserDoc = snapshot.docs.first;
 
-                          FirebaseFirestore.instance.runTransaction((transaction) async {
-                            
+                          FirebaseFirestore.instance.runTransaction((transaction) async {  //トランザクション開始
+ 
+                            await UserFirestore.getUserField(myUid);                             //チェック開始ポイント
+                            await UserFirestore.getUserField(talkuserDoc.id);                    //チェック開始ポイント
 
-
-                          });
+                            }); //transaction
+                        
 
                                              //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
                               Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid, talkuserDoc.id);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
@@ -131,9 +133,10 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                      unmatchedUserSubscription!.cancel(); 
                      myDocSubscription!.cancel();
                     }          
-                    });     
-                    }                                  
-                    });//■「自分がマッチングする場合」のstream処理
+                    }); //createRoom
+                    
+                    }   //if()                               
+                    }); //■「自分がマッチングする場合」のstream処理
                    
                     
 
