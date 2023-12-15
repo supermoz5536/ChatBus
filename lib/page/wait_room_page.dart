@@ -117,13 +117,16 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                   context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                       MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
+                                      
                       ),
-                    );  
+                    ); 
+                     unmatchedUserSubscription!.cancel(); 
+                     myDocSubscription!.cancel();
                     }          
                     });     
                     }                                  
                     });//■「自分がマッチングする場合」のstream処理
-                    unmatchedUserSubscription!.cancel();
+                   
                     
 
 
@@ -148,10 +151,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                       ),
                     );
+                    unmatchedUserSubscription!.cancel();
+                    myDocSubscription!.cancel();
                     }                         
                     }        
                     }); //■「マッチングされる場合」のstream処理
-                    myDocSubscription!.cancel();
 
                   } //■streamを使わない場合の「トークルームの作成」「画面遷移」
                });          
