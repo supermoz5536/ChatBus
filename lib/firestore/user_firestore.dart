@@ -61,11 +61,6 @@ class UserFirestore {
   }
 }
 
-
-    //   } catch (e) {
-    //   print('アカウント作成失敗 ===== &e'); // ここではエラー（例外）をどのように処理するかを定義する
-    //   return null;
-    // }
   
 
 
@@ -75,6 +70,7 @@ class UserFirestore {
     Shared_Prefes.setUid(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する
   }
 }
+
 
 
 
@@ -164,6 +160,11 @@ class UserFirestore {
     }
   }
 
+
+
+   static Future<void> getUserField(String uid) async{   //ここからが取得する処理の記述
+     await _userCollection.doc(uid).get();
+     }
 
 
 

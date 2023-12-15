@@ -95,12 +95,20 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
                         //■「自分がマッチングする場合」のstream処理
                         unmatchedUserSubscription =
-                        unmatchedUserStream.listen((snapshot) {  //talkuserUid ==null の文脈なので、talkuseUidがnullでないことを教えてほうがいい
-                          // if (await myDocStream.isEmpty == true) {
+                        unmatchedUserStream.listen((snapshot) {  
+                        
                          if (snapshot.docs.isNotEmpty) {     //stream開始時、一度実行される検索における空検索の可能性を除外
                           print('「自分がマッチングする場合」のstream処理開始');
 
-                              QueryDocumentSnapshot talkuserDoc = snapshot.docs.first;               //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
+                          QueryDocumentSnapshot talkuserDoc = snapshot.docs.first;
+
+                          FirebaseFirestore.instance.runTransaction((transaction) async {
+                            
+
+
+                          });
+
+                                             //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
                               Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid, talkuserDoc.id);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
                                               roomIdFuture.then((roomId){                     //roomIdの取得通信を確認(.then)してから
                           
@@ -134,14 +142,12 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                       //■「自分がマッチングされた場合」のstream処理              
                       myDocSubscription = 
                       myDocStream.listen((snapshot) {              
-                       // if (snapshot.data()!.isNotEmpty) {
-                          if (snapshot.data()!.isNotEmpty    //TESTドキュメントを避けるために必要
+                     
+                          if (snapshot.data()!.isNotEmpty    //TESTドキュメントはFiledが空なので、避けるために必要
                            && snapshot.data()!['room_id'] != 'none') {  
 
                             print('「自分がマッチングされた場合」のstream処理開始');
                               Map<String, dynamic>? doc = snapshot.data();
-
-
                               TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);  //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
 
                               if (context.mounted) {                                                       
