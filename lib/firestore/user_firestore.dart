@@ -220,4 +220,26 @@ print('自分のユーザー情報取得失敗 ----- &e');
 return null;
     }
   }
+
+
+
+static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) async {
+  for (int i = 0; i < maxRetries; i++) {
+    try {
+      var docSnapshot = await _userCollection.doc(myUid).get();
+      var matched_status = docSnapshot['matched_status'];
+
+      if (matched_status == true) {
+        print('matched_status == true, stop retry.');
+        break;
+      }
+    } catch (e) {
+      if (i == maxRetries - 1) rethrow;
+      print('Attempt $i failed: $e');
+      await Future.delayed(Duration(milliseconds: 1300));
+    }
+  }
+}
+
+
 }

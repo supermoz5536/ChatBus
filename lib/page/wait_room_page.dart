@@ -58,32 +58,40 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     setState(() {myUid = uid;});    //状態変数myUidに、非同期処理の結果（uid）を設定           
                       print('wait_room_page.dartの初期取得myUid = $myUid');
  
- 
-      UserFirestore.getUnmatchedUser(myUid)         //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
-                   .then((String? uid){
-                    setState(() {talkuserUid = uid;});
+      
+     UserFirestore.retry(myUid, (){});
+            FirebaseFirestore.instance.runTransaction((transaction) async { 
+            await UserFirestore.getUserField(myUid);   //read check (myUid)                   
+
+            UserFirestore.getUnmatchedUser(myUid)         //read check (talkuser 4人)                  
+                         .then((String? uid){
+                          setState(() {talkuserUid = uid;});
 
 
 
                   //■streamを使わない場合の「トークルームの作成」「画面遷移」
                   if((talkuserUid != null)){ 
                     print('wait_room_page.dartの初期取得talkUserUid = $talkuserUid');
+                    UserFirestore.getUserField(talkuserUid);              //read check 
 
                     Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid!, talkuserUid);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
                                     roomIdFuture.then((roomId){                     //roomIdの取得通信を確認(.then)してから
                     UserFirestore.updateDocField(myUid!, roomId, true);              //自分のroom_idの更新
                     UserFirestore.updateDocField(talkuserUid!, roomId, true);        //相手のroom_idの更新
                     TalkRoom talkRoom = TalkRoom(roomId: roomId);                   //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
-                    print('streamを使わない場合の「トークルームの作成」実行'); 
+                    return talkRoom;
 
+                  }).then((talkRoom){ //transaction end        
+                    print('streamを使わない場合の「トークルームの作成」実行');      
                     Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                     context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                         MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
                         builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
                         ),
                         );
-                    });
+                        }); //.then                
                   }
+                  });
 
 
                   //■streamを使う場合の「トークルームの作成」「画面遷移」
