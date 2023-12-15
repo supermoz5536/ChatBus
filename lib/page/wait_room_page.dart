@@ -128,12 +128,12 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                       ),
                                   ); 
                                }  
-                                      unmatchedUserSubscription!.cancel(); 
-                                      myDocSubscription!.cancel();                     
-                             });  //transaction callback end                                
-                             });  //createRoom
-                             }    //if()                               
-                             });  //■「自分がマッチングする場合」のstream処理
+                              unmatchedUserSubscription!.cancel(); 
+                              myDocSubscription!.cancel();                     
+                              });  //transaction callback end                                
+                              });  //createRoom
+                              }    //if()                               
+                              });  //■「自分がマッチングする場合」のstream処理
                    
                     
 
@@ -143,17 +143,17 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                       myDocSubscription = 
                       myDocStream.listen((snapshot) {              
                      
-                          if (snapshot.data()!.isNotEmpty    //TESTドキュメントはFiledが空なので、避けるために必要
+                          if (snapshot.data()!.isNotEmpty                                       //TESTドキュメントはFiledが空なので、避けるために必要
                            && snapshot.data()!['room_id'] != 'none') {  
 
                             print('「自分がマッチングされた場合」のstream処理開始');
                               Map<String, dynamic>? doc = snapshot.data();
-                              TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);  //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                              TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
 
                               if (context.mounted) {                                                       
-                                  Navigator.push(                                                 //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                  Navigator.push(                                               //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                                   context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                      MaterialPageRoute(                                          //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
+                                      MaterialPageRoute(                                        //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                       ),
                     );
@@ -166,7 +166,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                   } //■streamを使わない場合の「トークルームの作成」「画面遷移」
                });          
              });   
-
+          
   }// initState
 
 
