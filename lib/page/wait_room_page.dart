@@ -52,15 +52,16 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
       
 
-    //■起動時に1度行うマッチング処理
-      UserFirestore.getAccount()                  //自分のユーザー情報をDBへ書き込み
-                  .then((String? uid) {           //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-                  setState(() {myUid = uid;});    //状態変数myUidに、非同期処理の結果（uid）を設定           
-                    print('wait_room_page.dartの初期取得myUid = $myUid');
-
-      UserFirestore.getUnmatchedUser(myUid)      //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
-                  .then((String? uid){
-                  setState(() {talkuserUid = uid;});
+    //■起動時に1度行うmyUidを確認する処理
+      UserFirestore.getAccount()                    //自分のユーザー情報をDBへ書き込み
+                   .then((String? uid) {            //.then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+                    setState(() {myUid = uid;});    //状態変数myUidに、非同期処理の結果（uid）を設定           
+                      print('wait_room_page.dartの初期取得myUid = $myUid');
+ 
+ 
+      UserFirestore.getUnmatchedUser(myUid)         //getAccount()でのmyUid取得通信が完了する前に、.getUnmatcheduserが実行されてしまっていて、myUidがnullじゃないのにnullで処理されてしまってる　→ .thenで 囲む
+                   .then((String? uid){
+                    setState(() {talkuserUid = uid;});
 
 
 
@@ -87,53 +88,53 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
                   //■streamを使う場合の「トークルームの作成」「画面遷移」
                   if(talkuserUid == null) {
-                        print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる
-            
-                        var unmatchedUserStream = UserFirestore.streamUnmatchedUser(myUid!);
+                        print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる            
+                        // var unmatchedUserStream = UserFirestore.streamUnmatchedUser(myUid!);
                                 var myDocStream = UserFirestore.streamMyDoc(myUid);   
 
 
+
                         //■「自分がマッチングする場合」のstream処理
-                        unmatchedUserSubscription =
-                        unmatchedUserStream.listen((snapshot) {  
+                        // unmatchedUserSubscription =
+                        // unmatchedUserStream.listen((snapshot) {  
                         
-                         if (snapshot.docs.isNotEmpty) {                                   //stream開始時、一度実行される検索における空検索の可能性を除外
-                          print('「自分がマッチングする場合」のstream処理開始');
+                        //  if (snapshot.docs.isNotEmpty) {                                   //stream開始時、一度実行される検索における空検索の可能性を除外
+                        //   print('「自分がマッチングする場合」のstream処理開始');
 
-                          QueryDocumentSnapshot talkuserDoc = snapshot.docs.first;
+                        //   QueryDocumentSnapshot talkuserDoc = snapshot.docs.first;
 
-                          FirebaseFirestore.instance.runTransaction((transaction) async {  //transaction start
-                            await UserFirestore.getUserField(myUid);                       //read check 
-                            await UserFirestore.getUserField(talkuserDoc.id);              //read check            
+                        //   FirebaseFirestore.instance.runTransaction((transaction) async {  //transaction start
+                        //     await UserFirestore.getUserField(myUid);                       //read check 
+                        //     await UserFirestore.getUserField(talkuserDoc.id);              //read check            
 
-                                                                                           //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
-                          Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid, talkuserDoc.id);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
-                                          roomIdFuture.then((roomId){                      //roomIdの取得通信を確認(.then)してから
+                        //                                                                    //「QueryDocumentSnapshot型は、単一のドキュメントに対して」「QuerySnapshotは、ドキュメントの集合に対して」 https://sl.bing.net/k5HKDtzOAoe
+                        //   Future<String?> roomIdFuture = RoomFirestore.createRoom(myUid, talkuserDoc.id);        //ここまでで、DB上からリアルタイムに「matched_status == false」の相手を検索して、トークルームを作ることができた
+                        //                   roomIdFuture.then((roomId){                      //roomIdの取得通信を確認(.then)してから
                           
-                          print('「自分がマッチングする場合」のmyUid == $myUid');
-                          print('「自分がマッチングする場合」のtalkuserUid == ${talkuserDoc.id}');                          
-                          print('「自分がマッチングする場合」のroomId == $roomId');
+                        //   print('「自分がマッチングする場合」のmyUid == $myUid');
+                        //   print('「自分がマッチングする場合」のtalkuserUid == ${talkuserDoc.id}');                          
+                        //   print('「自分がマッチングする場合」のroomId == $roomId');
 
-                              UserFirestore.updateDocField(myUid, roomId, true);           //自分のroom_idの更新
-                              UserFirestore.updateDocField(talkuserDoc.id, roomId, true);                       
-                              TalkRoom talkRoom = TalkRoom(roomId: roomId);                //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意                                               
-                                return talkRoom;
-                             }).then((talkRoom){     //transaction end
-                               if (context.mounted) {                                                                              
-                                  Navigator.push(                                           //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                  context,                                                  //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                      MaterialPageRoute(                                    //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
-                                      builder: (context) => TalkRoomPage(talkRoom)          //遷移先の画面を構築する関数を指定                                                                              
+                        //       UserFirestore.updateDocField(myUid, roomId, true);           //自分のroom_idの更新
+                        //       UserFirestore.updateDocField(talkuserDoc.id, roomId, true);                       
+                        //       TalkRoom talkRoom = TalkRoom(roomId: roomId);                //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意                                               
+                        //         return talkRoom;
+                        //      }).then((talkRoom){     //transaction end
+                        //        if (context.mounted) {                                                                              
+                        //           Navigator.push(                                           //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                        //           context,                                                  //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                        //               MaterialPageRoute(                                    //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
+                        //               builder: (context) => TalkRoomPage(talkRoom)          //遷移先の画面を構築する関数を指定                                                                              
                                       
-                                      ),
-                                  ); 
-                               }  
-                              unmatchedUserSubscription!.cancel(); 
-                              myDocSubscription!.cancel();                     
-                              });  //transaction callback end                                
-                              });  //createRoom
-                              }    //if()                               
-                              });  //■「自分がマッチングする場合」のstream処理
+                        //               ),
+                        //           ); 
+                        //        }  
+                        //       unmatchedUserSubscription!.cancel(); 
+                        //       myDocSubscription!.cancel();                     
+                        //       });  //transaction callback end                                
+                        //       });  //createRoom
+                        //       }    //if()                               
+                        //       });  //■「自分がマッチングする場合」のstream処理
                    
                     
 
@@ -157,14 +158,14 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                       ),
                     );
-                    unmatchedUserSubscription!.cancel();
+                    // unmatchedUserSubscription!.cancel();
                     myDocSubscription!.cancel();
                     }                         
                     }        
                     }); //■「マッチングされる場合」のstream処理
 
                   } //■streamを使わない場合の「トークルームの作成」「画面遷移」
-               });          
+               });  //UserFirestore.getUnmatchedUser    
              });   
           
   }// initState
