@@ -224,20 +224,19 @@ return null;
 
 
 static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) async {
-  for (int i = 0; i < maxRetries; i++) {
-    try {
-      var docSnapshot = await _userCollection.doc(myUid).get();
-      var matched_status = docSnapshot['matched_status'];
+  DocumentSnapshot documentSnapshot = await _userCollection.doc(myUid).get();
+  bool myMatchedStatus = documentSnapshot.get('matched_status');
 
-      if (matched_status == true) {
-        print('matched_status == true, stop retry.');
-        break;
+  for (int i = 0; i < maxRetries; i++) {
+  try { if(myMatchedStatus == false) {return f();}
+
+      } catch (e) {                 
+        await Future.delayed(Duration(milliseconds: 1300));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+
+        if (i == maxRetries - 1){ 
+            print('Attempt $i failed: $e');
+            rethrow;}
       }
-    } catch (e) {
-      if (i == maxRetries - 1) rethrow;
-      print('Attempt $i failed: $e');
-      await Future.delayed(Duration(milliseconds: 1300));
-    }
   }
 }
 
