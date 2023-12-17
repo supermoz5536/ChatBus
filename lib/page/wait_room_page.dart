@@ -70,7 +70,8 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
 
                   //■「自分がマッチングする場合」の処理  
-                  if((talkuserUid != null)){ 
+                  if((talkuserUid != null)){
+                    print('「自分がマッチングする場合」の処理実行(トランザクション内)');  
                     print('wait_room_page.dartの初期取得talkUserUid = $talkuserUid');
                     UserFirestore.getUserField(talkuserUid);              //read check 
 
@@ -92,15 +93,23 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         myDocSubscription!.cancel();
                         }); //.then                
                   }         //if((talkuserUid != null))
-                  });       //UserFirestore.getUnmatchedUser
-                  } catch (e) { talkuserUid == null; }                            //transaction失敗 → talkuserUid == null で リスナーOn
+                  });       //UserFirestore.getUnmatchedUser                                                  
+                  } catch (e) {                                      //talkuserUidが取得できた上で、transaction実行が失敗した場合                    
+                    talkuserUid == null;                                          //transaction失敗 → talkuserUid == null で リスナーOn
+                    print('トランザクション内の「自分がマッチングする場合」の処理失敗 retry実行');                           
+                    throw e; 
+                  }         //try-catch
                   });       //transaction end
+                  if(talkuserUid == null) {                         //talkuserUid == null で エラーの起こりうるif(){}部分をスルーしてしまった場合に、エラーを手動で返してretryさせる
+                    throw Exception('talkuserUid == nullなので、transactionのretry実行');
+                  }  
                   });       //retry end
 
 
 
-                  //■「自分がマッチングされた場合」のstream処理  
-                  if(talkuserUid == null) {
+
+                  // //■「自分がマッチングされた場合」のstream処理  
+                  // if(talkuserUid == null) {
                         print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる            
                         var myDocStream = UserFirestore.streamMyDoc(myUid);  
                      
@@ -108,7 +117,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                       myDocStream.listen((snapshot) {              
                      
                           if (snapshot.data()!.isNotEmpty                                       //TESTドキュメントはFiledが空なので、避けるために必要
-                           && snapshot.data()!['room_id'] != 'none') {  
+                           && snapshot.data()!['matched_status'] == true) {  
 
                             print('「自分がマッチングされた場合」のstream処理開始');
                               Map<String, dynamic>? doc = snapshot.data();
@@ -121,11 +130,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                       ),
                     );
-                    myDocSubscription!.cancel();
+                    // myDocSubscription!.cancel();
                     }                         
                     }        
                     }); //myDocSubscription =
-                  } //■「自分がマッチングされた場合」のstream処理 
+                  // } //■「自分がマッチングされた場合」のstream処理 
              }); //getAccount             
           }// initState
 
