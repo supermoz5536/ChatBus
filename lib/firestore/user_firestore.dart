@@ -172,7 +172,7 @@ class UserFirestore {
     if(talkuserUid != null){
       return _userCollection.doc(talkuserUid).update({
         'matched_status': matchedStatus,
-        'room_Id': roomId,
+        'room_id': roomId,
       });
     }
   }
@@ -234,7 +234,7 @@ static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) asy
 
     if(myMatchedStatus == false) {
         return await f();
-        
+
       } else if(myMatchedStatus == true) {
         break;
       }

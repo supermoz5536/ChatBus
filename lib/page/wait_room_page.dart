@@ -108,7 +108,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
 
 
-                  // //■「自分がマッチングされた場合」のstream処理  
+                  //■「自分がマッチングされた場合」のstream処理  
                   if(talkuserUid == null) {
                         print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる            
                         var myDocStream = UserFirestore.streamMyDoc(myUid);  
