@@ -83,7 +83,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     return talkRoom;
 
                   }).then((talkRoom){                                             //画面遷移は .thenの応答関数で記述してるので、transactionの範囲に含まれてない
-                    print('streamを使わない場合の「トークルームの作成」実行');      
+                    print('「自分がマッチングする場合」の「トークルームの作成」実行');      
                     Navigator.push(                                               //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                     context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                         MaterialPageRoute(                                        //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
@@ -109,7 +109,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
 
                   // //■「自分がマッチングされた場合」のstream処理  
-                  // if(talkuserUid == null) {
+                  if(talkuserUid == null) {
                         print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる            
                         var myDocStream = UserFirestore.streamMyDoc(myUid);  
                      
@@ -130,11 +130,11 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                       builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                       ),
                     );
-                    // myDocSubscription!.cancel();
+                    myDocSubscription!.cancel();
                     }                         
                     }        
                     }); //myDocSubscription =
-                  // } //■「自分がマッチングされた場合」のstream処理 
+                  } //■「自分がマッチングされた場合」のstream処理 
              }); //getAccount             
           }// initState
 
