@@ -19,6 +19,7 @@ class UserFirestore {
                   final newDoc = await _userCollection.add({      //DB上に新規アカウント作成
                         'matched_status': false,
                         'room_id': 'none',
+                        'created_at': FieldValue.serverTimestamp(),                        
                   });        
                     Shared_Prefes.setUid(newDoc.id);              //端末のuid更新完了
                         print('アカウント作成完了');
@@ -49,6 +50,7 @@ class UserFirestore {
                   final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
                         'matched_status': false,
                         'room_id': 'none',
+                        'created_at': FieldValue.serverTimestamp(),
                   });        
                     Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
                         print('アカウント作成完了');
@@ -161,16 +163,17 @@ class UserFirestore {
 
 
 
-   static Future<void> getUserField(String? uid) async{   //ここからが取得する処理の記述
-     await _userCollection.doc(uid).get();
+   static aimUserFields(String? uid) {   //ここからが取得する処理の記述
+     return _userCollection.doc(uid);
+     
      }
 
 
 
 
-  static updateDocField(String? talkuserUid, String? roomId, bool matchedStatus){
+  static tUpdateField(String? talkuserUid, String? roomId, bool matchedStatus){
     if(talkuserUid != null){
-      return _userCollection.doc(talkuserUid).update({
+      return  _userCollection.doc(talkuserUid).update({
         'matched_status': matchedStatus,
         'room_id': roomId,
       });
@@ -229,7 +232,7 @@ static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) asy
   for (int i = 0; i < maxRetries; i++) {
   try { 
   DocumentSnapshot documentSnapshot = await _userCollection.doc(myUid).get();
-  bool myMatchedStatus = documentSnapshot.get('matched_status');
+  bool myMatchedStatus = await documentSnapshot.get('matched_status');
   print('myUidの matched_status == $myMatchedStatus');
 
     if(myMatchedStatus == false) {
@@ -240,7 +243,7 @@ static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) asy
       }
 
       } catch (e) {                 
-        await Future.delayed(Duration(milliseconds: 2333));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+        await Future.delayed(Duration(milliseconds: 4333));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
 
         if (i == maxRetries - 1){ 
             print('Attempt $i failed: $e');
