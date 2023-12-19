@@ -24,8 +24,16 @@ class UserFirestore {
                     Shared_Prefes.setUid(newDoc.id);              //端末のuid更新完了
                         print('アカウント作成完了');
                         print('端末のuid更新完了');
-                        print('最新の端末保存uid ${newDoc.id}');          
-                    return newDoc.id;}
+                        print('最新の端末保存uid ${newDoc.id}');  
+
+                            // Firestoreから取得したタイムスタンプをミリ秒単位で表示
+                            DocumentSnapshot docSnap = await _userCollection.doc(newDoc.id).get();
+                            Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+                            Timestamp timestamp = data['created_at'];
+                            int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
+                            print('Timestamp in milliseconds: $milliseconds');
+
+                            return newDoc.id;}
           
           
          if(sharedPrefesUid.isNotEmpty) {                         //端末保存uidが「有る」場合

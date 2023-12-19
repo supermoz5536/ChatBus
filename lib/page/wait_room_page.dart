@@ -122,7 +122,9 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         }
                   });         
                   if(talkuserUid == null) {                                                //talkuserUid == null で エラーの起こりうるif(){}部分をスルーしてしまった場合に、エラーを手動で返してretryさせる
+                              print('talkuserUid == nullなので、transactionのretry実行');
                     throw Exception('talkuserUid == nullなので、transactionのretry実行');
+                    
                   }  
                   }); //retry end
 
@@ -130,7 +132,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
 
                   // //■「自分がマッチングされた場合」のstream処理  
-                  // if(talkuserUid == null) {
+                  if(talkuserUid == null) {
                         print('wait_room_page.dartの初期取得talkUserUid = null');             //ここまでは読み込めてる            
                         var myDocStream = UserFirestore.streamMyDoc(myUid);  
                      
@@ -155,7 +157,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                     }                         
                     }        
                     }); //myDocSubscription =
-                  // } //■「自分がマッチングされた場合」のstream処理 
+                  } //■「自分がマッチングされた場合」のstream処理 
              }); //getAccount             
           }// initState
 
