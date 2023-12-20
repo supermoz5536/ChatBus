@@ -19,6 +19,7 @@ class UserFirestore {
                   final newDoc = await _userCollection.add({      //DB上に新規アカウント作成
                         'matched_status': false,
                         'room_id': 'none',
+                        'progress_marker': false,
                         'created_at': FieldValue.serverTimestamp(),                        
                   });        
                     Shared_Prefes.setUid(newDoc.id);              //端末のuid更新完了
@@ -58,6 +59,7 @@ class UserFirestore {
                   final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
                         'matched_status': false,
                         'room_id': 'none',
+                        'progress_marker': false,
                         'created_at': FieldValue.serverTimestamp(),
                   });        
                     Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
@@ -99,6 +101,7 @@ class UserFirestore {
   static Future<String?> getUnmatchedUser(String? myUid) async{   
     // try {     
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
+                                                                               .where('progress_marker', isEqualTo: false)
                                                                                .where(FieldPath.documentId, isNotEqualTo: myUid)
                                                                                .limit(4) 
                                                                                .get();
@@ -175,6 +178,8 @@ class UserFirestore {
      return _userCollection.doc(uid);
      
      }
+    
+  
 
 
 
@@ -241,24 +246,47 @@ static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) asy
   try { 
   DocumentSnapshot documentSnapshot = await _userCollection.doc(myUid).get();
   bool myMatchedStatus = await documentSnapshot.get('matched_status');
-  print('myUidの matched_status == $myMatchedStatus');
+
 
     if(myMatchedStatus == false) {
+        print('myUidの matched_status == {$myMatchedStatus}なのでretry関数内の処理開始');      
         return await f();
 
       } else if(myMatchedStatus == true) {
+        print('myUidの matched_status == {$myMatchedStatus}なのでretry終了');
         break;
       }
 
-      } catch (e) {                 
-        await Future.delayed(Duration(milliseconds: 4333));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+
+      } catch (e) {
+          await Future.delayed(Duration(milliseconds: 4333));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+
+        if (e.toString() == 'Exception: End Retry') {                 //talkuserUidを捕捉したけど「される場合」の処理が既に始まってたら、retry終了
+            break;
+            }
 
         if (i == maxRetries - 1){ 
             print('Attempt $i failed: $e');
-            rethrow;}
+            rethrow;
+            }
       }
   }
 }
 
+
+static updateProgressMarker(String? uid, bool progressStatus){
+        _userCollection.doc(uid).update({'progress_marker': progressStatus});     
+}
+
+
+static checkMyProgressMarker(String? myUid,) async{
+ DocumentSnapshot docMyUid = await _userCollection.doc(myUid).get();     
+ return docMyUid['progress_marker'];
+}
+
+static updateMyProgressMarker(String? myUid, bool boolStatus) async{
+ _userCollection.doc(myUid).update({'progress_marker': boolStatus});     
+
+}
 
 }
