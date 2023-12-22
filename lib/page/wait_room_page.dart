@@ -83,12 +83,14 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         await FirebaseFirestore.instance.runTransaction((transaction) async {                     //transaction start                                  
                         print('「する場合」のトランザクション開始');  
                           // try{ 
-                      var myFieldsRef = await UserFirestore.aimUserFields(myUid);                    //myUidのフィールドの補足  　　　　　　　
-                      var talkuserFieldsRef = await UserFirestore.aimUserFields(talkuserUid);        //myUidのフィールドの補足　
-                          var myFieldsSnapshot = await transaction.get(myFieldsRef);                                      //read check
-                          var talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);                                //read check　                                                                                                                  
-                              Map<String, dynamic> myFieldsData = myFieldsSnapshot.data() as Map<String, dynamic>;
-                              Map<String, dynamic> talkuserFieldsData = talkuserFieldsSnapshot.data() as Map<String, dynamic>;          
+
+                      var myFieldsRef = await UserFirestore.aimUserFields(myUid);                    //myUidのFieldを参照 　　　　　　　
+                      var myFieldsSnapshot = await transaction.get(myFieldsRef);                     //doc(myUid)のロックを取得
+     Map<String, dynamic> myFieldsData = myFieldsSnapshot.data() as Map<String, dynamic>;
+
+                      var talkuserFieldsRef = await UserFirestore.aimUserFields(talkuserUid);        //talkuserUidのFieldを参照 　　　　　　　
+                      var talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);         //doc(talkuserUid)のロック　                                                                                                                  
+     Map<String, dynamic> talkuserFieldsData = talkuserFieldsSnapshot.data() as Map<String, dynamic>;          
 
                           
                                          if (myFieldsData['matched_status'] == true){    //のDocumentCへのlock待機後に、既にマッチング済みだった場合は、実行中のトランザクションを失敗させる

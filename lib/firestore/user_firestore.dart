@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
 import '../utils/shared_prefs.dart';
@@ -240,7 +242,7 @@ return null;
 
 
 static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) async {
-  
+  Random random = Random();  
 
   for (int i = 0; i < maxRetries; i++) {
   try { 
@@ -259,7 +261,8 @@ static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) asy
 
 
       } catch (e) {
-          await Future.delayed(Duration(milliseconds: 4333));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+         int randomSeconds = 4333 + random.nextInt(2000);
+          await Future.delayed(Duration(milliseconds: randomSeconds));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
 
         if (e.toString() == 'Exception: End Retry') {                 //talkuserUidを捕捉したけど「される場合」の処理が既に始まってたら、retry終了
             break;
