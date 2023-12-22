@@ -16,7 +16,7 @@ class RoomFirestore {
   static Future<String?> createRoom(String? myUid, String? talkUserUid) async{    //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る
 try{
   DocumentReference docRef = await _roomCollection.add({
-        'jointed_user': [myUid, talkUserUid],
+        'jointed_user': [myUid, 'none'],
         'created time': Timestamp.now(),
       });
       return docRef.id;
@@ -26,6 +26,35 @@ try{
     return null;
   }
 }
+
+
+
+static Future<void> updateRoom(String? myRoomId, String? talkUserUid) async {
+  try {
+    await _roomCollection.doc(myRoomId).update({
+      'jointed_user': FieldValue.arrayRemove(['none']),
+    });
+    await _roomCollection.doc(myRoomId).update({
+      'jointed_user': FieldValue.arrayUnion([talkUserUid]),
+    });
+  } catch (e) {
+    print('doc(myRoomId)の[1]、noneをtalkuserUidに更新失敗 ===== $e');
+  }
+}
+
+
+
+static Future<String?> deleteRoom(String? myRoomId) async{    
+try{
+  await _roomCollection.doc(myRoomId).delete();
+  return null;
+
+  }catch(e){
+    print('myRoomの削除失敗 ===== $e');
+    return null;
+  }
+}
+
 
 
 

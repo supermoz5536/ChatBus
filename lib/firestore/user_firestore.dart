@@ -122,7 +122,7 @@ class UserFirestore {
                                     docs.shuffle();
 
              DocumentSnapshot docSnapshotFirst = docs[0];
-             print("Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
+             print("talkuserUid: Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
              return docSnapshotFirst.id;
              }    
 
