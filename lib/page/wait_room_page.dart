@@ -93,7 +93,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
      Map<String, dynamic> talkuserFieldsData = talkuserFieldsSnapshot.data() as Map<String, dynamic>;          
 
                           
-                                         if (myFieldsData['matched_status'] == true){    //のDocumentCへのlock待機後に、既にマッチング済みだった場合は、実行中のトランザクションを失敗させる
+                                         if (myFieldsData['matched_status'] == true){    //DocumentCへのlock待機後に、既にマッチング済みだった場合は、実行中のトランザクションを失敗させる
                                                throw Exception('エラー:トランザクション相手がlock解除後に既にマッチング済み retry');  //runTransactionへの例外
                                    }else if (talkuserFieldsData['progress_marker'] == true){
                                                throw Exception('エラー:トランザクション相手が現在マッチング処理中 retry');  //runTransactionへの例外
