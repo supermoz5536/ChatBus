@@ -39,6 +39,7 @@ dependencies:
   intl: any
   cloud_firestore: ^4.13.1
   shared_preferences: ^2.2.2
+  cloud_functions: ^4.5.8
 
 dev_dependencies:
   flutter_test:

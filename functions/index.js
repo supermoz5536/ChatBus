@@ -11,15 +11,11 @@ const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore: getFirestoreRef} = require("firebase-admin/firestore");//firestoreの参照を取得する関数のimport
 
-
 initializeApp(); //
 //initializeApp()関数が呼び出され
 //Firebase Admin SDKの初期化がされた時に
 //Firestoreのインスタンスが作成され
 //メモリにロード（格納）される
-
-
-
 
 
 

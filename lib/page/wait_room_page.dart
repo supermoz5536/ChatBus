@@ -61,6 +61,8 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
      String? myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);
      TalkRoom talkRoom = TalkRoom(roomId: myRoomId);
+     //■■■Footerのキャンセルボタンを押したら、RoomFirestore.deleteRoom(myRoomId); する必要がある。
+     //■■■予期しない形で離脱して取り残されたroomの、サーバーサイドお掃除処理が必要
                                                  
       
      UserFirestore.retry(myUid, () async{                                                 //retry start 
