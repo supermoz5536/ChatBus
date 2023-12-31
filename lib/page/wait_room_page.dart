@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/talk_room.dart';
@@ -82,34 +83,37 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
 
                       }else{
                         await UserFirestore.updateMyProgressMarker(myUid, true);                              //falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
-                        await FirebaseFirestore.instance.runTransaction((transaction) async {                     //transaction start                                  
-                        print('「する場合」のトランザクション開始');  
-                          // try{ 
+                          print('「する場合」の処理開始直前に progress_marker を trueに変更');
+                        // await FirebaseFirestore.instance.runTransaction((transaction) async {                     //transaction start                                  
+                        await CloudFunctions.runTransactionDB(myUid, talkuserUid, myRoomId)
 
-                      var myFieldsRef = await UserFirestore.aimUserFields(myUid);                    //myUidのFieldを参照 　　　　　　　
-                      var myFieldsSnapshot = await transaction.get(myFieldsRef);                     //doc(myUid)のロックを取得
-     Map<String, dynamic> myFieldsData = myFieldsSnapshot.data() as Map<String, dynamic>;
+    //                     print('「する場合」のトランザクション開始');  
+    //                       // try{ 
 
-                      var talkuserFieldsRef = await UserFirestore.aimUserFields(talkuserUid);        //talkuserUidのFieldを参照 　　　　　　　
-                      var talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);         //doc(talkuserUid)のロック　                                                                                                                  
-     Map<String, dynamic> talkuserFieldsData = talkuserFieldsSnapshot.data() as Map<String, dynamic>;          
+    //                   var myFieldsRef = await UserFirestore.aimUserFields(myUid);                    //myUidのFieldを参照 　　　　　　　
+    //                   var myFieldsSnapshot = await transaction.get(myFieldsRef);                     //doc(myUid)のロックを取得
+    //  Map<String, dynamic> myFieldsData = myFieldsSnapshot.data() as Map<String, dynamic>;
+
+    //                   var talkuserFieldsRef = await UserFirestore.aimUserFields(talkuserUid);        //talkuserUidのFieldを参照 　　　　　　　
+    //                   var talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);         //doc(talkuserUid)のロック　                                                                                                                  
+    //  Map<String, dynamic> talkuserFieldsData = talkuserFieldsSnapshot.data() as Map<String, dynamic>;          
 
                           
-                                         if (myFieldsData['matched_status'] == true){    //DocumentCへのlock待機後に、既にマッチング済みだった場合は、実行中のトランザクションを失敗させる
-                                               throw Exception('エラー:トランザクション相手がlock解除後に既にマッチング済み retry');  //runTransactionへの例外
-                                   }else if (talkuserFieldsData['progress_marker'] == true){
-                                               throw Exception('エラー:トランザクション相手が現在マッチング処理中 retry');  //runTransactionへの例外
+    //                                      if (myFieldsData['matched_status'] == true){    //DocumentCへのlock待機後に、既にマッチング済みだった場合は、実行中のトランザクションを失敗させる
+    //                                            throw Exception('エラー:トランザクション相手がlock解除後に既にマッチング済み retry');  //runTransactionへの例外
+    //                                }else if (talkuserFieldsData['progress_marker'] == true){
+    //                                            throw Exception('エラー:トランザクション相手が現在マッチング処理中 retry');  //runTransactionへの例外
 
-                                   }else{
-                                                  transaction.update(myFieldsRef, {
-                                                      'matched_status': true,
-                                                      'room_id': myRoomId,          
-                                                  });
-                                                  transaction.update(talkuserFieldsRef, {
-                                                      'matched_status': true,
-                                                      'room_id': myRoomId,          
-                                                  });       
-                                         }
+    //                                }else{
+    //                                               transaction.update(myFieldsRef, {
+    //                                                   'matched_status': true,
+    //                                                   'room_id': myRoomId,          
+    //                                               });
+    //                                               transaction.update(talkuserFieldsRef, {
+    //                                                   'matched_status': true,
+    //                                                   'room_id': myRoomId,          
+    //                                               });       
+    //                                      }
                           // } catch (e) {        
                           //   UserFirestore.updateMyProgressMarker(myUid, false);                                                                
                           //   talkuserUid = null;
@@ -118,7 +122,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                           //   throw e; 
                           // }   
                 
-                          }).then((_){                                                              //transaction end     
+                          .then((_){                                                              //transaction end     
                                 if(talkuserUid != null) {                                           //transaction処理内でtalkuserUidに変更がないかの確認
                                    print('トランザクション成功: myRoomのField情報の更新、画面遷移');
                                       RoomFirestore.updateRoom(myRoomId, talkuserUid);      
@@ -127,6 +131,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                           MaterialPageRoute(                                        //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
                                           builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                              
                                           ));
+                                        print('「する場合」の画面遷移 完了');                                            
                                               myDocSubscription!.cancel();
                                     } 
 
@@ -134,6 +139,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                           // transactionのエラーハンドリング
                               print('トランザクション失敗: talkuserUidをnullにしてretry: $error');
                               UserFirestore.updateMyProgressMarker(myUid, false);  
+                              print('「する場合」の処理開始直前に progress_marker を falseに戻す');                              
                               talkuserUid = null;        
                               throw Exception(); 
                           });                                                                       
@@ -158,13 +164,13 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                         if (snapshot.data()!.isNotEmpty){                                       //TESTドキュメントはFiledが空なので、避けるために必要
 
                             if (snapshot.data()!['progress_marker'] == true){                //myUidのマッチング処理状況の確認：「する場合」の処理との競合を避けるため                               
-                                print('「する場合」のマッチング処理を確認： 受信したstreamへの「される場合」の処理を終了');                          
+                                print('「する場合」のマッチング処理を確認： 受信したstreamへの「された場合」の処理を終了');                          
                                 return;
 
                      } else if (snapshot.data()!['progress_marker'] == false &&
                                 snapshot.data()!['matched_status']  == true) { 
                                         
-                                print('「自分がマッチングされた場合」の処理開始');                            
+                                print('「された場合」の処理開始');                            
                                 UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
                                 Map<String, dynamic>? doc = snapshot.data();
                                 TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
@@ -178,6 +184,7 @@ class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラ
                                         builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
                                         )
                                         );
+                                        print('「された場合」の画面遷移 完了');  
                                         myDocSubscription!.cancel();}                         
                                 }  
                             }
