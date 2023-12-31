@@ -20,17 +20,17 @@ import 'package:udemy_copy/page/talk_room_page.dart';
 
 
 
-class WaitRoomPage extends StatefulWidget {                            
-const WaitRoomPage({super.key});  // this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
+class MatchingProgressPage extends StatefulWidget {                            
+const MatchingProgressPage({super.key});  // this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
 // 10,11行で、TalkRoomPageクラスのインスタンス変数に、ルームの基本情報型を備えた変数talkRoomが設定された
 // 画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
   @override
-  State<WaitRoomPage> createState() => _WaitRoomPageState();    //「stateクラス」として「_WaitRoomPageState()」を定義 
+  State<MatchingProgressPage> createState() => _MatchingProgressPageState();    //「stateクラス」として「_WaitRoomPageState()」を定義 
                                                                 //「stateクラス」＝StatefulWifetを継承したWidfetの状態を管理するクラス
 }
 
-class _WaitRoomPageState extends State<WaitRoomPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
+class _MatchingProgressPageState extends State<MatchingProgressPage> {          //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
   String? myUid;
   String? talkuserUid;
   String? myRoomId;
