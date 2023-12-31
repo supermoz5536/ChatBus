@@ -2,15 +2,12 @@
 // Firestore：NoSQL型のdbで、データの保存と取得を担当一方
 // Cloud Functions：サーバーレスのコンピューティングサービスで、特定のイベント（Firestoreのデータ変更時など）に反応して関数を実行
 
-// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 const functions = require("firebase-functions");
+// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 
-// const {onRequest} = require("firebase-functions/v2/https");
-// const {onDocumentCreated} = require("firebase-functions/v2/firestore");
-
-// The Firebase Admin SDK to access Firestore.
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore: getFirestoreRef} = require("firebase-admin/firestore");
+// The Firebase Admin SDK to access Firestore.
 // firestoreの参照を取得する関数のimport
 
 initializeApp(); //
@@ -23,8 +20,17 @@ exports.runTransaction = functions.https.onCall(async (data, context) => {
 // onCallはクライアントから直接呼び出し可能関数の作成するメソッド
 // 引数dataは、クライアントから渡されるデータ内容 myUid talkuserUid myRoomId
 // 引数contextは、実行する関数の情報(関数名とか)とクライアント自身の情報（IPアドレスとか）
+
   const db = getFirestoreRef();
   // メモリに格納されたfirestoreインスタンスからの参照を取得してるので同期的（即時取得）、awaitいらない
+  // 確認：data.myUidが有効
+
+  if (!data.myUid) {
+    throw new functions.https.HttpsError(
+        "invalid-argument",
+        "The function must be called with 'myUid' argument.",
+    );
+  }
 
   try {
     return db.runTransaction(async (transaction) => {
@@ -32,20 +38,23 @@ exports.runTransaction = functions.https.onCall(async (data, context) => {
       // Firestoreデータベース上の、
       // 一連の読み取りと書き込み操作を
       // 一つの作業単位として扱う
-      const myFieldsRef = db.collection("users").doc(data.myUid);
-      // dataは引数で与えられたdata（クライアントから渡されたデータ内容）
+
+      const myFieldsRef = db.collection("user").doc(data.myUid);
       const myFieldsSnapshot = await transaction.get(myFieldsRef);
       const myFieldsData = myFieldsSnapshot.data();
+      // dataは引数で与えられたdata（クライアントから渡されたデータ内容）
 
-      const talkuserFieldsRef = db.collection("users").doc(data.talkuserUid);
+      const talkuserFieldsRef = db.collection("user").doc(data.talkuserUid);
       const talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);
       const talkuserFieldsData = talkuserFieldsSnapshot.data();
 
       if (myFieldsData.matched_status === true) {
       // DocumentCへのlock待機後の再readで既にマッチング済みだった場合は
       // 実行中のトランザクションを失敗させる
+
         throw new functions.https.HttpsError(
         // 「runTransactionへの例外を投げる処理」と「クライアント側へのエラー送信」の2つが同時に為されている
+            "transaction failed",
             `エラー:トランザクション相手がlock解除後に既にマッチング済み retry`,
         );
       } else if (talkuserFieldsData.progress_marker === true) {
