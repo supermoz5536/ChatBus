@@ -56,9 +56,15 @@ class UserFirestore {
              if (docIdSnapshot.exists) {
                  //.getでデータに取得に「成功」した場合
                  if (docIdSnapshot.id == sharedPrefesUid ) {                        
-                     //DB上に端末保存idと同じidが「ある」場合
-                     //既存の端末Uidをそのまま使用
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
+                     //DB上に端末保存idと同じidが「ある」場合
+                     //Filed情報を更新して、既存の端末Uidをそのまま使用
+                     
+                     _userCollection.doc(sharedPrefesUid).update({                      
+                          'matched_status': false,                         
+                          'room_id': 'none',
+                          'progress_marker': false,                          
+                   }); 
                      return sharedPrefesUid;                                   
 
                  } else {
@@ -303,15 +309,15 @@ static updateProgressMarker(String? uid, bool progressStatus){
         _userCollection.doc(uid).update({'progress_marker': progressStatus});     
 }
 
+static updateMatchedStatus(String? uid, bool matchedStatus){
+        _userCollection.doc(uid).update({'matched_status': matchedStatus});     
+}
+
 
 static checkMyProgressMarker(String? myUid,) async{
  DocumentSnapshot docMyUid = await _userCollection.doc(myUid).get();     
  return docMyUid['progress_marker'];
 }
 
-static updateMyProgressMarker(String? myUid, bool boolStatus) async{
- _userCollection.doc(myUid).update({'progress_marker': boolStatus});     
-
-}
 
 }

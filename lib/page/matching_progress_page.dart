@@ -4,6 +4,7 @@ import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 
 
@@ -36,9 +37,13 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
   String? myRoomId;
   StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
+  bool isInputEmpty = true;
+  bool isProcessing = false;
+  final TextEditingController controller = TextEditingController();
+  // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
+  
 
-
-    @override                  // 追加機能の記述部分であることの明示
+  @override                  // 追加機能の記述部分であることの明示
     void initState() {         // 関数の呼び出し（initStateはFlutter標準メソッド）
       super.initState();       // 親クラスの初期化処理　
                                //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
@@ -55,15 +60,14 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                      setState(() {myUid = uid;});       // 状態変数myUidに、非同期処理の結果（uid）を設定           
                      print('wait_room_page.dartの初期取得myUid = $myUid');
 
-     String? myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);
+              myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);
      TalkRoom talkRoom = TalkRoom(roomId: myRoomId);
-     //■■■Footerのキャンセルボタンを押したら、RoomFirestore.deleteRoom(myRoomId); する必要がある。
-     //■■■予期しない形で離脱して取り残されたroomの、サーバーサイドお掃除処理が必要
-                                                 
+     print("createRoom直後のmyRoomId == {$myRoomId}");                                               
       
      UserFirestore.retry(myUid, () async{    // retry start 
              await UserFirestore.getUnmatchedUser(myUid)                      
                                 .then((String? uid) async{
+                                  print("createRoom直後のmyRoomId == {$myRoomId}");                                               
                                  setState(() {talkuserUid = uid;});
                                               
                   // 「自分がマッチングする場合」の処理  
@@ -77,7 +81,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                           throw Exception('End Retry');  // retry()への例外
 
                       }else{
-                        await UserFirestore.updateMyProgressMarker(myUid, true);                    // falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
+                        await UserFirestore.updateProgressMarker(myUid, true);                    // falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
                           print('「する場合」の処理開始直前に progress_marker を trueに変更');
 
                         await CloudFunctions.runTransactionDB(myUid, talkuserUid, myRoomId)         // transaction start          
@@ -98,7 +102,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                           }).catchError((error) {
                           // transactionのエラーハンドリング
                               print('トランザクション失敗: talkuserUidをnullにしてretry: $error');
-                              UserFirestore.updateMyProgressMarker(myUid, false);  
+                              UserFirestore.updateProgressMarker(myUid, false);  
                               print('「する場合」の処理が失敗したので progress_marker を falseに戻す');                              
                               talkuserUid = null;        
                               throw Exception(); 
@@ -137,20 +141,19 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                 RoomFirestore.deleteRoom(myRoomId);
 
                                 if (context.mounted) {                                                       
-                                    Navigator.push(                                               //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                    context,                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                        MaterialPageRoute(                                        //新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
-                                        builder: (context) => TalkRoomPage(talkRoom)              //遷移先の画面を構築する関数を指定                                                                                                              
-                                        )
-                                        );
-                                        print('「された場合」の画面遷移 完了');  
-                                        myDocSubscription!.cancel();}                         
+                                    Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                      context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                      MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                      (_) => false                               
+                                    );
+                                      print('「された場合」の画面遷移 完了');  
+                                      myDocSubscription!.cancel();}                         
                                 }  
-                            }
-                    }); // myDocSubscription =
-                } // 「自分がマッチングされた場合」のstream処理 
-             }); // getAccount             
-          }// initState
+                              }
+                            }); // myDocSubscription =
+                          } // 「自分がマッチングされた場合」のstream処理 
+                        }); // getAccount             
+                      } // initState
 
 
 
@@ -222,15 +225,11 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               child: const ListTile(title:              // コンテナのchild部分に、[1]のメッセージを表示
                                          Text('チャット相手を検索中だよ〜！'),
                               )),                                        
-                          );
-                        }
-
-
+                            );
+                          }
                           return null;
-
-
-                   }),
-                 ), 
+                       }),
+                     ), 
 
 
 
@@ -240,44 +239,84 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
 
 
-          Column(            // 仮面下部の文字入力部分をColumnで構成
+      // ■フッター部分
+      Column( // column()の縦移動で、画面1番下に配置
             mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
                   color: Colors.white,
-                  height: 68,
-                child: Row(children: [
-                  //  Expanded(child: Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: TextField( 
-                  //     controller: controller,               //columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-                  //     decoration: const InputDecoration(
-                  //     contentPadding: EdgeInsets.only(left: 10),
-                  //     border: OutlineInputBorder(),
-                  //   ),
-                  //   ),
-                  // )), 
-                  IconButton (onPressed: () async {
-                    // await RoomFirestore.sendMessage(
-                    //   roomId: widget.talkRoom.roomId, 
-                    //   message: controller.text
-                    //   );
-                    //   controller.clear();
-                  }, icon: Icon(Icons.send))
-                ],
-                ),
-                ),
-              // Container(  //下部入力フィールドのsafeare部分の余白埋める役割
-              //   color: Colors.white,
-              //   height: MediaQuery.of(context).padding.bottom,   //スマホ画面の入力fieldの下部の部分を覆う
-              // )
-            ],
-          )
-        ],                         
-      ),
-    );
-  }  
-}
+                  height: 68, // フッター領域の縦幅
+                  
+                  child: Row(children: [
+
+                      Container(child:
+                        ElevatedButton( 
+                            onPressed: isProcessing ? null : () async{ 
+                             setState(() {
+                               isProcessing = true;
+                               // 二重タップ防止  
+                               // isProcessingの使い方は、progressMarkerと同じ                             
+                               // trueにして、タップをブロック
+                             });
+                                                       
+                            await RoomFirestore.deleteRoom(myRoomId); 
+                            myDocSubscription!.cancel();                             
+                            UserFirestore.updateMatchedStatus(myUid, true);  
+                            UserFirestore.updateProgressMarker(myUid, true);
+                            // Lounge_pageに戻る時の一連の処理
+                            //リスナーを反応させないために両方trueする
+
+                            if (context.mounted){    
+                                Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                  context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                  MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                  (_) => false                               
+                                );
+                              }
+                                setState(() {
+                                  isProcessing = false;
+                                  //入力のタップを解除
+                              });
+                            },
+                            child: const Text("前の画面に戻る"),
+                           )
+                         ),
+
+                      Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
+                         padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
+
+                         child: TextField(               
+                                    controller: controller,          // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                                    onChanged: (value){              // TextFiledの値(value)を引数
+                                                setState(() {        // valueに変化があったら、応答関数で状態を更新
+                                                isInputEmpty = value.isEmpty;  // isEmptyメソッドは、bool値を返す
+                                                });
+                                    },
+                                    decoration: const InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromARGB(255, 244, 241, 241),
+                                    contentPadding: EdgeInsets.only(left: 10),
+                                    border: InputBorder.none,                                  
+                                    ),
+                                  ),
+                               )), 
+
+                                IconButton (onPressed: () {                                                              
+                                            controller.clear(); // 送信すると文字を消す
+                                            }, 
+                                            icon: Icon(Icons.send,
+                                            color: isInputEmpty? Colors.grey : Colors.blue,
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],                         
+                              ),
+                            );
+                          }  
+                        }
 
 
 
