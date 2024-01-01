@@ -17,16 +17,14 @@ static Future<void> runTransactionDB(String? myUid, String? talkuserUid, String?
       'myRoomId': myRoomId,
     });
 
-    } on FirebaseFunctionsException catch (e){
-      print('The function called has thrown an error: $e');
+
+    // ignore: unused_catch_stack
+    } on FirebaseFunctionsException catch (e, stackTrace) {
       throw FirebaseFunctionsException(
-        code: 'INTERNAL',
-        details: e,
-        message: 'An internal error occurred: $e'
+        code: 'トランザクション内部エラー',
+        message: 'message: $e',
+        // stackTrace: stackTrace,
       );
-
-    
-
     }
 }
 

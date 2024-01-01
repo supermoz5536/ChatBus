@@ -27,7 +27,7 @@ final TextEditingController controller = TextEditingController();
     return Scaffold(
       backgroundColor: Colors.lightBlueAccent,
       appBar: AppBar(
-        title: Text('トークルーム'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
+        title: const Text('トークルーム'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
         ),  
 
       body: Stack(                            //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
@@ -125,21 +125,3 @@ final TextEditingController controller = TextEditingController();
 
 
 
-
-
-
-
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-  
-}

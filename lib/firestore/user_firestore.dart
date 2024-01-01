@@ -16,62 +16,84 @@ class UserFirestore {
   static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
          String? sharedPrefesUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
 
-         if(sharedPrefesUid == null){                             //端末保存uidが「無い」場合
+         if(sharedPrefesUid == null || sharedPrefesUid.isEmpty){                             //端末保存uidが「無い」場合
              print('既存の端末uid = 未登録');
                   final newDoc = await _userCollection.add({      //DB上に新規アカウント作成
                         'matched_status': false,
                         'room_id': 'none',
                         'progress_marker': false,
                         'created_at': FieldValue.serverTimestamp(),                        
-                  });        
-                    Shared_Prefes.setUid(newDoc.id);              //端末のuid更新完了
-                        print('アカウント作成完了');
-                        print('端末のuid更新完了');
-                        print('最新の端末保存uid ${newDoc.id}');  
+                  });
+                        // Firestoreから取得したタイムスタンプをミリ秒単位で表示
+                        DocumentSnapshot docSnap = await _userCollection.doc(newDoc.id).get();
+                        Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+                        Timestamp timestamp = data['created_at'];
+                        int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
+                          print('Timestamp in milliseconds: $milliseconds');
 
-                            // Firestoreから取得したタイムスタンプをミリ秒単位で表示
-                            DocumentSnapshot docSnap = await _userCollection.doc(newDoc.id).get();
-                            Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-                            Timestamp timestamp = data['created_at'];
-                            int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
-                            print('Timestamp in milliseconds: $milliseconds');
-
-                            return newDoc.id;}
+                        Shared_Prefes.setUid(newDoc.id);              //端末のuid更新
+                          print('アカウント作成完了');
+                          print('端末のuid更新完了');
+                          print('最新の端末保存uid ${newDoc.id}');  
+                                                      
+                          return newDoc.id;}
           
           
-         if(sharedPrefesUid.isNotEmpty) {                         //端末保存uidが「有る」場合
-           print('既存の端末uid = ${sharedPrefesUid}');
-       DocumentSnapshot? docIdSnapshot = await _userCollection
-                                               .doc(sharedPrefesUid)
-                                               .get();            //SharedPrefesUidと一致するドキュメントIDを取得
-                                                                  //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納        
-          
-                  if (docIdSnapshot.exists){             
-                      print('DB上のuid = ${docIdSnapshot.id}');
-                  } else {
-                      print('DB上のuid = 未登録');    
-                          }  
+         if(sharedPrefesUid.isNotEmpty) {                                    
+         //端末保存uidが「有る」場合
 
+            print('既存の端末uid = ${sharedPrefesUid}');
+            DocumentSnapshot? docIdSnapshot = await _userCollection
+                                                    .doc(sharedPrefesUid)
+                                                    .get();            //SharedPrefesUidと一致するドキュメントIDを取得
+                                                                       //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納                 
+                // if (docIdSnapshot.exists) {             
+                //     print('DB上のuid = ${docIdSnapshot.id}');
+                // } else {
+                //     print('DB上のuid = 未登録');    
+                // }  
       
-                if(docIdSnapshot.id == sharedPrefesUid ) {                        //DB上に端末保存idと同じidがある場合 → そのまま使えばいい  
-                    print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
-                    return sharedPrefesUid;                                       //fetchUid()で呼び出した端末保存uidをそのまま出力                                    ΩΩ 
+             if (docIdSnapshot.exists) {
+                 //.getでデータに取得に「成功」した場合
+                 if (docIdSnapshot.id == sharedPrefesUid ) {                        
+                     //DB上に端末保存idと同じidが「ある」場合
+                     //既存の端末Uidをそのまま使用
+                     print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
+                     return sharedPrefesUid;                                   
 
-                }else{                                                            //DB上に端末保存idと同じidがない場合 → 新規アカウント作成　＆　端末IDの更新
-                  final newDoc = await _userCollection.add({                      //DB上に新規アカウント作成
-                        'matched_status': false,
-                        'room_id': 'none',
-                        'progress_marker': false,
-                        'created_at': FieldValue.serverTimestamp(),
-                  });        
-                    Shared_Prefes.setUid(newDoc.id);                              //端末のuid更新完了
-                        print('アカウント作成完了');
-                        print('端末のuid更新完了');
-                        print('最新の端末保存uid ${newDoc.id}');          
-                    return newDoc.id;  
-  }
-  }
-    return null;
+                 } else {
+                     //DB上に端末保存idと同じidが「ない」場合
+                     //新規アカウント作成 ＆ 端末Uid更新                                                           
+                     final newDoc = await _userCollection.add({                      
+                          'matched_status': false,                         
+                          'room_id': 'none',
+                          'progress_marker': false,
+                          'created_at': FieldValue.serverTimestamp(),
+                 });        
+                     Shared_Prefes.setUid(newDoc.id);                            
+                          print('アカウント作成完了');
+                          print('端末のuid更新完了');
+                          print('最新の端末保存uid ${newDoc.id}');          
+                     return newDoc.id;  
+                 }
+                
+             } else {
+               //.getでデータに取得に「失敗」した場合 = 既存の端末Uidはあるが、db上にUidが既に削除されてる場合
+               //新規アカウント作成 ＆ 端末Uid更新
+               final newDoc = await _userCollection.add({                      
+                    'matched_status': false,
+                    'room_id': 'none',
+                    'progress_marker': false,
+                    'created_at': FieldValue.serverTimestamp(),
+            });        
+               Shared_Prefes.setUid(newDoc.id);                            
+                     print('アカウント作成完了');
+                     print('端末のuid更新完了');
+                     print('最新の端末保存uid ${newDoc.id}');          
+               return newDoc.id;  
+             }
+         }
+  return null;
 }
 
   

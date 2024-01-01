@@ -40,15 +40,18 @@ exports.runTransaction = functions.https.onCall(async (data, context) => {
       // 一つの作業単位として扱う
 
       const myFieldsRef = db.collection("user").doc(data.myUid);
-      const myFieldsSnapshot = await transaction.get(myFieldsRef);
-      const myFieldsData = myFieldsSnapshot.data();
-      // dataは引数で与えられたdata（クライアントから渡されたデータ内容）
+      // const myFieldsSnapshot = await transaction.get(myFieldsRef);
+      // const myFieldsData = myFieldsSnapshot.data();
 
       const talkuserFieldsRef = db.collection("user").doc(data.talkuserUid);
       const talkuserFieldsSnapshot = await transaction.get(talkuserFieldsRef);
       const talkuserFieldsData = talkuserFieldsSnapshot.data();
 
-      if (myFieldsData.matched_status === true) {
+      if (talkuserFieldsData.progress_marker === true) {
+        throw new functions.https.HttpsError(
+            `エラー:トランザクション相手が現在マッチング処理中 retry`,
+        );
+      } else if (talkuserFieldsData.matched_status === true) {
       // DocumentCへのlock待機後の再readで既にマッチング済みだった場合は
       // 実行中のトランザクションを失敗させる
 
@@ -56,10 +59,6 @@ exports.runTransaction = functions.https.onCall(async (data, context) => {
         // 「runTransactionへの例外を投げる処理」と「クライアント側へのエラー送信」の2つが同時に為されている
             "transaction failed",
             `エラー:トランザクション相手がlock解除後に既にマッチング済み retry`,
-        );
-      } else if (talkuserFieldsData.progress_marker === true) {
-        throw new functions.https.HttpsError(
-            `エラー:トランザクション相手が現在マッチング処理中 retry`,
         );
       } else {
         transaction.update(myFieldsRef, {

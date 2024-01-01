@@ -20,7 +20,7 @@ static Future<void> setPrefsInstance() async{
 
 
  static Future<void> setUid(String uid) async{       //実際に端末にユーザー情報を保存する関数
-  await _preferences!.setString('uid', uid);       //setStringはライブラリのメソッドえ、端末保存のコマンド
+  await _preferences!.setString('uid', uid);       //setStringはライブラリのメソッド、端末保存のコマンド
 }
 
 //shared_Prefesに書いてあるUidの情報をとってくる関数を書く
