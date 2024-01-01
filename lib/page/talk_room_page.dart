@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
+import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
@@ -18,7 +20,10 @@ class TalkRoomPage extends StatefulWidget {
 }
 
 class _TalkRoomPageState extends State<TalkRoomPage> {
-final TextEditingController controller = TextEditingController();
+  bool isInputEmpty = true;
+  bool isProcessing = false;
+  final TextEditingController controller = TextEditingController();
+
 
  
 
@@ -83,39 +88,78 @@ final TextEditingController controller = TextEditingController();
           ),
 
 
-          Column(            //仮面下部の文字入力部分をColumnで構成
+      // ■フッター部分
+      Column( // column()の縦移動で、画面1番下に配置
             mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
                   color: Colors.white,
-                  height: 68,
-                child: Row(children: [
-                   Expanded(child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField( 
-                      controller: controller,               //columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-                      decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 10),
-                      border: OutlineInputBorder(),
-                    ),
-                    ),
-                  )), 
-                  IconButton (onPressed: () async {
-                    await RoomFirestore.sendMessage(
-                      roomId: widget.talkRoom.roomId!, 
-                      message: controller.text
-                      );
-                      controller.clear();
-                  }, icon: Icon(Icons.send))
-                ],
-                ),
-                ),
-              // Container(  //下部入力フィールドのsafeare部分の余白埋める役割
-              //   color: Colors.white,
-              //   height: MediaQuery.of(context).padding.bottom,   //スマホ画面の入力fieldの下部の部分を覆う
-              // )
-            ],
-          )
+                  height: 68, // フッター領域の縦幅
+                  
+                  child: Row(children: [
+
+                      Container(child:
+                        ElevatedButton( 
+                            onPressed: isProcessing ? null : () async{ 
+                             setState(() {
+                               isProcessing = true;
+                               // 二重タップ防止  
+                               // isProcessingの使い方は、progressMarkerと同じ                             
+                               // trueにして、タップをブロック
+                             });
+                                                       
+                            // await RoomFirestore.deleteRoom(talkRoom.id);                                                         
+                            // UserFirestore.updateMatchedStatus(myUid, true);  
+                            // UserFirestore.updateProgressMarker(myUid, true);
+                            // Lounge_pageに戻る時の一連の処理
+                            //リスナーを反応させないために両方trueする
+
+                            if (context.mounted){    
+                                Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                  context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                  MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                  (_) => false                               
+                                );
+                              }
+                              //   setState(() {
+                              //     isProcessing = false;
+                              //     //入力のタップを解除
+                              // });
+                            },
+                            child: const Text("前の画面に戻る"),
+                           )
+                         ),
+
+                      Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
+                         padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
+
+                         child: TextField(               
+                                    controller: controller,          // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                                    onChanged: (value){              // TextFiledの値(value)を引数
+                                                setState(() {        // valueに変化があったら、応答関数で状態を更新
+                                                isInputEmpty = value.isEmpty;  // isEmptyメソッドは、bool値を返す
+                                                });
+                                    },
+                                    decoration: const InputDecoration(
+                                    filled: true,
+                                    fillColor: Color.fromARGB(255, 244, 241, 241),
+                                    contentPadding: EdgeInsets.only(left: 10),
+                                    border: InputBorder.none,                                  
+                                    ),
+                                  ),
+                               )), 
+
+                                IconButton (onPressed: () {                                                              
+                                            controller.clear(); // 送信すると文字を消す
+                                            }, 
+                                            icon: Icon(Icons.send,
+                                            color: isInputEmpty? Colors.grey : Colors.blue,
+                                            ))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )
         ],
       ),
     );
@@ -124,4 +168,41 @@ final TextEditingController controller = TextEditingController();
 
 
 
+
+
+
+
+          // Column(            //仮面下部の文字入力部分をColumnで構成
+          //   mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
+          //   children: [
+          //     Container(
+          //         color: Colors.white,
+          //         height: 68,
+          //       child: Row(children: [
+          //          Expanded(child: Padding(
+          //           padding: const EdgeInsets.all(8.0),
+          //           child: TextField( 
+          //             controller: controller,               //columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+          //             decoration: const InputDecoration(
+          //             contentPadding: EdgeInsets.only(left: 10),
+          //             border: OutlineInputBorder(),
+          //           ),
+          //           ),
+          //         )), 
+          //         IconButton (onPressed: () async {
+          //           await RoomFirestore.sendMessage(
+          //             roomId: widget.talkRoom.roomId!, 
+          //             message: controller.text
+          //             );
+          //             controller.clear();
+          //         }, icon: Icon(Icons.send))
+          //       ],
+          //       ),
+          //       ),
+          //     // Container(  //下部入力フィールドのsafeare部分の余白埋める役割
+          //     //   color: Colors.white,
+          //     //   height: MediaQuery.of(context).padding.bottom,   //スマホ画面の入力fieldの下部の部分を覆う
+          //     // )
+          //   ],
+          // )
 

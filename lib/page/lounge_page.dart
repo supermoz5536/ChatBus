@@ -13,14 +13,14 @@ class LoungePage extends StatefulWidget {
 final TextEditingController controller = TextEditingController();
 // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 bool isInputEmpty = true;
-bool? isProcessing;
+bool? isDisabled;
 
 class _LoungePageState extends State<LoungePage> {
   
 @override                  // 追加機能の記述部分であることの明示
   void initState() {         // 関数の呼び出し（initStateはFlutter標準メソッド）
     super.initState();       // 親クラスの初期化処理　
-    isProcessing = false;
+    isDisabled = false;
       
       }       
                                //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
@@ -59,19 +59,25 @@ class _LoungePageState extends State<LoungePage> {
 
                       Container(child:
                         ElevatedButton( 
-                            onPressed: isProcessing! ? null : () async{ 
+                            onPressed: isDisabled! ? null : () async{ 
                              setState(() {
-                               isProcessing = true;
-                               // 二重タップ防止  
-                               // isProcessingの使い方は、progressMarkerと同じ                             
+                               isDisabled = true;
+                               // 二重タップ防止                                 
                                // trueにして、タップをブロック
                              });
 
-                             Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                               context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                               MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                               (_) => false                               
+                              await Future.delayed(
+                              const Duration(milliseconds: 300), //無効にする時間
                              );
+
+                               Navigator.pushAndRemoveUntil (context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                 MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                 (_) => false                               
+                               );
+                              //   setState(() {
+                              //     isDisabled = false;
+                              //     //入力のタップを解除
+                              // });
                            },
                             child: const Text("チャット開始"),
                            )

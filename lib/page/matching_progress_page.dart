@@ -38,7 +38,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
   StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
   bool isInputEmpty = true;
-  bool isProcessing = false;
+  bool isDisabled = false;
   final TextEditingController controller = TextEditingController();
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
   
@@ -251,13 +251,17 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
                       Container(child:
                         ElevatedButton( 
-                            onPressed: isProcessing ? null : () async{ 
+                            onPressed: isDisabled ? null : () async{ 
                              setState(() {
-                               isProcessing = true;
+                               isDisabled = true;
                                // 二重タップ防止  
                                // isProcessingの使い方は、progressMarkerと同じ                             
                                // trueにして、タップをブロック
                              });
+
+                              await Future.delayed(
+                              const Duration(milliseconds: 300), //無効にする時間
+                             );                             
                                                        
                             await RoomFirestore.deleteRoom(myRoomId); 
                             myDocSubscription!.cancel();                             
@@ -266,18 +270,17 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                             // Lounge_pageに戻る時の一連の処理
                             //リスナーを反応させないために両方trueする
 
-                            if (context.mounted){    
-                                Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                  context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                  MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                  (_) => false                               
-                                );
-                              }
-                                setState(() {
-                                  isProcessing = false;
-                                  //入力のタップを解除
-                              });
-                            },
+                            if (context.mounted) {    
+                                Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                   MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                          (_) => false                               
+                                        );
+                                      }
+                            //     setState(() {
+                            //       isDisabled = false;
+                            //       //入力のタップを解除
+                            //  });
+                           },
                             child: const Text("前の画面に戻る"),
                            )
                          ),
