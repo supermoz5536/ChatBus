@@ -61,13 +61,12 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                      print('wait_room_page.dartの初期取得myUid = $myUid');
 
               myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);
-     TalkRoom talkRoom = TalkRoom(roomId: myRoomId);
-     print("createRoom直後のmyRoomId == {$myRoomId}");                                               
+     TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: myRoomId);
+                                                
       
      UserFirestore.retry(myUid, () async{    // retry start 
              await UserFirestore.getUnmatchedUser(myUid)                      
-                                .then((String? uid) async{
-                                  print("createRoom直後のmyRoomId == {$myRoomId}");                                               
+                                .then((String? uid) async{                                              
                                  setState(() {talkuserUid = uid;});
                                               
                   // 「自分がマッチングする場合」の処理  
@@ -89,7 +88,10 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                             .then((_){                                                              // transaction 成功の分岐
                                 if(talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
                                    print('トランザクション成功: myRoomのField情報の更新、画面遷移');
-                                      RoomFirestore.updateRoom(myRoomId, talkuserUid);      
+                                      RoomFirestore.updateRoom(myRoomId, talkuserUid);
+                                      talkRoom.myUid = myUid;
+                                      talkRoom.talkuserUid = talkuserUid;
+
                                       Navigator.push(                                               //　画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                                       context,                                                      //　1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                           MaterialPageRoute(                                        //　新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
@@ -136,7 +138,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                 print('「された場合」の処理開始');                            
                                 UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
                                 Map<String, dynamic>? doc = snapshot.data();
-                                TalkRoom talkRoom = TalkRoom(roomId: doc?['room_id']);            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                                TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: doc?['room_id']);            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
 
                                 RoomFirestore.deleteRoom(myRoomId);
 
@@ -245,11 +247,11 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
             children: [
               Container(
                   color: Colors.white,
-                  height: 68, // フッター領域の縦幅
-                  
+                  height: 68, // フッター領域の縦幅                 
                   child: Row(children: [
 
-                      Container(child:
+                      // ■「キャンセル」ボタン
+                      Container(child:                                             
                         ElevatedButton( 
                             onPressed: isDisabled ? null : () async{ 
                              setState(() {
@@ -281,10 +283,11 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                             //       //入力のタップを解除
                             //  });
                            },
-                            child: const Text("前の画面に戻る"),
+                            child: const Text("キャンセル"),
                            )
                          ),
 
+                      // ■入力フィールド                    
                       Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
                          padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
@@ -304,22 +307,23 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                   ),
                                )), 
 
-                                IconButton (onPressed: () {                                                              
-                                            controller.clear(); // 送信すると文字を消す
-                                            }, 
-                                            icon: Icon(Icons.send,
-                                            color: isInputEmpty? Colors.grey : Colors.blue,
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],                         
+                      //■送信アイコン
+                      IconButton (onPressed: () {                                                              
+                                  controller.clear(); // 送信すると文字を消す
+                                  }, 
+                                  icon: Icon(Icons.send,
+                                  color: isInputEmpty? Colors.grey : Colors.blue,
+                                  ))
+                                ],
                               ),
-                            );
-                          }  
-                        }
+                            ),
+                          ],
+                        )
+                      ],                         
+                    ),
+                  );
+                }  
+              }
 
 
 

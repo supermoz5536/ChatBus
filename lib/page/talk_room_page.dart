@@ -21,7 +21,7 @@ class TalkRoomPage extends StatefulWidget {
 
 class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
-  bool isProcessing = false;
+  bool isDisabled = false;
   final TextEditingController controller = TextEditingController();
 
 
@@ -94,10 +94,10 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
             children: [
               Container(
                   color: Colors.white,
-                  height: 68, // フッター領域の縦幅
-                  
+                  height: 68, // フッター領域の縦幅                  
                   child: Row(children: [
 
+                      // ■「次の相手を探す」ボタン
                       Container(child:
                         ElevatedButton( 
                             onPressed: isDisabled ? null : () async{ 
@@ -111,17 +111,17 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               await Future.delayed(
                               const Duration(milliseconds: 300), //無効にする時間
                              );                             
-                                                       
-                            await RoomFirestore.deleteRoom(myRoomId); 
-                            myDocSubscription!.cancel();                             
-                            UserFirestore.updateMatchedStatus(myUid, true);  
-                            UserFirestore.updateProgressMarker(myUid, true);
-                            // Lounge_pageに戻る時の一連の処理
-                            //リスナーを反応させないために両方trueする
+                                                                                  
+                            // UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
+                            // UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
+                            // matching_progress_pageに戻る時の一連の処理
+                            // matching_progress_pageでmyUidのFieldデータは初期化されるので記述の必要無し
+                            
+
 
                             if (context.mounted) {    
                                 Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                   MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                   MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                           (_) => false                               
                                         );
                                       }
@@ -130,10 +130,49 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                             //       //入力のタップを解除
                             //  });
                            },
-                            child: const Text("前の画面に戻る"),
+                            child: const Text("次の相手を探す"),
                            )
                          ),
 
+                      // ■「最初の画面に戻る」ボタン
+                      Container(child:
+                        ElevatedButton( 
+                            onPressed: isDisabled ? null : () async{ 
+                             setState(() {
+                               isDisabled = true;
+                               // 二重タップ防止  
+                               // isProcessingの使い方は、progressMarkerと同じ                             
+                               // trueにして、タップをブロック
+                             });
+
+                              await Future.delayed(
+                              const Duration(milliseconds: 300), //無効にする時間
+                             );                             
+                                                                                  
+                            // UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
+                            // UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
+                            // matching_progress_pageに戻る時の一連の処理
+                            // matching_progress_pageでmyUidのFieldデータは初期化されるので記述の必要無し
+                            
+
+
+                            if (context.mounted) {    
+                                Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                   MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                          (_) => false                               
+                                        );
+                                      }
+                            //     setState(() {
+                            //       isDisabled = false;
+                            //       //入力のタップを解除
+                            //  });
+                           },
+                            child: const Text("最初の画面に戻る"),
+                           )
+                         ),
+
+
+                      // ■入力フィールド
                       Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
                          padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
@@ -153,23 +192,25 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                   ),
                                )), 
 
-                                IconButton (onPressed: () {                                                              
-                                            controller.clear(); // 送信すると文字を消す
-                                            }, 
-                                            icon: Icon(Icons.send,
-                                            color: isInputEmpty? Colors.grey : Colors.blue,
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
-
-        ],
-      ),
-    );
-  }  
-}
+                      //■送信アイコン
+                      IconButton (onPressed: () async{                                                              
+                        await RoomFirestore.sendMessage(
+                              roomId: widget.talkRoom.roomId!, 
+                              message: controller.text);
+                              controller.clear();}, 
+                              icon: Icon(Icons.send,
+                              color: isInputEmpty? Colors.grey : Colors.blue,
+                                  ))
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                }  
+              }
 
 
 

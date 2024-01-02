@@ -53,10 +53,10 @@ class _LoungePageState extends State<LoungePage> {
             children: [
               Container(
                   color: Colors.white,
-                  height: 68, // フッター領域の縦幅
-                  
+                  height: 68, // フッター領域の縦幅                  
                   child: Row(children: [
 
+                      // ■「チャット開始」ボタン
                       Container(child:
                         ElevatedButton( 
                             onPressed: isDisabled! ? null : () async{ 
@@ -83,6 +83,7 @@ class _LoungePageState extends State<LoungePage> {
                            )
                          ),
 
+                      // ■入力フィールド
                       Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
                          padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
@@ -102,19 +103,20 @@ class _LoungePageState extends State<LoungePage> {
                                   ),
                                )), 
 
-                                IconButton (onPressed: () {                                                              
-                                            controller.clear(); // 送信すると文字を消す
-                                            }, 
-                                            icon: Icon(Icons.send,
-                                            color: isInputEmpty? Colors.grey : Colors.blue,
-                                            ))
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                      //■送信アイコン
+                      IconButton (onPressed: () {                                                              
+                                  controller.clear(); // 送信すると文字を消す
+                                  }, 
+                                  icon: Icon(Icons.send,
+                                  color: isInputEmpty? Colors.grey : Colors.blue,
+                                  ))
                                 ],
-                              ), 
-                            );
-                          }
-                        }
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ), 
+                  );
+                }
+              }

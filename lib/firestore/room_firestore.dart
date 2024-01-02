@@ -59,37 +59,37 @@ try{
 
 
 //自分の参加してるルームの情報だけを取得する関数
-static Future<List<TalkRoom>?> fetchJoinedRooms(QuerySnapshot snapshot) async{  //この引数のsnapshotはどこで取得してるのか？
-  try{
-    String myUid = Shared_Prefes.fetchUid()!;               //自分の所属してるルームがある時だけ(!)取得 //fetchUid()は端末に保存してあるユーザーIDを取得
-List<TalkRoom> talkRooms = []; //List<○○型> 変数 = [] ○型の新しい空のリストを作成し、それを変数に代入してる　https://terupro.net/flutter-dart-grammar-list
+// static Future<List<TalkRoom>?> fetchJoinedRooms(QuerySnapshot snapshot) async{  //この引数のsnapshotはどこで取得してるのか？
+//   try{
+//     String myUid = Shared_Prefes.fetchUid()!;               //自分の所属してるルームがある時だけ(!)取得 //fetchUid()は端末に保存してあるユーザーIDを取得
+// List<TalkRoom> talkRooms = []; //List<○○型> 変数 = [] ○型の新しい空のリストを作成し、それを変数に代入してる　https://terupro.net/flutter-dart-grammar-list
 
-for(var doc in snapshot.docs){        
-                        //snapshotは、自分が参加してるトークルームの情報、そのドキュメント情報を変数docに順々に代入してく
-  Map<String, dynamic> data = doc.data() as Map<String, dynamic>;                      
-  List<dynamic> userIds = data['jointed_user'];    //順々に代入された各doc(各トークルーム情報)から'Joined_user_ids'というDB上のフィールドのデータを取得し、それをuserIdsというリストに格納
-  late String talkUserUid;                                  //初期化に大入地が用意できてないので、lateを設定して、後で代入処理をプログラミング
-  for(var id in userIds){                                   //userIdsの各要素（id）に対してループを開始　ローラー作戦でチェック
-if(id == myUid) continue;                                     //idが端末に保存してある自分のID、つまり myUidと一致する場合は、何も処理をしない=return
-talkUserUid = id;                                           //一致しない場合は相手のユーザーidで talkUserUidに代入、ここ部分のためのlate
-}
-  User? talkUser = await UserFirestore.fetchProfile(talkUserUid);     //相手のUserIdがわかったので、それを元に相手のユーザー情報を取得
-  if(talkUser == null) return null;
-  final talkRoom = TalkRoom(             //インスタンス変数を代入して、個々のTalkRoomをインスタンス化
-    roomId: doc.id,                                     
+// for(var doc in snapshot.docs){        
+//                         //snapshotは、自分が参加してるトークルームの情報、そのドキュメント情報を変数docに順々に代入してく
+//   Map<String, dynamic> data = doc.data() as Map<String, dynamic>;                      
+//   List<dynamic> userIds = data['jointed_user'];    //順々に代入された各doc(各トークルーム情報)から'Joined_user_ids'というDB上のフィールドのデータを取得し、それをuserIdsというリストに格納
+//   late String talkUserUid;                                  //初期化に大入地が用意できてないので、lateを設定して、後で代入処理をプログラミング
+//   for(var id in userIds){                                   //userIdsの各要素（id）に対してループを開始　ローラー作戦でチェック
+// if(id == myUid) continue;                                     //idが端末に保存してある自分のID、つまり myUidと一致する場合は、何も処理をしない=return
+// talkUserUid = id;                                           //一致しない場合は相手のユーザーidで talkUserUidに代入、ここ部分のためのlate
+// }
+//   User? talkUser = await UserFirestore.fetchProfile(talkUserUid);     //相手のUserIdがわかったので、それを元に相手のユーザー情報を取得
+//   if(talkUser == null) return null;
+//   final talkRoom = TalkRoom(             //インスタンス変数を代入して、個々のTalkRoomをインスタンス化
+//     roomId: doc.id,                                     
                               
            
-    );      
-  talkRooms.add(talkRoom);                            
-}  
-print(talkRooms.length);     
+//     );      
+//   talkRooms.add(talkRoom);                            
+// }  
+// print(talkRooms.length);     
 
-    return talkRooms;                              
-  } catch(e) {
-print('参加してるルーム情報の取得失敗 ===== $e');
-return null;
-  }
-}
+//     return talkRooms;                              
+//   } catch(e) {
+// print('参加してるルーム情報の取得失敗 ===== $e');
+// return null;
+//   }
+// }
 
 
 
