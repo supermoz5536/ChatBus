@@ -110,14 +110,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                               await Future.delayed(
                               const Duration(milliseconds: 300), //無効にする時間
-                             );                             
-                                                                                  
-                            // UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
-                            // UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
-                            // matching_progress_pageに戻る時の一連の処理
-                            // matching_progress_pageでmyUidのFieldデータは初期化されるので記述の必要無し
-                            
-
+                             );                                                                                                             
 
                             if (context.mounted) {    
                                 Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
@@ -149,10 +142,10 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               const Duration(milliseconds: 300), //無効にする時間
                              );                             
                                                                                   
-                            // UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
-                            // UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
-                            // matching_progress_pageに戻る時の一連の処理
-                            // matching_progress_pageでmyUidのFieldデータは初期化されるので記述の必要無し
+                            UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
+                            UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
+                            // lounge_pageに戻る時の一連の処理
+
                             
 
 
