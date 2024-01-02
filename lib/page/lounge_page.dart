@@ -70,10 +70,12 @@ class _LoungePageState extends State<LoungePage> {
                               const Duration(milliseconds: 300), //無効にする時間
                              );
 
-                               Navigator.pushAndRemoveUntil (context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                 MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                 (_) => false                               
-                               );
+                              if (context.mounted) { 
+                                  Navigator.pushAndRemoveUntil (context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                    MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                    (_) => false                               
+                                  );
+                              }
                               //   setState(() {
                               //     isDisabled = false;
                               //     //入力のタップを解除

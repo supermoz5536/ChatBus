@@ -35,7 +35,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
   String? myUid;
   String? talkuserUid;
   String? myRoomId;
-  StreamSubscription? unmatchedUserSubscription;
+  // StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
   bool isInputEmpty = true;
   bool isDisabled = false;
@@ -45,8 +45,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
   @override                  // 追加機能の記述部分であることの明示
     void initState() {         // 関数の呼び出し（initStateはFlutter標準メソッド）
-      super.initState();       // 親クラスの初期化処理　
-                               //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+      super.initState();       // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+                               //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
       // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
       // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
       // initState()とは　https://sl.bing.net/ivIFfFUd6Vo      
@@ -66,8 +66,10 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
       
      UserFirestore.retry(myUid, () async{    // retry start 
              await UserFirestore.getUnmatchedUser(myUid)                      
-                                .then((String? uid) async{                                              
-                                 setState(() {talkuserUid = uid;});
+                                .then((uid) async{                                              
+                                 talkuserUid = uid;
+                                 // setState(() {talkuserUid = uid;});
+                                 //■■■■■■■■■■■■■■■■■setState()いらない
                                               
                   // 「自分がマッチングする場合」の処理  
                 if(talkuserUid != null) {                                                                                
@@ -86,20 +88,23 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                         await CloudFunctions.runTransactionDB(myUid, talkuserUid, myRoomId)         // transaction start          
 
                             .then((_){                                                              // transaction 成功の分岐
-                                if(talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
-                                   print('トランザクション成功: myRoomのField情報の更新、画面遷移');
-                                      RoomFirestore.updateRoom(myRoomId, talkuserUid);
-                                      talkRoom.myUid = myUid;
-                                      talkRoom.talkuserUid = talkuserUid;
+                                if (talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
+                                  print('トランザクション成功: myRoomのField情報の更新、画面遷移');
+                                  RoomFirestore.updateRoom(myRoomId, talkuserUid);
+                                  talkRoom.talkuserUid = talkuserUid;
+
+                                  // print('talkRoom.myUid == ${talkRoom.myUid}');
+                                  // print('talkRoom.talkuerUid == ${talkRoom.talkuserUid}');
+                                  // print('talkRoom.roomId == ${talkRoom.roomId}');  
 
                                       Navigator.push(                                               //　画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                                       context,                                                      //　1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                           MaterialPageRoute(                                        //　新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
                                           builder: (context) => TalkRoomPage(talkRoom)              //　遷移先の画面を構築する関数を指定                                                                              
                                           ));
-                                        print('「する場合」の画面遷移 完了');                                            
+                                          print('「する場合」の画面遷移 完了');                                            
                                               myDocSubscription!.cancel();
-                                      } 
+                                } 
 
                           }).catchError((error) {
                           // transactionのエラーハンドリング
@@ -134,22 +139,29 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
                      } else if (snapshot.data()!['progress_marker'] == false &&
                                 snapshot.data()!['matched_status']  == true) { 
-                                        
+
                                 print('「された場合」の処理開始');                            
                                 UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
                                 Map<String, dynamic>? doc = snapshot.data();
-                                TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: doc?['room_id']);            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
-
-                                RoomFirestore.deleteRoom(myRoomId);
+                                talkRoom.roomId = doc?['room_id'];            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
+                                RoomFirestore.getRoomMember(myUid, talkRoom.roomId)
+                                             .then((roomMemberUid){
+                                talkRoom.talkuserUid = roomMemberUid;
+                                //TalkRoomクラスの渡すコンストラクタ変数の用意                               
 
                                 if (context.mounted) {                                                       
+                                    // print('talkRoom.myUid == ${talkRoom.myUid}');
+                                    // print('talkRoom.talkuerUid == ${talkRoom.talkuserUid}');
+                                    // print('talkRoom.roomId == ${talkRoom.roomId}');                                  
                                     Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                                       context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                       MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
                                       (_) => false                               
                                     );
                                       print('「された場合」の画面遷移 完了');  
-                                      myDocSubscription!.cancel();}                         
+                                      myDocSubscription!.cancel();             
+                                }    
+                                });                     
                                 }  
                               }
                             }); // myDocSubscription =
@@ -275,9 +287,9 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                             if (context.mounted) {    
                                 Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                    MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                          (_) => false                               
-                                        );
-                                      }
+                                  (_) => false                               
+                                );
+                            }
                             //     setState(() {
                             //       isDisabled = false;
                             //       //入力のタップを解除

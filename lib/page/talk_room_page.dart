@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
@@ -5,6 +7,7 @@ import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 
@@ -23,9 +26,38 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
   bool isDisabled = false;
   bool isChatting = true; // フッターUIの再描画に使う状態変数
+  StreamSubscription? myDocSubscription;
   final TextEditingController controller = TextEditingController();
 
 
+  @override               // 追加機能の記述部分であることの明示
+    void initState() {    // 関数の呼び出し（initStateはFlutter標準メソッド）
+      super.initState();  // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+
+  // ■■■■■■■初期化の部分でtalkuserUidを取得すれば良さげ
+ 
+        UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
+                     .then((_){
+          var myDocStream = UserFirestore.streamMyDoc(widget.talkRoom.myUid);  
+                            print ('streamの起動');
+                            print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');                            
+                              
+                              myDocSubscription = myDocStream.listen((snapshot) {
+                              print ('streamの受信');                
+                                  if (snapshot.data()!.isNotEmpty &&
+                                      snapshot.data()!['chatting_status'] == false){
+                                        print ('streamの受信データが条件に合致するので処理実行');                                      
+                                        setState(() {
+                                          isChatting =false;
+                                          // 状態を更新：フッターUIを再描画                                
+                                        });                               
+                                  }
+                              });
+                      });                            
+
+
+
+    } // initState
  
 
   @override
@@ -115,15 +147,14 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         // ■「チャットを終了」ボタン
                         Container(child:
                           ElevatedButton( 
-                              onPressed: () async{ 
+                              onPressed: () { 
                               setState(() {
                                 isChatting =false;
                                 // 状態を更新：フッターUIを再描画                                
-                              });
-                              // トーク相手にチャットが終了したことを伝える必要がある
-                              
-
-                                                                                                                                           
+                              });                    
+                              print('updateChattingStatusの引数 talkuserUid == ${widget.talkRoom.talkuserUid}');          
+                              UserFirestore.updateChattingStatus(widget.talkRoom.talkuserUid, false);
+                              // トーク相手にチャット終了を伝える                                                                                                                                         
                               },
                               child: const Text("チャットを終了"),
                           )
@@ -223,7 +254,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                               if (context.mounted) {    
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                    MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                    MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                             (_) => false                               
                                           );
                                         }

@@ -57,6 +57,32 @@ try{
 
 
 
+static Future<String?> getRoomMember(String? myUid, String? roomId) async{
+  print('getRoomMember関数の実行確認');    
+try{
+    DocumentSnapshot docSnapshot = await _roomCollection.doc(roomId).get();
+
+  if (docSnapshot.exists) {
+      Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+      List<String> jointedUser = List<String>.from(data['jointed_user']);
+      // .fromメソッド：dynamicListの各要素がString型として新しいリストstringListにコピーされるので安全
+      // asメソッド： 元のリストの型を強制的に変更 → 元のリストの型があってない場合エラーになる可能性
+
+      String roomMemberUid = jointedUser.firstWhere((user) => user != myUid);
+      print('getRoomMember()で取得したtalkuerUid == $roomMemberUid');          
+      return roomMemberUid;      
+  }
+      return null;
+
+  }catch(e){
+    print('roomMemberUidの取得失敗 ===== $e');
+    return null;
+  }
+}
+
+
+
+
 
 //自分の参加してるルームの情報だけを取得する関数
 // static Future<List<TalkRoom>?> fetchJoinedRooms(QuerySnapshot snapshot) async{  //この引数のsnapshotはどこで取得してるのか？
@@ -103,6 +129,8 @@ return _roomCollection.doc(roomId).collection('message').orderBy('send_time', de
    //DB上の、roomのcollectionから、ID指定した任意のルームの、messageのcollectionへのstreamができた。
    //orderBy()の用法について　https://sl.bing.net/GxKL2wdx1g
 }
+
+
 
 
 //入力フィールドのメッセージ情報を、Firestore上のroomにpushする関数

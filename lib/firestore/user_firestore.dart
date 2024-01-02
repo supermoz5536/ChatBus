@@ -14,38 +14,38 @@ class UserFirestore {
 
 
   static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
-         String? sharedPrefesUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
+         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
 
-         if(sharedPrefesUid == null || sharedPrefesUid.isEmpty){                             //端末保存uidが「無い」場合
+         if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
              print('既存の端末uid = 未登録');
-                  final newDoc = await _userCollection.add({      //DB上に新規アカウント作成
-                        'matched_status': false,
-                        'room_id': 'none',
-                        'progress_marker': false,
-                        'chatting_marker': false,
-                        'created_at': FieldValue.serverTimestamp(),                        
+                  final newMyUid = await _userCollection.add({      //DB上に新規アカウント作成
+                       'matched_status': false,
+                       'room_id': 'none',
+                       'progress_marker': false,
+                       'chatting_status': false,
+                       'created_at': FieldValue.serverTimestamp(),                        
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
-                        DocumentSnapshot docSnap = await _userCollection.doc(newDoc.id).get();
+                        DocumentSnapshot docSnap = await _userCollection.doc(newMyUid.id).get();
                         Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
                         Timestamp timestamp = data['created_at'];
                         int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
                           print('Timestamp in milliseconds: $milliseconds');
 
-                        Shared_Prefes.setUid(newDoc.id);              //端末のuid更新
+                        Shared_Prefes.setUid(newMyUid.id);              //端末のuid更新
                           print('アカウント作成完了');
                           print('端末のuid更新完了');
-                          print('最新の端末保存uid ${newDoc.id}');  
+                          print('最新の端末保存uid ${newMyUid.id}');  
                                                       
-                          return newDoc.id;}
+                          return newMyUid.id;}
           
           
-         if(sharedPrefesUid.isNotEmpty) {                                    
+         if(sharedPrefesMyUid.isNotEmpty) {                                    
          //端末保存uidが「有る」場合
 
-            print('既存の端末uid = ${sharedPrefesUid}');
+            print('既存の端末uid = ${sharedPrefesMyUid}');
             DocumentSnapshot? docIdSnapshot = await _userCollection
-                                                    .doc(sharedPrefesUid)
+                                                    .doc(sharedPrefesMyUid)
                                                     .get();            //SharedPrefesUidと一致するドキュメントIDを取得
                                                                        //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納                 
                 // if (docIdSnapshot.exists) {             
@@ -56,18 +56,19 @@ class UserFirestore {
       
              if (docIdSnapshot.exists) {
                  //.getでデータに取得に「成功」した場合
-                 if (docIdSnapshot.id == sharedPrefesUid ) {                        
+                 if (docIdSnapshot.id == sharedPrefesMyUid ) {                        
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
                      //DB上に端末保存idと同じidが「ある」場合
                      //Filed情報を更新して、既存の端末Uidをそのまま使用
                      
-                     _userCollection.doc(sharedPrefesUid).update({                      
+                     _userCollection.doc(sharedPrefesMyUid).update({                      
                           'matched_status': false,                         
                           'room_id': 'none',
                           'progress_marker': false,
-                          'chatting_marker': false,                                                    
+                          'chatting_status': false,
+                          'created_at': FieldValue.serverTimestamp(),                                                                              
                    }); 
-                     return sharedPrefesUid;                                   
+                     return sharedPrefesMyUid;                                   
 
                  } else {
                      //DB上に端末保存idと同じidが「ない」場合
@@ -76,7 +77,7 @@ class UserFirestore {
                           'matched_status': false,                         
                           'room_id': 'none',
                           'progress_marker': false,
-                          'chatting_marker': false,                          
+                          'chatting_status': false,                          
                           'created_at': FieldValue.serverTimestamp(),
                  });        
                      Shared_Prefes.setUid(newDoc.id);                            
@@ -93,7 +94,7 @@ class UserFirestore {
                     'matched_status': false,
                     'room_id': 'none',
                     'progress_marker': false,
-                    'chatting_marker': false,                    
+                    'chatting_status': false,                    
                     'created_at': FieldValue.serverTimestamp(),
             });        
                Shared_Prefes.setUid(newDoc.id);                            
@@ -316,6 +317,11 @@ static updateProgressMarker(String? uid, bool progressStatus){
 static updateMatchedStatus(String? uid, bool matchedStatus){
         _userCollection.doc(uid).update({'matched_status': matchedStatus});     
 }
+
+static Future<void> updateChattingStatus(String? uid, bool chattingStatus) {
+      print('updateChattingStatusの実行');
+      return _userCollection.doc(uid).update({'chatting_status': chattingStatus});     
+}                                               
 
 
 static checkMyProgressMarker(String? myUid,) async{
