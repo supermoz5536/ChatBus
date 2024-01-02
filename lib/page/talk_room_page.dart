@@ -106,6 +106,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
            );
          }
 
+
+
         // ■ フッター（チャット中）
         Row buildChattingFooter(BuildContext context) {
           return Row(children: [
@@ -118,8 +120,9 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                 isChatting =false;
                                 // 状態を更新：フッターUIを再描画                                
                               });
+                              // トーク相手にチャットが終了したことを伝える必要がある
+                              
 
-                              //トーク相手にチャットが終了したことを伝える必要がある
                                                                                                                                            
                               },
                               child: const Text("チャットを終了"),
@@ -159,6 +162,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                   ],
                                 );
                                }  
+        
+
         
         // ■ フッター（チャット終了後）
         Row buildEndedFooter(BuildContext context) {

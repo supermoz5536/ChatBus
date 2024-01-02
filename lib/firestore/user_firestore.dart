@@ -22,6 +22,7 @@ class UserFirestore {
                         'matched_status': false,
                         'room_id': 'none',
                         'progress_marker': false,
+                        'chatting_marker': false,
                         'created_at': FieldValue.serverTimestamp(),                        
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
@@ -63,7 +64,8 @@ class UserFirestore {
                      _userCollection.doc(sharedPrefesUid).update({                      
                           'matched_status': false,                         
                           'room_id': 'none',
-                          'progress_marker': false,                          
+                          'progress_marker': false,
+                          'chatting_marker': false,                                                    
                    }); 
                      return sharedPrefesUid;                                   
 
@@ -74,6 +76,7 @@ class UserFirestore {
                           'matched_status': false,                         
                           'room_id': 'none',
                           'progress_marker': false,
+                          'chatting_marker': false,                          
                           'created_at': FieldValue.serverTimestamp(),
                  });        
                      Shared_Prefes.setUid(newDoc.id);                            
@@ -90,6 +93,7 @@ class UserFirestore {
                     'matched_status': false,
                     'room_id': 'none',
                     'progress_marker': false,
+                    'chatting_marker': false,                    
                     'created_at': FieldValue.serverTimestamp(),
             });        
                Shared_Prefes.setUid(newDoc.id);                            

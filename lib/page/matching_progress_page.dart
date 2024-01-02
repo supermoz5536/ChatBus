@@ -270,7 +270,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                             UserFirestore.updateMatchedStatus(myUid, true);  
                             UserFirestore.updateProgressMarker(myUid, true);
                             // Lounge_pageに戻る時の一連の処理
-                            //リスナーを反応させないために両方trueする
+                            // リスナーを反応させないために両方trueする
 
                             if (context.mounted) {    
                                 Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
