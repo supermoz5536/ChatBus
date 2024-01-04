@@ -52,14 +52,11 @@ exports.runTransaction = functions.https.onCall(async (data, context) => {
             `エラー:トランザクション相手が現在マッチング処理中 retry`,
         );
       } else if (talkuserFieldsData.matched_status === true) {
-      // DocumentCへのlock待機後の再readで既にマッチング済みだった場合は
-      // 実行中のトランザクションを失敗させる
-
         throw new functions.https.HttpsError(
-        // 「runTransactionへの例外を投げる処理」と「クライアント側へのエラー送信」の2つが同時に為されている
-            "transaction failed",
             `エラー:トランザクション相手がlock解除後に既にマッチング済み retry`,
         );
+        // DocumentCへのlock待機後の再readで既にマッチング済みだった場合は
+        // 実行中のトランザクションを失敗させる
       } else {
         transaction.update(myFieldsRef, {
           "matched_status": true,

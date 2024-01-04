@@ -24,8 +24,8 @@ class TalkRoomPage extends StatefulWidget {
 
 class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
-  bool isDisabled = false;
-  bool isChatting = true; // フッターUIの再描画に使う状態変数
+  bool? isDisabled;
+  bool? isChatting;
   StreamSubscription? myDocSubscription;
   final TextEditingController controller = TextEditingController();
 
@@ -33,8 +33,11 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   @override               // 追加機能の記述部分であることの明示
     void initState() {    // 関数の呼び出し（initStateはFlutter標準メソッド）
       super.initState();  // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
-
-  isChatting = true;
+      // 追加機能の記述部分であることの明示
+      // 関数の呼び出し（initStateはFlutter標準メソッド）
+      // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+        isDisabled = false;
+        isChatting = true;
  
  
         UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
@@ -132,7 +135,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   Container(
                       color: Colors.white,
                       height: 68, // フッター領域の縦幅                  
-                      child: isChatting ? buildChattingFooter(context) : buildEndedFooter(context), // 条件付きレンダリング
+                      child: isChatting! ? buildChattingFooter(context) : buildEndedFooter(context), // 条件付きレンダリング
 
                      ),
                    ],
@@ -206,7 +209,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         // ■ 「次の相手を探す」ボタン
                         Container(child:
                           ElevatedButton( 
-                              onPressed: isDisabled ? null : () async{ 
+                              onPressed: isDisabled! ? null : () async{ 
                               setState(() {
                                 isDisabled = true;
                                 // 二重タップ防止  
@@ -237,7 +240,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         // ■ 「最初の画面に戻る」ボタン
                         Container(child:
                           ElevatedButton( 
-                              onPressed: isDisabled ? null : () async{ 
+                              onPressed: isDisabled! ? null : () async{ 
                               setState(() {
                                 isDisabled = true;
                                 // 二重タップ防止  

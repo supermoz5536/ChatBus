@@ -6,6 +6,7 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
+import 'package:synchronized/synchronized.dart';
 
 
 // initstate()の実行に時間が掛かって、Widget build()の本体の実行が先走ってる。
@@ -40,20 +41,26 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
   bool? isInputEmpty;
   bool? isDisabled;
   bool? shouldBreak;
+  bool? isTransitioned;
+  final lock = Lock();
   final TextEditingController controller = TextEditingController();
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
   
 
-  @override                   // 追加機能の記述部分であることの明示
-    void initState() {        // 関数の呼び出し（initStateはFlutter標準メソッド）
-      super.initState();      // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
-                              //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
-                              // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-                              // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-                              // initState()とは　https://sl.bing.net/ivIFfFUd6Vo      
-   isInputEmpty = true;
-   isDisabled = false;
-   shouldBreak = false;
+  @override                   
+    void initState() {        
+      super.initState();      
+      // 追加機能の記述部分であることの明示
+      // 関数の呼び出し（initStateはFlutter標準メソッド）
+      // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+      //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化                              
+      // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+      // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo      
+        isInputEmpty = true;  
+        isDisabled = false;
+        shouldBreak = false;
+        isTransitioned = false;
 
       
 
@@ -99,25 +106,25 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                 if (talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
                                   print('トランザクション成功: myRoomのField情報の更新、画面遷移');
                                   shouldBreak = true;
+                                  // isTransitioned = true;                                  
 
                                   RoomFirestore.updateRoom(myRoomId, talkuserUid);
                                   talkRoom.talkuserUid = talkuserUid;  
                                   //TalkRoomクラスの渡す一連のコンストラクタ変数を用意
 
                                   await myDocSubscription!.cancel();
-
-                                    if (context.mounted) {
-                                      print('「する場合」の画面遷移 実行');
-                                      setState(() {
-                                      isDisabled = false;   // キャンセルボタンのロック解除   
-                                      });                                          
+                                  
+                                  await lock.synchronized(() async{
+                                    if (context.mounted && isTransitioned == false) {
+                                      print('「する場合」の画面遷移 実行');                                      
+                                      isTransitioned = true;  
                                       await Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
                                         context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                           MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
                                           (_) => false                                                                         
-                                      );                                                                                 
-                                          // throw Exception('End Retry');  // retry終了
-                                    }                                                                              
+                                      );                                                                                       
+                                    }    
+                                  });                                                                          
                                 }
                           }).catchError((error) {
                           // transactionのエラーハンドリング
@@ -159,12 +166,11 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
                      } else if (snapshot.data()!['progress_marker'] == false &&
                                 snapshot.data()!['matched_status']  == true) {
+                                print('「された場合」の処理開始');                             
                                   setState(() {
-                                  isDisabled = true;   // キャンセルボタンのロック     
-                                  });                                   
-
-                                  print('「された場合」の処理開始');                            
-                                  shouldBreak = true;  // retry終了
+                                  isDisabled = true;});   // キャンセルボタンのロック                                                                          
+                                  shouldBreak = true;     // retry終了
+                                  // isTransitioned = true;                                  
                                   await UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
                                   await RoomFirestore.deleteRoom(myRoomId);
 
@@ -172,21 +178,22 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                   talkRoom.roomId = doc?['room_id'];            
                                   RoomFirestore.getRoomMember(myUid, talkRoom.roomId)
                                                .then((roomMemberUid) async{
+
                                                   talkRoom.talkuserUid = roomMemberUid;                                                
                                                   await myDocSubscription!.cancel();   
                                                   //コンストラクタ変数を用意 & リスナー解除
 
-                                                  if (context.mounted) {
-                                                        print('「された場合」の画面遷移 実行');
-                                                        setState(() {
-                                                        isDisabled = false;   // キャンセルボタンのロック解除   
-                                                        });    
-                                                        await Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                                          context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                                            MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                                            (_) => false                               
-                                                        );
-                                                  }    
+                                                  await lock.synchronized(() async{
+                                                    if (context.mounted && isTransitioned == false) {
+                                                      print('「する場合」の画面遷移 実行');                                      
+                                                      isTransitioned = true;  
+                                                      await Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                                        context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                                          MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                                          (_) => false                                                                         
+                                                      );                                                                                       
+                                                    }    
+                                                  });   
                                                 });                     
                                               }  
                                             }
@@ -291,7 +298,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                       Container(child:                                             
                         ElevatedButton( 
                             // onPressed: isDisabled! ? null : () async{ 
-                            onPressed: isDisabled! ? null : () async{ 
+                            onPressed: isDisabled! ? null : () async{
+                             print('キャンセルボタンクリック');
                              setState(() {
                                isDisabled = true;
                                // 二重タップ防止  
@@ -303,26 +311,30 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               const Duration(milliseconds: 300), //無効にする時間
                              );   
                                                        
-                              shouldBreak = true;                                                        
-                              await RoomFirestore.deleteRoom(myRoomId); 
+                              shouldBreak = true;                                                                                      
                               await myDocSubscription!.cancel();                             
                               await UserFirestore.updateMatchedStatus(myUid, true);  
-                              await UserFirestore.updateProgressMarker(myUid, true);
+                              await UserFirestore.updateProgressMarker(myUid, false);
                               // Lounge_pageに戻る時の一連の処理
                               // リスナーを反応させないために両方trueする
+                            if (isTransitioned == false) {
+                                await RoomFirestore.deleteRoom(myRoomId);  
 
-                            if (context.mounted) {    
-                                Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                   MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                  (_) => false                               
-                                );
-                            }  
-                               isDisabled = false;
+                              if (context.mounted ) { // ■■■■■■ キャンセルボタンの画面遷移関数もsyncronized()を使って競合排除すべきか？
+                                  print('キャンセルボタンの画面遷移の実行');
+                                  await Navigator.pushAndRemoveUntil(
+                                    context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                      MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                      (_) => false                               
+                                  );
+                              }
+                            }
+                              //  isDisabled = false;
                                //入力のタップを解除
-                           },
+                            },
                             child: const Text("キャンセル"),
-                           )
-                         ),
+                        )
+                      ),
 
                       // ■入力フィールド                    
                       Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている

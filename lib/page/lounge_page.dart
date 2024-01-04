@@ -17,16 +17,18 @@ bool? isDisabled;
 
 class _LoungePageState extends State<LoungePage> {
   
-@override                  // 追加機能の記述部分であることの明示
-  void initState() {         // 関数の呼び出し（initStateはFlutter標準メソッド）
-    super.initState();       // 親クラスの初期化処理　
-    isDisabled = false;
-      
-      }       
-                                //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-                                // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-                                // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-                                // initState()とは　https://sl.bing.net/ivIFfFUd6Vo   
+@override                   
+  void initState() {        
+    super.initState();      
+      // 追加機能の記述部分であることの明示
+      // 関数の呼び出し（initStateはFlutter標準メソッド）
+      // 親クラスの初期化処理　
+      //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+      // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+      // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo 
+        isDisabled = false;   
+  }       
 
 
   @override
