@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async'; 
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
@@ -37,81 +37,97 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
   String? myRoomId;
   // StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
-  bool isInputEmpty = true;
-  bool isDisabled = false;
+  bool? isInputEmpty;
+  bool? isDisabled;
+  bool? shouldBreak;
   final TextEditingController controller = TextEditingController();
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
   
 
-  @override                  // 追加機能の記述部分であることの明示
-    void initState() {         // 関数の呼び出し（initStateはFlutter標準メソッド）
-      super.initState();       // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
-                               //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
-      // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-      // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo      
-
+  @override                   // 追加機能の記述部分であることの明示
+    void initState() {        // 関数の呼び出し（initStateはFlutter標準メソッド）
+      super.initState();      // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+                              //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
+                              // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+                              // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+                              // initState()とは　https://sl.bing.net/ivIFfFUd6Vo      
+   isInputEmpty = true;
+   isDisabled = false;
+   shouldBreak = false;
 
       
 
     // 起動時に1度行うmyUidを確認する処理
-     UserFirestore.getAccount()                         // 自分のユーザー情報をDBへ書き込み
-                  .then((String? uid) async{            // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-                     setState(() {myUid = uid;});       // 状態変数myUidに、非同期処理の結果（uid）を設定           
+     UserFirestore.getAccount()                       // 自分のユーザー情報をDBへ書き込み
+                  .then((getUid) async{          // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+                     myUid = getUid;                     // 状態変数myUidに、非同期処理の結果（uid）を設定           
                      print('wait_room_page.dartの初期取得myUid = $myUid');
 
-              myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);
+              myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);            
      TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: myRoomId);
                                                 
-      
-     UserFirestore.retry(myUid, () async{    // retry start 
-             await UserFirestore.getUnmatchedUser(myUid)                      
-                                .then((uid) async{                                              
-                                 talkuserUid = uid;
-                                 // setState(() {talkuserUid = uid;});
-                                 //■■■■■■■■■■■■■■■■■setState()いらない
+     UserFirestore.retry(myUid, shouldBreak, () async{    // retry start
+         setState(() {
+         isDisabled = true;   // キャンセルボタンのロック     
+         });
+           
+         await UserFirestore.getUnmatchedUser(myUid)                      
+                            .then((getUid) async{                                              
+                               talkuserUid = getUid;
+
                                               
-                  // 「自分がマッチングする場合」の処理  
+                // 「自分がマッチングする場合」の処理  
                 if(talkuserUid != null) {                                                                                
 
                     bool myProgressMarker = await UserFirestore.checkMyProgressMarker(myUid);                  
-                    print('myUidのマッチング処理状況の確認');  
+                    // print('myUidのマッチング処理状況の確認');  
 
                      if(myProgressMarker == true){                                                  // myUidのマッチング処理状況の確認：「される場合」の処理との競合を避けるため
-                          print('「される場合」のマッチング処理を確認： retry end');
-                          throw Exception('End Retry');  // retry()への例外
+                          print('「される場合」のマッチング処理を確認： retry end');                          
+                          setState(() {
+                          isDisabled = false;   // キャンセルボタンのロック解除   
+                          });                            
+                          throw Exception('End Retry');  // retry終了
 
                       }else{
                         await UserFirestore.updateProgressMarker(myUid, true);                    // falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
-                          print('「する場合」の処理開始直前に progress_marker を trueに変更');
+                        print('「する場合」の処理開始直前に progress_marker を trueに変更');
 
                         await CloudFunctions.runTransactionDB(myUid, talkuserUid, myRoomId)         // transaction start          
 
-                            .then((_){                                                              // transaction 成功の分岐
+                            .then((_) async{                                                              // transaction 成功の分岐
                                 if (talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
                                   print('トランザクション成功: myRoomのField情報の更新、画面遷移');
+                                  shouldBreak = true;
+
                                   RoomFirestore.updateRoom(myRoomId, talkuserUid);
-                                  talkRoom.talkuserUid = talkuserUid;
+                                  talkRoom.talkuserUid = talkuserUid;  
+                                  //TalkRoomクラスの渡す一連のコンストラクタ変数を用意
 
-                                  // print('talkRoom.myUid == ${talkRoom.myUid}');
-                                  // print('talkRoom.talkuerUid == ${talkRoom.talkuserUid}');
-                                  // print('talkRoom.roomId == ${talkRoom.roomId}');  
+                                  await myDocSubscription!.cancel();
 
-                                      Navigator.push(                                               //　画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                      context,                                                      //　1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                          MaterialPageRoute(                                        //　新しい画面への遷移を定義(アニメーションとか遷移先の画面の設定)
-                                          builder: (context) => TalkRoomPage(talkRoom)              //　遷移先の画面を構築する関数を指定                                                                              
-                                          ));
-                                          print('「する場合」の画面遷移 完了');                                            
-                                              myDocSubscription!.cancel();
-                                } 
-
+                                    if (context.mounted) {
+                                      print('「する場合」の画面遷移 実行');
+                                      setState(() {
+                                      isDisabled = false;   // キャンセルボタンのロック解除   
+                                      });                                          
+                                      await Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                        context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                          MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                          (_) => false                                                                         
+                                      );                                                                                 
+                                          // throw Exception('End Retry');  // retry終了
+                                    }                                                                              
+                                }
                           }).catchError((error) {
                           // transactionのエラーハンドリング
                               print('トランザクション失敗: talkuserUidをnullにしてretry: $error');
                               UserFirestore.updateProgressMarker(myUid, false);  
                               print('「する場合」の処理が失敗したので progress_marker を falseに戻す');                              
-                              talkuserUid = null;        
+                              talkuserUid = null;
+                              setState(() {
+                              isDisabled = false;   // キャンセルボタンのロック解除   
+                              });       // キャンセルボタンのロック解除                                      
                               throw Exception(); 
                           });                                                                       
         
@@ -120,6 +136,9 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
     }); //　getUnmatchedUser           
               if (talkuserUid == null) {                                                //　talkuserUid == null で エラーの起こりうるif(){}部分をスルーしてしまった場合に、エラーを手動で返してretryさせる
                   print('マッチング可能な相手が0人、retry関数再実行の待機中)');
+                  setState(() {
+                  isDisabled = false;   // キャンセルボタンのロック解除   
+                  });                       
                   throw Exception();} 
   }); // retry end
 
@@ -129,46 +148,52 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                   // 「自分がマッチングされた場合」のstream処理  
                 if (talkuserUid == null) {
                     var myDocStream = UserFirestore.streamMyDoc(myUid);  
-                    print ('streamの起動');                        
+                    print ('マッチングルームのstreamの起動(リスンの参照を取得)');                        
                     
-                    myDocSubscription = myDocStream.listen((snapshot) {              
-                        if (snapshot.data()!.isNotEmpty){                                       //TESTドキュメントはFiledが空なので、避けるために必要
+                    myDocSubscription = myDocStream.listen((snapshot) async{              
+                        if (snapshot.data()!.isNotEmpty) {                                       //TESTドキュメントはFiledが空なので、避けるために必要
 
                             if (snapshot.data()!['progress_marker'] == true){                //myUidのマッチング処理状況の確認：「する場合」の処理との競合を避けるため                               
-                                print('「する場合」のマッチング処理を確認： 受信したstreamへの「された場合」の処理を終了');                          
+                                  print('「する場合」のマッチング処理を確認： 受信したstreamへの「された場合」の処理を終了');                          
+                                  return;
 
                      } else if (snapshot.data()!['progress_marker'] == false &&
-                                snapshot.data()!['matched_status']  == true) { 
+                                snapshot.data()!['matched_status']  == true) {
+                                  setState(() {
+                                  isDisabled = true;   // キャンセルボタンのロック     
+                                  });                                   
 
-                                print('「された場合」の処理開始');                            
-                                UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
-                                Map<String, dynamic>? doc = snapshot.data();
-                                talkRoom.roomId = doc?['room_id'];            //TalkRoomPageクラスのコンストラクタに引き渡すため、TalkRoom型の変数talkRoomを用意
-                                RoomFirestore.getRoomMember(myUid, talkRoom.roomId)
-                                             .then((roomMemberUid){
-                                talkRoom.talkuserUid = roomMemberUid;
-                                //TalkRoomクラスの渡すコンストラクタ変数の用意                               
+                                  print('「された場合」の処理開始');                            
+                                  shouldBreak = true;  // retry終了
+                                  await UserFirestore.updateProgressMarker(myUid, true);                   //「される場合」の処理開始。「する場合」の競合防止マーカー更新
+                                  await RoomFirestore.deleteRoom(myRoomId);
 
-                                if (context.mounted) {                                                       
-                                    // print('talkRoom.myUid == ${talkRoom.myUid}');
-                                    // print('talkRoom.talkuerUid == ${talkRoom.talkuserUid}');
-                                    // print('talkRoom.roomId == ${talkRoom.roomId}');                                  
-                                    Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
-                                      context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                      MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                      (_) => false                               
-                                    );
-                                      print('「された場合」の画面遷移 完了');  
-                                      myDocSubscription!.cancel();             
-                                }    
-                                });                     
-                                }  
-                              }
-                            }); // myDocSubscription =
-                          } // 「自分がマッチングされた場合」のstream処理 
-                        }); // getAccount             
-                      } // initState
+                                  Map<String, dynamic>? doc = snapshot.data();
+                                  talkRoom.roomId = doc?['room_id'];            
+                                  RoomFirestore.getRoomMember(myUid, talkRoom.roomId)
+                                               .then((roomMemberUid) async{
+                                                  talkRoom.talkuserUid = roomMemberUid;                                                
+                                                  await myDocSubscription!.cancel();   
+                                                  //コンストラクタ変数を用意 & リスナー解除
 
+                                                  if (context.mounted) {
+                                                        print('「された場合」の画面遷移 実行');
+                                                        setState(() {
+                                                        isDisabled = false;   // キャンセルボタンのロック解除   
+                                                        });    
+                                                        await Navigator.pushAndRemoveUntil(                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
+                                                          context,                                     //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                                            MaterialPageRoute(builder: (context) => TalkRoomPage(talkRoom)),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                                            (_) => false                               
+                                                        );
+                                                  }    
+                                                });                     
+                                              }  
+                                            }
+                                          }); // myDocSubscription =
+                                        } // 「自分がマッチングされた場合」のstream処理 
+                                      }); // getAccount             
+                                    } // initState
 
 
 
@@ -265,7 +290,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                       // ■「キャンセル」ボタン
                       Container(child:                                             
                         ElevatedButton( 
-                            onPressed: isDisabled ? null : () async{ 
+                            // onPressed: isDisabled! ? null : () async{ 
+                            onPressed: isDisabled! ? null : () async{ 
                              setState(() {
                                isDisabled = true;
                                // 二重タップ防止  
@@ -275,25 +301,24 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
 
                               await Future.delayed(
                               const Duration(milliseconds: 300), //無効にする時間
-                             );                             
+                             );   
                                                        
-                            await RoomFirestore.deleteRoom(myRoomId); 
-                            myDocSubscription!.cancel();                             
-                            UserFirestore.updateMatchedStatus(myUid, true);  
-                            UserFirestore.updateProgressMarker(myUid, true);
-                            // Lounge_pageに戻る時の一連の処理
-                            // リスナーを反応させないために両方trueする
+                              shouldBreak = true;                                                        
+                              await RoomFirestore.deleteRoom(myRoomId); 
+                              await myDocSubscription!.cancel();                             
+                              await UserFirestore.updateMatchedStatus(myUid, true);  
+                              await UserFirestore.updateProgressMarker(myUid, true);
+                              // Lounge_pageに戻る時の一連の処理
+                              // リスナーを反応させないために両方trueする
 
                             if (context.mounted) {    
                                 Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                    MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                   (_) => false                               
                                 );
-                            }
-                            //     setState(() {
-                            //       isDisabled = false;
-                            //       //入力のタップを解除
-                            //  });
+                            }  
+                               isDisabled = false;
+                               //入力のタップを解除
                            },
                             child: const Text("キャンセル"),
                            )
@@ -324,7 +349,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                   controller.clear(); // 送信すると文字を消す
                                   }, 
                                   icon: Icon(Icons.send,
-                                  color: isInputEmpty? Colors.grey : Colors.blue,
+                                  color: isInputEmpty! ? Colors.grey : Colors.blue,
                                   ))
                                 ],
                               ),

@@ -5,7 +5,7 @@ import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 
-void main() async{
+void main() async{ 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

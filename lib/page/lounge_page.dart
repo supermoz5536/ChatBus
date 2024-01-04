@@ -23,10 +23,10 @@ class _LoungePageState extends State<LoungePage> {
     isDisabled = false;
       
       }       
-                               //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-      // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-      // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo   
+                                //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
+                                // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+                                // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
+                                // initState()とは　https://sl.bing.net/ivIFfFUd6Vo   
 
 
   @override

@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
 import '../utils/shared_prefs.dart';
@@ -14,7 +13,8 @@ class UserFirestore {
 
 
   static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
-         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
+  try {
+        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
 
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
              print('既存の端末uid = 未登録');
@@ -22,17 +22,17 @@ class UserFirestore {
                        'matched_status': false,
                        'room_id': 'none',
                        'progress_marker': false,
-                       'chatting_status': false,
-                       'created_at': FieldValue.serverTimestamp(),                        
+                       'chatting_status': true,
+                      //  'created_at': FieldValue.serverTimestamp(),                        
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
-                        DocumentSnapshot docSnap = await _userCollection.doc(newMyUid.id).get();
-                        Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-                        Timestamp timestamp = data['created_at'];
-                        int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
-                          print('Timestamp in milliseconds: $milliseconds');
+                        // DocumentSnapshot docSnap = await _userCollection.doc(newMyUid.id).get();
+                        // Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
+                        // Timestamp timestamp = data['created_at'];
+                        // int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
+                        //   print('Timestamp in milliseconds: $milliseconds');
 
-                        Shared_Prefes.setUid(newMyUid.id);              //端末のuid更新
+                       await Shared_Prefes.setUid(newMyUid.id);              //端末のuid更新
                           print('アカウント作成完了');
                           print('端末のuid更新完了');
                           print('最新の端末保存uid ${newMyUid.id}');  
@@ -61,12 +61,12 @@ class UserFirestore {
                      //DB上に端末保存idと同じidが「ある」場合
                      //Filed情報を更新して、既存の端末Uidをそのまま使用
                      
-                     _userCollection.doc(sharedPrefesMyUid).update({                      
-                          'matched_status': false,                         
-                          'room_id': 'none',
-                          'progress_marker': false,
-                          'chatting_status': false,
-                          'created_at': FieldValue.serverTimestamp(),                                                                              
+                     await _userCollection.doc(sharedPrefesMyUid).update({  //■■■■■エラー■■■■■■■■■■■■              
+                           'matched_status': false,                         
+                           'room_id': 'none',
+                           'progress_marker': false,
+                           'chatting_status': true,
+                           // 'created_at': FieldValue.serverTimestamp(),                                                                              
                    }); 
                      return sharedPrefesMyUid;                                   
 
@@ -77,10 +77,10 @@ class UserFirestore {
                           'matched_status': false,                         
                           'room_id': 'none',
                           'progress_marker': false,
-                          'chatting_status': false,                          
-                          'created_at': FieldValue.serverTimestamp(),
+                          'chatting_status': true,                          
+                           // 'created_at': FieldValue.serverTimestamp(),
                  });        
-                     Shared_Prefes.setUid(newDoc.id);                            
+                     await Shared_Prefes.setUid(newDoc.id);                            
                           print('アカウント作成完了');
                           print('端末のuid更新完了');
                           print('最新の端末保存uid ${newDoc.id}');          
@@ -94,10 +94,10 @@ class UserFirestore {
                     'matched_status': false,
                     'room_id': 'none',
                     'progress_marker': false,
-                    'chatting_status': false,                    
-                    'created_at': FieldValue.serverTimestamp(),
+                    'chatting_status': true,                    
+                    // 'created_at': FieldValue.serverTimestamp(),
             });        
-               Shared_Prefes.setUid(newDoc.id);                            
+               await Shared_Prefes.setUid(newDoc.id);                            
                      print('アカウント作成完了');
                      print('端末のuid更新完了');
                      print('最新の端末保存uid ${newDoc.id}');          
@@ -105,6 +105,11 @@ class UserFirestore {
              }
          }
   return null;
+
+  }catch(e){
+    print('getAccount失敗 $e');
+  return null;
+  }
 }
 
   
@@ -142,11 +147,11 @@ class UserFirestore {
                                                                                .get();
                                                                                //黄色五角形エラーが出るが問題ない（.getの取得doc数 == 0の時に表示される模様）
         
-             print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
+            //  print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
 
 
           if(querySnapshot.docs.isEmpty){
-             print('マッチング可能な相手がDB上に0人');
+            //  print('マッチング可能な相手がDB上に0人');
              return null;
             }
 
@@ -274,53 +279,68 @@ return null;
 
 
 
-static Future<void> retry(String? myUid, Function f, {int maxRetries = 500}) async {
+static Future<void> retry(String? myUid, bool? shouldBreak, Function f, {int maxRetries = 500}) async {
   Random random = Random();  
 
   for (int i = 0; i < maxRetries; i++) {
-  try { 
-  DocumentSnapshot documentSnapshot = await _userCollection.doc(myUid).get();
-  bool myMatchedStatus = await documentSnapshot.get('matched_status');
-
-
-    if(myMatchedStatus == false) {
-        print('myUidの matched_status == {$myMatchedStatus}なのでretry関数内の処理開始');      
+    try { 
+      if (shouldBreak == false) {
+        // print('shouldBreak == false: retry関数内の処理開始');      
         return await f();
 
-      } else if(myMatchedStatus == true) {
-        print('myUidの matched_status == {$myMatchedStatus}なのでretry終了');
-        break;
+      } else if (shouldBreak == true) {
+        print('shouldBreak == true: なのでretry終了');
+        return;
       }
 
 
       } catch (e) {
-         int randomSeconds = 4333 + random.nextInt(2000);
-          await Future.delayed(Duration(milliseconds: randomSeconds));         //待機時間中はtalkuserUidをnullにしてリスナーをOn
+        //関数fの実行中に例外をキャッチした場合
+        //retry()では、try-catchが例外をキャッチしてもretryする仕様        
 
-        if (e.toString() == 'Exception: End Retry') {                 //talkuserUidを捕捉したけど「される場合」の処理が既に始まってたら、retry終了
-            break;
-            }
+        int randomSeconds = 4333 + random.nextInt(2000);
+          await Future.delayed(Duration(milliseconds: randomSeconds));  
+
+        if (e.toString() == 'Exception: End Retry') {       
+          //talkuserUidを捕捉したけど「される場合」の処理が既に始まってたら、retry終了  
+          print('End Retry の例外をキャッチ');
+          return;
+        }        
 
         if (i == maxRetries - 1){ 
             print('Attempt $i failed: $e');
-            rethrow;
-            }
+          rethrow;
+        }
       }
   }
 }
+      // DocumentSnapshot documentSnapshot = await _userCollection.doc(myUid).get();
+  // bool myMatchedStatus = await documentSnapshot.get('matched_status');
+      // if(myMatchedStatus == false) {
+      //   print('myUidの matched_status == {$myMatchedStatus}なのでretry関数内の処理開始');      
+      //   return await f();
+
+      // } else if(myMatchedStatus == true) {
+      //   print('myUidの matched_status == {$myMatchedStatus}なのでretry終了');
+      //   break;
+      // }
 
 
-static updateProgressMarker(String? uid, bool progressStatus){
-        _userCollection.doc(uid).update({'progress_marker': progressStatus});     
+
+
+
+
+static updateProgressMarker(String? uid, bool progressStatus) async{
+        await _userCollection.doc(uid).update({'progress_marker': progressStatus});     
 }
 
-static updateMatchedStatus(String? uid, bool matchedStatus){
-        _userCollection.doc(uid).update({'matched_status': matchedStatus});     
+static updateMatchedStatus(String? uid, bool matchedStatus) async{
+        await _userCollection.doc(uid).update({'matched_status': matchedStatus});     
 }
 
-static Future<void> updateChattingStatus(String? uid, bool chattingStatus) {
-      print('updateChattingStatusの実行');
-      return _userCollection.doc(uid).update({'chatting_status': chattingStatus});     
+static Future<void> updateChattingStatus(String? uid, bool chattingStatus) async{
+      // print('updateChattingStatusの実行');
+      return await _userCollection.doc(uid).update({'chatting_status': chattingStatus});     
 }                                               
 
 

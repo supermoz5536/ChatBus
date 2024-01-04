@@ -58,7 +58,7 @@ try{
 
 
 static Future<String?> getRoomMember(String? myUid, String? roomId) async{
-  print('getRoomMember関数の実行確認');    
+  // print('getRoomMember関数の実行確認');    
 try{
     DocumentSnapshot docSnapshot = await _roomCollection.doc(roomId).get();
 
@@ -69,7 +69,7 @@ try{
       // asメソッド： 元のリストの型を強制的に変更 → 元のリストの型があってない場合エラーになる可能性
 
       String roomMemberUid = jointedUser.firstWhere((user) => user != myUid);
-      print('getRoomMember()で取得したtalkuerUid == $roomMemberUid');          
+      // print('getRoomMember関数で取得したtalkuerUid == $roomMemberUid');          
       return roomMemberUid;      
   }
       return null;

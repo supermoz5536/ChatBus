@@ -34,19 +34,23 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
     void initState() {    // 関数の呼び出し（initStateはFlutter標準メソッド）
       super.initState();  // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
-  // ■■■■■■■初期化の部分でtalkuserUidを取得すれば良さげ
+  isChatting = true;
+ 
  
         UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
                      .then((_){
           var myDocStream = UserFirestore.streamMyDoc(widget.talkRoom.myUid);  
-                            print ('streamの起動');
-                            print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');                            
+                            print ('トークルーム: streamの起動(リスンの参照を取得)');
+                            // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');                            
                               
                               myDocSubscription = myDocStream.listen((snapshot) {
-                              print ('streamの受信');                
+                              print ('トークルーム: streamデータをリスン');     
+                              print('トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
+
                                   if (snapshot.data()!.isNotEmpty &&
                                       snapshot.data()!['chatting_status'] == false){
-                                        print ('streamの受信データが条件に合致するので処理実行');                                      
+
+                                        print ('トークルーム: 相手の会話終了をリスン isDisabled == false にしてフッター再描画');                                      
                                         setState(() {
                                           isChatting =false;
                                           // 状態を更新：フッターUIを再描画                                
@@ -147,13 +151,12 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         // ■「チャットを終了」ボタン
                         Container(child:
                           ElevatedButton( 
-                              onPressed: () { 
+                              onPressed: () async{ 
                               setState(() {
                                 isChatting =false;
                                 // 状態を更新：フッターUIを再描画                                
-                              });                    
-                              print('updateChattingStatusの引数 talkuserUid == ${widget.talkRoom.talkuserUid}');          
-                              UserFirestore.updateChattingStatus(widget.talkRoom.talkuserUid, false);
+                              });                                                  
+                              await UserFirestore.updateChattingStatus(widget.talkRoom.talkuserUid, false);
                               // トーク相手にチャット終了を伝える                                                                                                                                         
                               },
                               child: const Text("チャットを終了"),
@@ -167,7 +170,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                           child: TextField(               
                                       controller: controller,          // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-                                      onChanged: (value){              // TextFiledの値(value)を引数
+                                      onChanged: (value){              // TextFiledのテキストが変更されるたびに呼び出される応答関数を指定
                                                   setState(() {        // valueに変化があったら、応答関数で状態を更新
                                                   isInputEmpty = value.isEmpty;  // isEmptyメソッドは、bool値を返す
                                                   });
@@ -213,19 +216,20 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                                 await Future.delayed(
                                 const Duration(milliseconds: 300), //無効にする時間
-                              );                                                                                                             
+                                );
+                              
+                                await myDocSubscription!.cancel(); 
+                                // matching_progress_pageに戻る時の一連の処理                                                                                                                            
 
                               if (context.mounted) {    
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                     MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                            (_) => false                               
-                                          );
-                                        }
-                              //     setState(() {
-                              //       isDisabled = false;
-                              //       //入力のタップを解除
-                              //  });
-                            },
+                                    (_) => false                               
+                                  );
+                              }
+                                isDisabled = false;
+                                //入力のタップを解除
+                              },
                               child: const Text("次のチャット相手を探す"),
                             )
                           ),
@@ -243,26 +247,20 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                                 await Future.delayed(
                                 const Duration(milliseconds: 300), //無効にする時間
-                              );                             
-                                                                                    
-                              UserFirestore.updateMatchedStatus(widget.talkRoom.myUid, true);  
-                              UserFirestore.updateProgressMarker(widget.talkRoom.myUid, true);
-                              // lounge_pageに戻る時の一連の処理
+                                );
 
-                              
-
+                                await myDocSubscription!.cancel();                                                       
+                                // lounge_pageに戻る時の一連の処理                    
 
                               if (context.mounted) {    
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                     MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
-                                            (_) => false                               
-                                          );
-                                        }
-                              //     setState(() {
-                              //       isDisabled = false;
-                              //       //入力のタップを解除
-                              //  });
-                            },
+                                    (_) => false                               
+                                  );
+                              }
+                                isDisabled = false;
+                                //入力のタップを解除
+                              },
                               child: const Text("最初の画面に戻る"),
                             )
                           ),
