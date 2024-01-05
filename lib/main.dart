@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firebase_options.dart';
-import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 
