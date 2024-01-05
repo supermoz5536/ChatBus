@@ -27,7 +27,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
-  StreamSubscription? myDocSubscription;
+  StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final TextEditingController controller = TextEditingController();
 
@@ -45,23 +45,24 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
         UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
                      .then((_) async{
 
-                            // await Future.delayed(
-                            // const Duration(milliseconds: 100), //リスナー開始までの時間
-                            // );
+                            await Future.delayed(
+                            const Duration(milliseconds: 400), //リスナー開始までの時間
+                            );
 
-          var myDocStream = UserFirestore.streamMyDoc(widget.talkRoom.myUid);  
+          var talkuserDocStream = UserFirestore.streamTalkuserDoc(widget.talkRoom.talkuserUid);
                             print ('トークルーム: streamの起動(リスンの参照を取得)');
                             // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');                            
                               
-                              myDocSubscription = myDocStream.listen((snapshot) {
+                              talkuserDocSubscription = talkuserDocStream.listen((snapshot) {
                               print ('トークルーム: streamデータをリスン');     
                               print('トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
 
-                                  if (snapshot.data()!.isNotEmpty && snapshot.data()!['chatting_status'] == false){
-                                    //  (snapshot.data()!['chatting_status'] == false || snapshot.data()!['islounge']== true)) { 
+                                  if (snapshot.data()!.isNotEmpty && 
+                                     (snapshot.data()!['chatting_status'] == false || snapshot.data()!['is_lounge']== true)) { 
                                     // ■■■■■■islounge を実装したら、上記のコメントアウトを実装する
 
-                                        print ('トークルーム: 相手の会話終了をリスン isDisabled == false にしてフッター再描画');                                      
+                                        print ('トークルーム: [chatting_status == false] OR [is_lounge == true]');
+                                        print ('トークルーム: isDisabled == false にしてフッター再描画');                                                                              
                                         setState(() {
                                           isChatting =false;
                                           // 状態を更新：フッターUIを再描画                                
@@ -167,7 +168,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                 isChatting =false;
                                 // 状態を更新：フッターUIを再描画                                
                               });                                                  
-                              await UserFirestore.updateChattingStatus(widget.talkRoom.talkuserUid, false);
+                              await UserFirestore.updateChattingStatus(widget.talkRoom.myUid, false);
                               // トーク相手にチャット終了を伝える                                                                                                                                         
                               },
                               child: const Text("チャットを終了"),
@@ -226,10 +227,10 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               });
 
                                 await Future.delayed(
-                                const Duration(milliseconds: 50), //無効にする時間
+                                const Duration(milliseconds: 100), //無効にする時間
                                 );
                               
-                                await myDocSubscription!.cancel(); 
+                                await talkuserDocSubscription!.cancel(); 
                                 // matching_progress_pageに戻る時の一連の処理                                                                                                                            
 
                               if (context.mounted) { 
@@ -262,7 +263,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                 const Duration(milliseconds: 50), //無効にする時間
                                 );
 
-                                await myDocSubscription!.cancel();                                                       
+                                await talkuserDocSubscription!.cancel();                                                       
                                 // lounge_pageに戻る時の一連の処理                    
 
                               if (context.mounted) {    

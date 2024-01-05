@@ -23,6 +23,7 @@ class UserFirestore {
                        'room_id': 'none',
                        'progress_marker': true,
                        'chatting_status': true,
+                       'is_lounge': true,
                       //  'created_at': FieldValue.serverTimestamp(),                        
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
@@ -66,6 +67,7 @@ class UserFirestore {
                            'room_id': 'none',
                            'progress_marker': true,
                            'chatting_status': true,
+                           'is_lounge': true,                           
                            // 'created_at': FieldValue.serverTimestamp(),                                                                              
                    }); 
                      return sharedPrefesMyUid;                                   
@@ -77,7 +79,8 @@ class UserFirestore {
                           'matched_status': true,                         
                           'room_id': 'none',
                           'progress_marker': true,
-                          'chatting_status': true,                          
+                          'chatting_status': true,
+                          'is_lounge': true,                          
                            // 'created_at': FieldValue.serverTimestamp(),
                  });        
                      await Shared_Prefes.setUid(newDoc.id);                            
@@ -94,7 +97,8 @@ class UserFirestore {
                     'matched_status': true,
                     'room_id': 'none',
                     'progress_marker': true,
-                    'chatting_status': true,                    
+                    'chatting_status': true,  
+                    'is_lounge': true,                  
                     // 'created_at': FieldValue.serverTimestamp(),
             });        
                await Shared_Prefes.setUid(newDoc.id);                            
@@ -252,8 +256,20 @@ try {
   }
 
 
-//stream用に、自分のドキュメント情報の'matched_status'に snapshotsを設定
-//'matched_status'の
+  //DocumentSnapshot型について　→  https://sl.bing.net/bQeSPlCC23w
+static Stream<DocumentSnapshot<Map<String, dynamic>>> streamTalkuserDoc(String? talkuserUid){
+try {                                                         
+      return _userCollection.doc(talkuserUid).snapshots();
+   
+    } catch(e) {
+      print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
+      return const Stream<DocumentSnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す      
+
+    }
+  }
+
+
+
 
 
 
@@ -343,6 +359,12 @@ static Future<void> updateChattingStatus(String? uid, bool chattingStatus) async
       return await _userCollection.doc(uid).update({'chatting_status': chattingStatus});     
 }                                               
 
+static Future<void> updateIsLounge(String? uid, bool isLounge) async{
+      // print('updateChattingStatusの実行');
+      return await _userCollection.doc(uid).update({'is_lounge': isLounge});     
+}                                               
+
+
 
 static checkMyProgressMarker(String? myUid,) async{
  DocumentSnapshot docMyUid = await _userCollection.doc(myUid).get();     
@@ -355,6 +377,7 @@ static Future<void> initForMatching (String? myUid,) async{
          'room_id': 'none',
          'progress_marker': false,
          'chatting_status': true,
+         'is_lounge': false,         
         }); 
       return null;    
   

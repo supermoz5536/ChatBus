@@ -315,6 +315,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               await myDocSubscription!.cancel();                             
                               await UserFirestore.updateMatchedStatus(myUid, true);  
                               await UserFirestore.updateProgressMarker(myUid, false);
+                              await UserFirestore.updateIsLounge(myUid, true);
                               // Lounge_pageに戻る時の一連の処理
                               // リスナーを反応させないために両方trueする
 
