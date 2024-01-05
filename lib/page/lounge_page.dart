@@ -69,7 +69,7 @@ class _LoungePageState extends State<LoungePage> {
                              });
 
                               await Future.delayed(
-                              const Duration(milliseconds: 300), //無効にする時間
+                              const Duration(milliseconds: 50), //無効にする時間
                              );
 
                               if (context.mounted) { 

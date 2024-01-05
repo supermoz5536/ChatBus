@@ -106,7 +106,6 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                 if (talkuserUid != null) {                                           // transaction処理内でtalkuserUidに変更がないかの確認
                                   print('トランザクション成功: myRoomのField情報の更新、画面遷移');
                                   shouldBreak = true;
-                                  // isTransitioned = true;                                  
 
                                   RoomFirestore.updateRoom(myRoomId, talkuserUid);
                                   talkRoom.talkuserUid = talkuserUid;  
@@ -308,7 +307,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                              });
 
                               await Future.delayed(
-                              const Duration(milliseconds: 300), //無効にする時間
+                              const Duration(milliseconds: 50), //無効にする時間
                              );   
                                                        
                               shouldBreak = true;                                                                                      
@@ -317,20 +316,20 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               await UserFirestore.updateProgressMarker(myUid, false);
                               // Lounge_pageに戻る時の一連の処理
                               // リスナーを反応させないために両方trueする
+
                             if (isTransitioned == false) {
                                 await RoomFirestore.deleteRoom(myRoomId);  
-
-                              if (context.mounted ) { // ■■■■■■ キャンセルボタンの画面遷移関数もsyncronized()を使って競合排除すべきか？
-                                  print('キャンセルボタンの画面遷移の実行');
+                                await lock.synchronized(() async{
+                              if (context.mounted ) { 
+                                  print('キャンセルボタンの画面遷移の実行');                                  
                                   await Navigator.pushAndRemoveUntil(
                                     context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                       MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                       (_) => false                               
                                   );
                               }
+                              });
                             }
-                              //  isDisabled = false;
-                               //入力のタップを解除
                             },
                             child: const Text("キャンセル"),
                         )

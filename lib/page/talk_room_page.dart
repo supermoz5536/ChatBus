@@ -218,7 +218,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               });
 
                                 await Future.delayed(
-                                const Duration(milliseconds: 300), //無効にする時間
+                                const Duration(milliseconds: 50), //無効にする時間
                                 );
                               
                                 await myDocSubscription!.cancel(); 
@@ -249,7 +249,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               });
 
                                 await Future.delayed(
-                                const Duration(milliseconds: 300), //無効にする時間
+                                const Duration(milliseconds: 50), //無効にする時間
                                 );
 
                                 await myDocSubscription!.cancel();                                                       
