@@ -19,9 +19,9 @@ class UserFirestore {
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
              print('既存の端末uid = 未登録');
                   final newMyUid = await _userCollection.add({      //DB上に新規アカウント作成
-                       'matched_status': false,
+                       'matched_status': true,
                        'room_id': 'none',
-                       'progress_marker': false,
+                       'progress_marker': true,
                        'chatting_status': true,
                       //  'created_at': FieldValue.serverTimestamp(),                        
                   });
@@ -62,9 +62,9 @@ class UserFirestore {
                      //Filed情報を更新して、既存の端末Uidをそのまま使用
                      
                      await _userCollection.doc(sharedPrefesMyUid).update({  //■■■■■エラー■■■■■■■■■■■■              
-                           'matched_status': false,                         
+                           'matched_status': true,                         
                            'room_id': 'none',
-                           'progress_marker': false,
+                           'progress_marker': true,
                            'chatting_status': true,
                            // 'created_at': FieldValue.serverTimestamp(),                                                                              
                    }); 
@@ -74,9 +74,9 @@ class UserFirestore {
                      //DB上に端末保存idと同じidが「ない」場合
                      //新規アカウント作成 ＆ 端末Uid更新                                                           
                      final newDoc = await _userCollection.add({                      
-                          'matched_status': false,                         
+                          'matched_status': true,                         
                           'room_id': 'none',
-                          'progress_marker': false,
+                          'progress_marker': true,
                           'chatting_status': true,                          
                            // 'created_at': FieldValue.serverTimestamp(),
                  });        
@@ -91,9 +91,9 @@ class UserFirestore {
                //.getでデータに取得に「失敗」した場合 = 既存の端末Uidはあるが、db上にUidが既に削除されてる場合
                //新規アカウント作成 ＆ 端末Uid更新
                final newDoc = await _userCollection.add({                      
-                    'matched_status': false,
+                    'matched_status': true,
                     'room_id': 'none',
-                    'progress_marker': false,
+                    'progress_marker': true,
                     'chatting_status': true,                    
                     // 'created_at': FieldValue.serverTimestamp(),
             });        
@@ -346,7 +346,18 @@ static Future<void> updateChattingStatus(String? uid, bool chattingStatus) async
 
 static checkMyProgressMarker(String? myUid,) async{
  DocumentSnapshot docMyUid = await _userCollection.doc(myUid).get();     
- return docMyUid['progress_marker'];
+      return docMyUid['progress_marker'];
+}
+
+static Future<void> initForMatching (String? myUid,) async{
+      await _userCollection.doc(myUid).update({
+         'matched_status': false,
+         'room_id': 'none',
+         'progress_marker': false,
+         'chatting_status': true,
+        }); 
+      return null;    
+  
 }
 
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
@@ -23,7 +24,8 @@ import 'package:synchronized/synchronized.dart';
 
 
 class MatchingProgressPage extends StatefulWidget {                            
-const MatchingProgressPage({super.key});  // this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
+  final MatchingProgress matchingProgress;
+const MatchingProgressPage(this.matchingProgress, {super.key});  // this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
 // 10,11行で、TalkRoomPageクラスのインスタンス変数に、ルームの基本情報型を備えた変数talkRoomが設定された
 // 画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
@@ -61,16 +63,15 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
         isDisabled = false;
         shouldBreak = false;
         isTransitioned = false;
+        myUid = widget.matchingProgress.myUid;
 
       
 
     // 起動時に1度行うmyUidを確認する処理
-     UserFirestore.getAccount()                       // 自分のユーザー情報をDBへ書き込み
-                  .then((getUid) async{          // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-                     myUid = getUid;                     // 状態変数myUidに、非同期処理の結果（uid）を設定           
-                     print('wait_room_page.dartの初期取得myUid = $myUid');
-
-              myRoomId = await RoomFirestore.createRoom(myUid!, talkuserUid);            
+     UserFirestore.initForMatching(myUid)
+                  .then((_) async{          
+                                                                      
+              myRoomId = await RoomFirestore.createRoom(myUid, talkuserUid);            
      TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: myRoomId);
                                                 
      UserFirestore.retry(myUid, shouldBreak, () async{    // retry start
@@ -198,7 +199,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                             }
                                           }); // myDocSubscription =
                                         } // 「自分がマッチングされた場合」のstream処理 
-                                      }); // getAccount             
+                                      }); // initForMatching             
                                     } // initState
 
 

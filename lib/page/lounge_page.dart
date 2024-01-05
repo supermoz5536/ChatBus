@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 
 class LoungePage extends StatefulWidget {
@@ -13,7 +15,9 @@ class LoungePage extends StatefulWidget {
 final TextEditingController controller = TextEditingController();
 // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 bool isInputEmpty = true;
+String? myUid;
 bool? isDisabled;
+MatchingProgress? matchingProgress;
 
 class _LoungePageState extends State<LoungePage> {
   
@@ -28,6 +32,20 @@ class _LoungePageState extends State<LoungePage> {
       // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
       // initState()とは　https://sl.bing.net/ivIFfFUd6Vo 
         isDisabled = false;   
+
+    // 起動時に1度行うmyUidを確認する処理
+     UserFirestore.getAccount()                       // 自分のユーザー情報をDBへ書き込み
+                  .then((getUid) async{          // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+                     myUid = getUid;                     // 状態変数myUidに、非同期処理の結果（uid）を設定           
+                     matchingProgress = MatchingProgress(myUid: myUid); 
+                       print('wait_room_page.dartの初期取得myUid = $myUid');                               
+                   });
+     
+     
+
+
+
+
   }       
 
 
@@ -73,8 +91,9 @@ class _LoungePageState extends State<LoungePage> {
                              );
 
                               if (context.mounted) { 
-                                  Navigator.pushAndRemoveUntil (context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                      //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                    MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                  Navigator.pushAndRemoveUntil (context,                              
+                                    MaterialPageRoute(
+                                      builder: (context) => MatchingProgressPage(matchingProgress!)),   
                                     (_) => false                               
                                   );
                               }

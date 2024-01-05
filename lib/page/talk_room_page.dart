@@ -6,6 +6,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
+import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
@@ -27,6 +28,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   bool? isDisabled;
   bool? isChatting;
   StreamSubscription? myDocSubscription;
+  MatchingProgress? matchingProgress;
   final TextEditingController controller = TextEditingController();
 
 
@@ -41,7 +43,12 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
  
  
         UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
-                     .then((_){
+                     .then((_) async{
+
+                            // await Future.delayed(
+                            // const Duration(milliseconds: 100), //リスナー開始までの時間
+                            // );
+
           var myDocStream = UserFirestore.streamMyDoc(widget.talkRoom.myUid);  
                             print ('トークルーム: streamの起動(リスンの参照を取得)');
                             // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');                            
@@ -50,8 +57,9 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               print ('トークルーム: streamデータをリスン');     
                               print('トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
 
-                                  if (snapshot.data()!.isNotEmpty &&
-                                      snapshot.data()!['chatting_status'] == false){
+                                  if (snapshot.data()!.isNotEmpty && snapshot.data()!['chatting_status'] == false){
+                                    //  (snapshot.data()!['chatting_status'] == false || snapshot.data()!['islounge']== true)) { 
+                                    // ■■■■■■islounge を実装したら、上記のコメントアウトを実装する
 
                                         print ('トークルーム: 相手の会話終了をリスン isDisabled == false にしてフッター再描画');                                      
                                         setState(() {
@@ -224,9 +232,11 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                 await myDocSubscription!.cancel(); 
                                 // matching_progress_pageに戻る時の一連の処理                                                                                                                            
 
-                              if (context.mounted) {    
+                              if (context.mounted) { 
+                                matchingProgress = MatchingProgress(myUid: myUid);   
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                    MaterialPageRoute(builder: (context) => const MatchingProgressPage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                    MaterialPageRoute(
+                                      builder: (context) => MatchingProgressPage(matchingProgress!)),    //遷移先の画面を構築する関数を指定                                                                                                              
                                     (_) => false                               
                                   );
                               }
