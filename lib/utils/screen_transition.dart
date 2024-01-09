@@ -9,7 +9,7 @@ class SlideRightRoute extends PageRouteBuilder {
 
   
   SlideRightRoute({required this.page})
-  // 遷移先のページを必須の引数に取る「SlideRightRoute」クラスのコンストラクタ
+  // 画面遷移の関数なので、引数に遷移先ページの情報が必須
 
       : super(
         // Dartでは、（:）は「初期化リスト」を開始を宣言する記号
@@ -52,8 +52,14 @@ class SlideRightRoute extends PageRouteBuilder {
                       begin: const Offset(-1, 0),
                       // (dx, dy)の座標軸表記
                       end: Offset.zero,
-                    ).animate(animation),
-                      // Tweenをアニメーションに適用します。 
+                    ).animate(
+                        CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.ease,
+                        ),
+                      ),
+                      // Animation<double>で取得したanimationオブジェクトは初期値が0に設定されており
+                      // これを親（初期値）として、非線形のカーブのアニメーションを設定
 
             
             child: child,

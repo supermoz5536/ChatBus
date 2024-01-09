@@ -10,7 +10,9 @@ import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
+// import 'package:udemy_copy/utils/screen_transition.dart';
 
 
 class TalkRoomPage extends StatefulWidget {      
@@ -231,7 +233,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               });
 
                                 await Future.delayed(
-                                const Duration(milliseconds: 100), //無効にする時間
+                                const Duration(milliseconds: 50), //無効にする時間
                                 );
                               
                                 await talkuserDocSubscription!.cancel(); 
@@ -240,8 +242,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               if (context.mounted) { 
                                 matchingProgress = MatchingProgress(myUid: myUid);   
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                    MaterialPageRoute(
-                                      builder: (context) => MatchingProgressPage(matchingProgress!)),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                    SlideRightRoute(page: MatchingProgressPage(matchingProgress!)),    //遷移先の画面を構築する関数を指定                                                                                                              
                                     (_) => false                               
                                   );
                               }
@@ -272,7 +273,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
 
                               if (context.mounted) {    
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                    MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                    SlideRightRoute(page: const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                     (_) => false                               
                                   );
                               }

@@ -8,6 +8,7 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:udemy_copy/utils/screen_transition.dart';
 
 
 // initstate()の実行に時間が掛かって、Widget build()の本体の実行が先走ってる。
@@ -308,7 +309,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                              });
 
                               await Future.delayed(
-                              const Duration(milliseconds: 50), //無効にする時間
+                              const Duration(milliseconds: 25), //無効にする時間
                              );   
                                                        
                               shouldBreak = true;                                                                                      
@@ -324,9 +325,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                                 await lock.synchronized(() async{
                               if (context.mounted ) { 
                                   print('キャンセルボタンの画面遷移の実行');                                  
-                                  await Navigator.pushAndRemoveUntil(
-                                    context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                      MaterialPageRoute(builder: (context) => const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
+                                  await Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                      SlideRightRoute(page: const LoungePage()),    //遷移先の画面を構築する関数を指定                                                                                                              
                                       (_) => false                               
                                   );
                               }
