@@ -298,7 +298,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                       Container(child:                                             
                         ElevatedButton( 
                             // onPressed: isDisabled! ? null : () async{ 
-                            onPressed: isDisabled! ? null : () async{
+                            onPressed: isDisabled! ? (){} : () async{
                              print('キャンセルボタンクリック');
                              setState(() {
                                isDisabled = true;
@@ -333,7 +333,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               });
                             }
                             },
-                            child: Text(isDisabled! ? "見つけた！" : "キャンセル"),
+                            child: const Text("キャンセル"),
                         )
                       ),
 

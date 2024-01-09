@@ -201,14 +201,18 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                           await RoomFirestore.sendMessage(
                                 roomId: widget.talkRoom.roomId!, 
                                 message: controller.text);
-                                controller.clear();}, 
+                                controller.clear();
+                                setState(() {
+                                  isInputEmpty = true;
+                                });
+                                },  
                                 icon: Icon(Icons.send,
                                 color: isInputEmpty? Colors.grey : Colors.blue,
-                                    ))
-                                  ],
-                                );
-                               }  
-        
+                              ))
+                            ],
+                        );
+                      }  
+              
 
         
         // ■ フッター（チャット終了後）
