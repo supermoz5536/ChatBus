@@ -333,7 +333,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {          
                               });
                             }
                             },
-                            child: const Text("キャンセル"),
+                            child: Text(isDisabled! ? "見つけた！" : "キャンセル"),
                         )
                       ),
 
