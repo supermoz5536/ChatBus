@@ -16,6 +16,8 @@ bool isInputEmpty = true;
 String? myUid;
 bool? isDisabled;
 MatchingProgress? matchingProgress;
+var _overlayController1st = OverlayPortalController();
+var _overlayController2nd = OverlayPortalController();
 
 class _LoungePageState extends State<LoungePage> {
   
@@ -54,6 +56,192 @@ class _LoungePageState extends State<LoungePage> {
 
       appBar: AppBar(
         title: const Text('ラウンジページ'),
+        actions: <Widget>[
+
+
+          // ■ リクエスト通知ボタン
+          OverlayPortal(
+            controller: _overlayController1st, 
+            overlayChildBuilder: (BuildContext context){
+             return  Stack(
+               children: [
+                 GestureDetector(
+                 // Stack()最下層の全領域がスコープの範囲
+                   onTap: (){
+                      _overlayController1st.toggle();
+                   },
+                   child: Container(color: Colors.transparent),
+                 ),
+                   
+                 const Positioned(
+                   top: 70,
+                   left: 55,
+                   height: 140,
+                   width: 400,
+                   child: 
+                      Card(
+                        elevation: 20,                              
+                        color:Color.fromARGB(255, 156, 156, 156),
+                        child:
+                          Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: 
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SizedBox(height: 8,),
+                                  Text('リクエスト通知の表示'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),                 
+                    ],
+                  );
+                },
+            child: IconButton(
+              onPressed: _overlayController1st.toggle,
+              icon: const Icon(Icons.add_outlined))
+            ),          
+
+
+          // ■ DMの通知ボタン
+          OverlayPortal(
+            controller: _overlayController2nd, 
+            overlayChildBuilder: (BuildContext context){
+             return  Stack(
+               children: [
+                 GestureDetector(
+                 // Stack()最下層の全領域がスコープの範囲
+                   onTap: (){
+                      _overlayController2nd.toggle();
+                   },
+                   child: Container(color: Colors.transparent),
+                 ),
+                   
+                 const Positioned(
+                   top: 70,
+                   left: 55,
+                   height: 140,
+                   width: 400,
+                   child: 
+                      Card(
+                        elevation: 20,                              
+                        color:Color.fromARGB(255, 156, 156, 156),
+                        child:
+                          Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: 
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SizedBox(height: 8,),
+                                  Text('DM通知の表示'),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),                 
+                    ],
+                  );
+                },
+            child: IconButton(
+              onPressed: _overlayController2nd.toggle,
+              icon: const Icon(Icons.visibility))
+            ), 
+
+
+          // ■ マッチングヒストリーの表示ボタン
+          Builder(
+            builder: (context) {
+              return IconButton(onPressed: (){
+                Scaffold.of(context).openEndDrawer();
+                // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
+                // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
+                // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる
+              }, icon: const Icon(Icons.alarm_off_sharp));
+            }
+          ),
+        ],        
+      ),
+
+
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Expanded(
+            //ListView が無限の長さを持つので直接 column でラップすると不具合
+            //Expanded で長さを限界値に指定
+              child: ListView(
+                children: const[
+                  SizedBox(
+                    height: 160.0,
+                    child: 
+                      DrawerHeader(
+                        child:
+                          Column(
+                            children: [
+                              Text('フレンド登録を5人達成するとフィルターの有料機能が使える'),
+                              Spacer(flex: 1,),
+                              Text('☆5の登録済みチェック部分'),
+                              Spacer(flex: 1,),
+                                
+                              ],                              
+                             )
+                           ),
+                  ),
+                  ListTile(title: Text('text'),),
+                  Spacer(flex: 1,), 
+                  ListTile(title: Text('test'),),
+                ]          
+              ),
+            ),
+
+            const Spacer(flex: 1,),
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                   top: BorderSide(
+                     color: Color.fromARGB(255, 199, 199, 199), 
+                     width: 1.0),
+                ),                  
+              ),
+              padding: const EdgeInsets.all(8),
+              child: 
+                const Row(
+                  children: [                
+                    Text('サブスクリプション'),                                           
+                ]
+              )
+            ),
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                   top: BorderSide(
+                     color: Color.fromARGB(255, 199, 199, 199), 
+                     width: 1.0),
+                ),                  
+              ),
+              padding: const EdgeInsets.all(8),
+              child: 
+                const Row(
+                  children: [                
+                    Text('ログインID表示 環境設定関連'),                                           
+                ]
+              )
+            )
+          ],          
+        ),
+      ),
+
+      endDrawer: Drawer(
+        child: Column(children: <Widget>[
+        Container(),
+        Container(),
+        ],),
+
       ),
 
       body: Stack(children: <Widget>[
@@ -125,7 +313,7 @@ class _LoungePageState extends State<LoungePage> {
                                )), 
 
                       //■送信アイコン
-                      IconButton (onPressed: () {                                                              
+                      IconButton (onPressed: (){  
                                   controller.clear(); // 送信すると文字を消す
                                   }, 
                                   icon: Icon(Icons.send,
