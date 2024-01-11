@@ -69,9 +69,12 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                           isChatting =false;
                                           // 状態を更新：フッターUIを再描画                                
                                         });                               
-                                  }
-                              });
-                      });                            
+                                     }
+                                 });
+                             }); 
+
+        
+
 
 
 

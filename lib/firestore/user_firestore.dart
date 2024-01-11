@@ -384,4 +384,16 @@ static Future<void> initForMatching (String? myUid,) async{
 }
 
 
+static Future<String?> updateHistory (String? myUid, String? talkuserUid) async{
+       DocumentSnapshot docSnapshot = await _userCollection.doc(talkuserUid).get();
+       String name = docSnapshot['name'];
+       String profileImage = docSnapshot['image'];
+
+      await _userCollection.doc(myUid).collection('history').add({
+          'name': name,
+          'image': profileImage, 
+      });
+}
+
+
 }
