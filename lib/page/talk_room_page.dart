@@ -73,7 +73,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                  });
                              }); 
 
-        
+        UserFirestore.updateHistory(widget.talkRoom.myUid, widget.talkRoom.talkuserUid);
 
 
 

@@ -24,7 +24,9 @@ class UserFirestore {
                        'progress_marker': true,
                        'chatting_status': true,
                        'is_lounge': true,
-                      //  'created_at': FieldValue.serverTimestamp(),                        
+                       'user_name': 'user_name',
+                       'user_image_url': 'user_image_url',
+                      //  'created_at': FieldValue.serverTimestamp(),
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
                         // DocumentSnapshot docSnap = await _userCollection.doc(newMyUid.id).get();
@@ -80,7 +82,9 @@ class UserFirestore {
                           'room_id': 'none',
                           'progress_marker': true,
                           'chatting_status': true,
-                          'is_lounge': true,                          
+                          'is_lounge': true,
+                          'user_name': 'user_name',
+                          'user_image_url': 'user_image_url',                                                   
                            // 'created_at': FieldValue.serverTimestamp(),
                  });        
                      await Shared_Prefes.setUid(newDoc.id);                            
@@ -98,7 +102,9 @@ class UserFirestore {
                     'room_id': 'none',
                     'progress_marker': true,
                     'chatting_status': true,  
-                    'is_lounge': true,                  
+                    'is_lounge': true,
+                    'user_name': 'user_name',
+                    'user_image_url': 'user_image_url',                                  
                     // 'created_at': FieldValue.serverTimestamp(),
             });        
                await Shared_Prefes.setUid(newDoc.id);                            
@@ -384,14 +390,15 @@ static Future<void> initForMatching (String? myUid,) async{
 }
 
 
-static Future<String?> updateHistory (String? myUid, String? talkuserUid) async{
+static Future<void> updateHistory (String? myUid, String? talkuserUid) async{
        DocumentSnapshot docSnapshot = await _userCollection.doc(talkuserUid).get();
-       String name = docSnapshot['name'];
-       String profileImage = docSnapshot['image'];
+       String name = docSnapshot['user_name'];
+       String profileImage = docSnapshot['user_image_url'];
 
       await _userCollection.doc(myUid).collection('history').add({
-          'name': name,
-          'image': profileImage, 
+          'user_name': name,
+          'user_image_url': profileImage, 
+          'created_at': FieldValue.serverTimestamp(),          
       });
 }
 
