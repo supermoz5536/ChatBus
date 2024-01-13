@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
@@ -10,6 +11,10 @@ class LoungePage extends StatefulWidget {
   State<LoungePage> createState() => _LoungePageState();
 }
 
+
+
+class _LoungePageState extends State<LoungePage> {
+
 final TextEditingController controller = TextEditingController();
 // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 bool isInputEmpty = true;
@@ -18,9 +23,8 @@ bool? isDisabled;
 MatchingProgress? matchingProgress;
 var _overlayController1st = OverlayPortalController();
 var _overlayController2nd = OverlayPortalController();
+Future<String?>? myUidFuture; 
 
-class _LoungePageState extends State<LoungePage> {
-  
 @override                   
   void initState() {        
     super.initState();      
@@ -30,22 +34,17 @@ class _LoungePageState extends State<LoungePage> {
       //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
       // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
       // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo 
-        isDisabled = false;   
-
-    // 起動時に1度行うmyUidを確認する処理
-     UserFirestore.getAccount()                       // 自分のユーザー情報をDBへ書き込み
-                  .then((getUid) async{          // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-                     myUid = getUid;                     // 状態変数myUidに、非同期処理の結果（uid）を設定           
-                     matchingProgress = MatchingProgress(myUid: myUid); 
-                       print('wait_room_page.dartの初期取得myUid = $myUid');                               
-                   });
+      // initState()とは　https://sl.bing.net/ivIFfFUd6Vo  
+      
+     isDisabled = false;    
+     myUidFuture = UserFirestore.getAccount();        //EndDrawerのstreamがmyUidのgetに先走って実行してエラーになるのを防ぐ処理
+     myUidFuture!.then((uid) {                    // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+      if (uid != null) {
+         matchingProgress = MatchingProgress(myUid: uid);              
+      }
+     });                          
      
-     
-
-
-
-
+                   
   }       
 
 
@@ -236,12 +235,141 @@ class _LoungePageState extends State<LoungePage> {
         ),
       ),
 
-      endDrawer: Drawer(
-        child: Column(children: <Widget>[
-        Container(),
-        Container(),
-        ],),
 
+      endDrawer: Drawer(
+
+        child: 
+          Column(children: <Widget>[
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                     color: Color.fromARGB(255, 199, 199, 199), 
+                     width: 1.0,
+                  )
+                )
+              ),
+              height: 50,
+              width: 200,
+              child: 
+                Center(child: 
+                  Text(
+                    'マッチングの履歴',
+                    style: TextStyle(fontSize: 24),
+
+                )
+              )
+            ),
+            // const Divider(
+            //   height: 10,
+            //   thickness: 1,
+            //   color: Colors.grey,
+            //   indent: 10,
+            //   endIndent: 10,
+            // ),
+
+            FutureBuilder(
+              future: myUidFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();     
+                } else if (snapshot.hasError) {
+                    return Text('エラーが発生しました');
+                } else {            
+                    return StreamBuilder<QuerySnapshot>(                      
+                      stream: UserFirestore.streamHistoryCollection(snapshot.data),
+                      //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                          return Expanded(
+                            child: 
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: 
+                                  ListView.builder(
+                                    itemCount: snapshot.data!.docs.length,                              
+                                    itemBuilder: (context, index) {
+                                      DocumentSnapshot talkuserProf = snapshot.data!.docs[index];
+                                      DateTime createdAt = (talkuserProf['created_at'] as Timestamp).toDate();
+                                      // グループ処理：ザルに通すデータを取得
+                                      
+                                      DateTime now = DateTime.now();
+                                      DateTime today = DateTime(now.year, now.month, now.day); // 夜中の00:00
+                                      DateTime yesterday = today.subtract(Duration(days: 1));
+                                      DateTime oneWeek = today.subtract(Duration(days: 7));
+                                      // DateTime twoWeek = today.subtract(Duration(days: 14));
+                                      // グループ処理：ザルの編み目を作成
+                                      
+                                      // グループ処理：index当該リストをザルに通す                                      
+                                      String dateLabel = '';
+                                      print('createdAt: $createdAt');                                      
+
+                                        if (createdAt.isBefore(oneWeek)) {
+                                              dateLabel = '1週間以上前';
+                                 } else if (createdAt.isAfter(oneWeek)
+                                         && createdAt.isBefore(yesterday)) {
+                                              dateLabel = 'この１週間';
+                                 } else if (createdAt.isAfter(today)
+                                        ||  createdAt.isAtSameMomentAs(today)) {
+                                              dateLabel = '今日';
+                                 } else if (createdAt.isAfter(yesterday)
+                                        ||  createdAt.isAtSameMomentAs(yesterday)) {
+                                              dateLabel = '昨日';
+                                 }
+
+                                      String prevDateLabel = '';
+                                      // グループ処理：index当該リストの1つ前（配置が上）のリストをザルに通す                          
+                                      if (index > 0) {
+                                        DateTime prevCreatedAt = (snapshot.data!
+                                                                          .docs[index - 1]['created_at']
+                                                                           as Timestamp)
+                                                                          .toDate();
+                                        print('prevCreatedAt: $prevCreatedAt');
+
+                                        if (prevCreatedAt.isBefore(oneWeek)) {
+                                              prevDateLabel = '1週間以上前';
+                                 } else if (prevCreatedAt.isAfter(oneWeek)
+                                         && prevCreatedAt.isBefore(yesterday)) {
+                                              prevDateLabel = 'この１週間';
+                                 } else if (prevCreatedAt.isAfter(today)
+                                        ||  prevCreatedAt.isAtSameMomentAs(today)) {
+                                              prevDateLabel = '今日';
+                                 } else if (prevCreatedAt.isAfter(yesterday)
+                                        ||  prevCreatedAt.isAtSameMomentAs(yesterday)) {
+                                              prevDateLabel = '昨日';
+                                 }
+                                      }
+
+                                     
+                                      if (index == 0 || dateLabel != prevDateLabel) {
+                                      // 1番上のリスト or 直上に配置されたリストとdateLabelが異なる場合だけTrue 
+                                        return Column(children: <Widget>[
+                                          Text(
+                                            '---$dateLabel---',
+                                            style: const TextStyle(fontSize: 17),
+                                          ),
+                                          ListTile(
+                                            // leading: Image.network(talkuserProf['user_image_url']),
+                                            title: Text(talkuserProf['user_name']),                                  
+                                          )
+                                        ]);
+
+                                      } else {
+                                        return ListTile(
+                                          // leading: Image.network(talkuserProf['user_image_url']),
+                                          title: Text(talkuserProf['user_name']),                                  
+                                        );
+                                      }
+                                  }),
+                              ),
+                            );
+                        }    
+                          return const Text('まだマッチングの履歴がないようです');
+                  });
+                }
+              } 
+            )
+         ])
       ),
 
       body: Stack(children: <Widget>[

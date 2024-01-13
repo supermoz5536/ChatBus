@@ -206,7 +206,7 @@ class UserFirestore {
 
 
 
-   //QuerySnapshot型について　→  https://sl.bing.net/bQeSPlCC23w                                                                     
+   
    static Stream<QuerySnapshot<Object>> streamUnmatchedUser(String myUid){   //ここからが取得する処理の記述
     try {                                                         
         return _userCollection.where(FieldPath.documentId, isNotEqualTo: myUid)
@@ -221,6 +221,21 @@ class UserFirestore {
         
     }
   }
+
+   static Stream<QuerySnapshot<Object>> streamHistoryCollection(String? myUid){   //ここからが取得する処理の記述
+    try {                                                         
+        return _userCollection.doc(myUid)
+                              .collection('history')
+                              .orderBy('created_at', descending: true)
+                              .snapshots();                              
+
+    } catch(e) {
+        print('streamによる、Historyの参照失敗 ===== $e');
+        return const Stream<QuerySnapshot<Object>>.empty();  // 空のストリームを返す
+        
+    }
+  }
+
 
 
 
@@ -390,14 +405,16 @@ static Future<void> initForMatching (String? myUid,) async{
 }
 
 
-static Future<void> updateHistory (String? myUid, String? talkuserUid) async{
+static Future<void> updateHistory (String? myUid, String? talkuserUid, String? roomId) async{
        DocumentSnapshot docSnapshot = await _userCollection.doc(talkuserUid).get();
        String name = docSnapshot['user_name'];
        String profileImage = docSnapshot['user_image_url'];
 
       await _userCollection.doc(myUid).collection('history').add({
           'user_name': name,
-          'user_image_url': profileImage, 
+          'user_image_url': profileImage,
+          'talkuser_id': talkuserUid,
+          'room_id': roomId,           
           'created_at': FieldValue.serverTimestamp(),          
       });
 }

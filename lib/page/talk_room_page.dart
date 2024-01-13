@@ -26,6 +26,7 @@ class TalkRoomPage extends StatefulWidget {
 }
 
 class _TalkRoomPageState extends State<TalkRoomPage> {
+
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
@@ -73,7 +74,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                  });
                              }); 
 
-        UserFirestore.updateHistory(widget.talkRoom.myUid, widget.talkRoom.talkuserUid);
+        UserFirestore.updateHistory(widget.talkRoom.myUid, widget.talkRoom.talkuserUid, widget.talkRoom.roomId);
 
 
 
@@ -243,7 +244,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                 // matching_progress_pageに戻る時の一連の処理                                                                                                                            
 
                               if (context.mounted) { 
-                                matchingProgress = MatchingProgress(myUid: myUid);   
+                                matchingProgress = MatchingProgress(myUid: widget.talkRoom.myUid);   
                                   Navigator.pushAndRemoveUntil(context,                              //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                     SlideRightRoute(page: MatchingProgressPage(matchingProgress!)),    //遷移先の画面を構築する関数を指定                                                                                                              
                                     (_) => false                               
