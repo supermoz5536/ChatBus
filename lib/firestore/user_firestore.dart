@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/model/user.dart';
 import '../utils/shared_prefs.dart';
 // import 'package:firebase_core/firebase_core.dart';
@@ -17,7 +18,8 @@ class UserFirestore {
         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
 
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
-             print('既存の端末uid = 未登録');
+            print('既存の端末uid = 未登録');
+            String? userImageUrl = await UserFirebaseStorage.getProfImage();
                   final newMyUid = await _userCollection.add({      //DB上に新規アカウント作成
                        'matched_status': true,
                        'room_id': 'none',
@@ -25,7 +27,7 @@ class UserFirestore {
                        'chatting_status': true,
                        'is_lounge': true,
                        'user_name': 'user_name',
-                       'user_image_url': 'user_image_url',
+                       'user_image_url': '$userImageUrl',
                       //  'created_at': FieldValue.serverTimestamp(),
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
@@ -76,7 +78,8 @@ class UserFirestore {
 
                  } else {
                      //DB上に端末保存idと同じidが「ない」場合
-                     //新規アカウント作成 ＆ 端末Uid更新                                                           
+                     //新規アカウント作成 ＆ 端末Uid更新
+                     String? userImageUrl = await UserFirebaseStorage.getProfImage();
                      final newDoc = await _userCollection.add({                      
                           'matched_status': true,                         
                           'room_id': 'none',
@@ -84,7 +87,7 @@ class UserFirestore {
                           'chatting_status': true,
                           'is_lounge': true,
                           'user_name': 'user_name',
-                          'user_image_url': 'user_image_url',                                                   
+                          'user_image_url': '$userImageUrl',                                                  
                            // 'created_at': FieldValue.serverTimestamp(),
                  });        
                      await Shared_Prefes.setUid(newDoc.id);                            
@@ -95,17 +98,18 @@ class UserFirestore {
                  }
                 
              } else {
-               //.getでデータに取得に「失敗」した場合 = 既存の端末Uidはあるが、db上にUidが既に削除されてる場合
-               //新規アカウント作成 ＆ 端末Uid更新
-               final newDoc = await _userCollection.add({                      
-                    'matched_status': true,
-                    'room_id': 'none',
-                    'progress_marker': true,
-                    'chatting_status': true,  
-                    'is_lounge': true,
-                    'user_name': 'user_name',
-                    'user_image_url': 'user_image_url',                                  
-                    // 'created_at': FieldValue.serverTimestamp(),
+                 //.getでデータに取得に「失敗」した場合 = 既存の端末Uidはあるが、db上にUidが既に削除されてる場合
+                 //新規アカウント作成 ＆ 端末Uid更新
+                 String? userImageUrl = await UserFirebaseStorage.getProfImage();
+                 final newDoc = await _userCollection.add({                      
+                      'matched_status': true,
+                      'room_id': 'none',
+                      'progress_marker': true,
+                      'chatting_status': true,  
+                      'is_lounge': true,
+                      'user_name': 'user_name',
+                      'user_image_url': '$userImageUrl',                                  
+                      // 'created_at': FieldValue.serverTimestamp(),
             });        
                await Shared_Prefes.setUid(newDoc.id);                            
                      print('アカウント作成完了');
@@ -232,6 +236,18 @@ class UserFirestore {
     } catch(e) {
         print('streamによる、Historyの参照失敗 ===== $e');
         return const Stream<QuerySnapshot<Object>>.empty();  // 空のストリームを返す
+        
+    }
+  }
+
+
+   static Stream<DocumentSnapshot<Map<String, dynamic>>> streamProfImage(String? myUid){   //ここからが取得する処理の記述
+    try {                                                         
+        return _userCollection.doc(myUid).snapshots();                           
+
+    } catch(e) {
+        print('streamによる、Historyの参照失敗 ===== $e');
+        return const Stream<DocumentSnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す
         
     }
   }

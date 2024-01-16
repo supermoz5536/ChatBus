@@ -15,15 +15,18 @@ class LoungePage extends StatefulWidget {
 
 class _LoungePageState extends State<LoungePage> {
 
-final TextEditingController controller = TextEditingController();
-// TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
-bool isInputEmpty = true;
 String? myUid;
 bool? isDisabled;
-MatchingProgress? matchingProgress;
-var _overlayController1st = OverlayPortalController();
-var _overlayController2nd = OverlayPortalController();
+bool isInputEmpty = true;
 Future<String?>? myUidFuture; 
+MatchingProgress? matchingProgress;
+int? currentIndex;
+// List<Widget> currentScreen = [FilterPage(), MessagePage(), ProfilePage()];
+final _overlayController1st = OverlayPortalController();
+final _overlayController2nd = OverlayPortalController();
+final TextEditingController controller = TextEditingController();
+// TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
+
 
 @override                   
   void initState() {        
@@ -51,12 +54,43 @@ Future<String?>? myUidFuture;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlueAccent,
+      backgroundColor: const Color.fromARGB(255, 252, 252, 252),
 
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 151, 222, 255),
+        leading:  FutureBuilder(
+                    future: myUidFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();     
+                      } else if (snapshot.hasError) {
+                          return Text('エラーが発生しました');
+                      } else {
+                        return StreamBuilder<DocumentSnapshot>(                      
+                      stream: UserFirestore.streamProfImage(snapshot.data),
+                      //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!.exists) {
+                          return  InkWell(
+                            onTap: (){
+                              Scaffold.of(context).openDrawer();},
+                            child: Image.network(
+                              snapshot.data!['user_image_url'],
+                              fit: BoxFit.contain, 
+                            )
+                          );
+                            
+
+                        } else { 
+                          return const Text('画像がありません');
+  
+                      }
+                      }
+                        );}
+                    }),
+
         title: const Text('ラウンジページ'),
         actions: <Widget>[
-
 
           // ■ リクエスト通知ボタン
           OverlayPortal(
@@ -99,9 +133,14 @@ Future<String?>? myUidFuture;
                   );
                 },
             child: IconButton(
-              onPressed: _overlayController1st.toggle,
-              icon: const Icon(Icons.add_outlined))
-            ),          
+               onPressed: _overlayController1st.toggle,
+               icon: const Icon(
+                 Icons.add_outlined,
+                 color: Colors.grey),
+               iconSize: 40,
+               tooltip: '友達リクエストの通知',  
+            )
+          ),          
 
 
           // ■ DMの通知ボタン
@@ -145,23 +184,42 @@ Future<String?>? myUidFuture;
                   );
                 },
             child: IconButton(
-              onPressed: _overlayController2nd.toggle,
-              icon: const Icon(Icons.visibility))
-            ), 
-
+               onPressed: _overlayController2nd.toggle,
+               icon: const Icon(
+                 Icons.visibility,
+                 color: Colors.grey),
+               iconSize: 40,
+               tooltip: '受信メールの通知',
+            )
+          ), 
 
           // ■ マッチングヒストリーの表示ボタン
           Builder(
             builder: (context) {
-              return IconButton(onPressed: (){
-                Scaffold.of(context).openEndDrawer();
-                // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
-                // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
-                // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる
-              }, icon: const Icon(Icons.alarm_off_sharp));
+              return IconButton(
+                onPressed: (){
+                  Scaffold.of(context).openEndDrawer();},
+                icon: const Icon(
+                  Icons.alarm_off_sharp,
+                  color: Colors.grey),
+                  iconSize: 40,
+                  tooltip: 'マッチング履歴の表示',
+                  // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
+                  // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
+                  // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる,                  
+              );
             }
-          ),
-        ],        
+          )
+
+        ],
+
+        bottom: const PreferredSize(
+                  preferredSize: Size.fromHeight(10),
+                  child: Divider(
+                    color: Color.fromARGB(255, 227, 227, 227),
+                    height: 0.5,
+                  )),      
+
       ),
 
 
@@ -252,21 +310,13 @@ Future<String?>? myUidFuture;
               height: 50,
               width: 200,
               child: 
-                Center(child: 
+                const Center(child: 
                   Text(
                     'マッチングの履歴',
                     style: TextStyle(fontSize: 24),
-
                 )
               )
             ),
-            // const Divider(
-            //   height: 10,
-            //   thickness: 1,
-            //   color: Colors.grey,
-            //   indent: 10,
-            //   endIndent: 10,
-            // ),
 
             FutureBuilder(
               future: myUidFuture,
@@ -318,7 +368,7 @@ Future<String?>? myUidFuture;
                                  }
 
                                       String prevDateLabel = '';
-                                      // グループ処理：index当該リストの1つ前（配置が上）のリストをザルに通す                          
+                                      // グループ処理：index当該リストの1つ前（配置が上）のリストをザルに通す
                                       if (index > 0) {
                                         DateTime prevCreatedAt = (snapshot.data!
                                                                           .docs[index - 1]['created_at']
@@ -349,14 +399,17 @@ Future<String?>? myUidFuture;
                                             style: const TextStyle(fontSize: 17),
                                           ),
                                           ListTile(
-                                            // leading: Image.network(talkuserProf['user_image_url']),
+                                            leading: Image.network(talkuserProf['user_image_url']),
                                             title: Text(talkuserProf['user_name']),                                  
                                           )
                                         ]);
 
                                       } else {
                                         return ListTile(
-                                          // leading: Image.network(talkuserProf['user_image_url']),
+                                          leading: InkWell(
+                                            onTap: (){},
+                                            // ■■■■■■ アイコンをクリックした時の処理を記入 ■■■■■■
+                                            child: Image.network(talkuserProf['user_image_url'],)),
                                           title: Text(talkuserProf['user_name']),                                  
                                         );
                                       }
@@ -369,10 +422,12 @@ Future<String?>? myUidFuture;
                 }
               } 
             )
-         ])
+         ]
+         )
       ),
 
-      body: Stack(children: <Widget>[
+      body:
+       Stack(children: <Widget>[
 
 
 
@@ -381,79 +436,144 @@ Future<String?>? myUidFuture;
 
 
 
-      // ■フッター部分
+      // ■フッター部分 
       Column( // column()の縦移動で、画面1番下に配置
             mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
-                  color: Colors.white,
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 250, 250, 250),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0,15), // 上方向への影
+                        blurRadius: 20, // ぼかしの量                      
+                      )
+                    ]
+                  ),
+                  // color: Colors.white,
                   height: 68, // フッター領域の縦幅                  
-                  child: Row(children: [
+                  child: 
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [                      
 
-                      // ■「チャット開始」ボタン
-                      Container(child:
-                        ElevatedButton( 
-                            onPressed: isDisabled! ? null : () async{ 
-                             setState(() {
-                               isDisabled = true;
-                               // 二重タップ防止                                 
-                               // trueにして、タップをブロック
-                             });
+                       // ■「チャット開始」ボタン
+                       SizedBox(
+                        // height: ,
+                        // width: ,
+                          child: ElevatedButton( 
+                              onPressed: isDisabled! ? null : () async{ 
+                              setState(() {
+                                isDisabled = true;
+                                // 二重タップ防止                                 
+                                // trueにして、タップをブロック
+                              });
 
-                              await Future.delayed(
-                              const Duration(milliseconds: 50), //無効にする時間
-                             );
+                                await Future.delayed(
+                                const Duration(milliseconds: 50), //無効にする時間
+                              );
 
-                              if (context.mounted) { 
-                                  Navigator.pushAndRemoveUntil (context,                              
-                                    MaterialPageRoute(
-                                      builder: (context) => MatchingProgressPage(matchingProgress!)),   
-                                    (_) => false                               
-                                  );
-                              }
-                              //   setState(() {
-                              //     isDisabled = false;
-                              //     //入力のタップを解除
-                              // });
-                           },
-                            child: const Text("チャット開始"),
-                           )
-                         ),
+                                if (context.mounted) { 
+                                    Navigator.pushAndRemoveUntil (context,                              
+                                      MaterialPageRoute(
+                                        builder: (context) => MatchingProgressPage(matchingProgress!)),   
+                                      (_) => false                               
+                                    );
+                                }
+                                //   setState(() {
+                                //     isDisabled = false;
+                                //     //入力のタップを解除
+                                // });
+                            },
+                              child: const Text(
+                                "チャット開始",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                ),
+                                
+                                ),
+                            )
+                          ),
+
+                          const Spacer(),
+
+                       // 検索設定アイコン
+                       IconButton(
+                          icon: const Icon(
+                            Icons.travel_explore_outlined,
+                            color: Colors.grey),
+                          iconSize: 45,
+                          tooltip: 'マッチングしたい相手の設定ができます',
+                          onPressed: (){},
+                       ),
+
+                          const Spacer(),                       
+
+                       // DMアイコン
+                       IconButton(
+                          icon: const Icon(
+                            Icons.email_outlined,
+                            color: Colors.grey),
+                          iconSize: 45,
+                          tooltip: '友達から受信したメールの一覧が見られます',
+                          onPressed: (){},
+                       ),
+
+                          const Spacer(),                       
+
+                       // 友達アイコン
+                       IconButton(
+                          icon: const Icon(
+                            Icons.people_alt_outlined,
+                            color: Colors.grey),
+                          iconSize: 45,
+                          tooltip: '友達リストが見られます',
+                          onPressed: (){},
+                       ),
+
+                          const Spacer(),                       
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ), 
+        );
+      }
+    }
+
+
+
+
+
 
                       // ■入力フィールド
-                      Expanded(child: Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
-                         padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
+                      // Expanded(child: 
+                      //     Padding( // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
+                      //     padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
-                         child: TextField(               
-                                    controller: controller,          // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-                                    onChanged: (value){              // TextFiledの値(value)を引数
-                                                setState(() {        // valueに変化があったら、応答関数で状態を更新
-                                                isInputEmpty = value.isEmpty;  // isEmptyメソッドは、bool値を返す
-                                                });
-                                    },
-                                    decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Color.fromARGB(255, 244, 241, 241),
-                                    contentPadding: EdgeInsets.only(left: 10),
-                                    border: InputBorder.none,                                  
-                                    ),
-                                  ),
-                               )), 
+                      //     child: TextField(               
+                      //               controller: controller,          // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                      //               onChanged: (value){              // TextFiledの値(value)を引数
+                      //                           setState(() {        // valueに変化があったら、応答関数で状態を更新
+                      //                           isInputEmpty = value.isEmpty;  // isEmptyメソッドは、bool値を返す
+                      //                           });
+                      //               },
+                      //               decoration: const InputDecoration(
+                      //               filled: true,
+                      //               fillColor: Color.fromARGB(255, 244, 241, 241),
+                      //               contentPadding: EdgeInsets.only(left: 10),
+                      //               border: InputBorder.none,                                  
+                      //               ),
+                      //             ),
+                      //          )), 
 
                       //■送信アイコン
-                      IconButton (onPressed: (){  
-                                  controller.clear(); // 送信すると文字を消す
-                                  }, 
-                                  icon: Icon(Icons.send,
-                                  color: isInputEmpty? Colors.grey : Colors.blue,
-                                  ))
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ), 
-                  );
-                }
-              }
+                      // IconButton (onPressed: (){  
+                      //             controller.clear(); // 送信すると文字を消す
+                      //             }, 
+                      //             icon: Icon(Icons.send,
+                      //             color: isInputEmpty? Colors.grey : Colors.blue,
+                      //             ))
