@@ -56,8 +56,8 @@ final TextEditingController controller = TextEditingController();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 252, 252, 252),
 
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 151, 222, 255),
+      appBar: AppBar( 
+        backgroundColor: Colors.white,        
         leading:  FutureBuilder(
                     future: myUidFuture,
                     builder: (context, snapshot) {
@@ -67,31 +67,56 @@ final TextEditingController controller = TextEditingController();
                           return Text('エラーが発生しました');
                       } else {
                         return StreamBuilder<DocumentSnapshot>(                      
-                      stream: UserFirestore.streamProfImage(snapshot.data),
-                      //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData && snapshot.data!.exists) {
-                          return  InkWell(
-                            onTap: (){
-                              Scaffold.of(context).openDrawer();},
-                            child: Image.network(
-                              snapshot.data!['user_image_url'],
-                              fit: BoxFit.contain, 
-                            )
-                          );
-                            
+                          stream: UserFirestore.streamProfImage(snapshot.data),
+                          //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data!.exists) {
+                              return  Padding(
+                                padding: const EdgeInsets.only(top: 8, left: 8),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  shape: const CircleBorder(),
+                                      child: Ink(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: NetworkImage(snapshot.data!['user_image_url']),
+                                            fit: BoxFit.cover,
+                                            // BoxFith は画像の表示方法の制御
+                                            // cover は満遍なく埋める
+                                          ),
+                                        ),
+                                        child: InkWell(
+                                          splashColor: Colors.black.withOpacity(0.1),
+                                          radius: 100,
+                                          customBorder: const CircleBorder(),
+                                          onTap: (){ Scaffold.of(context).openDrawer();},
+                                          child: const SizedBox(width: 200, height: 200),
+                                          // InkWellの有効範囲はchildのWidgetの範囲に相当するので
+                                          // タップの有効領域確保のために、空のSizedBoxを設定
+                                        ),
+                                      ),
+                                ),
+                              );
 
-                        } else { 
-                          return const Text('画像がありません');
-  
-                      }
-                      }
-                        );}
-                    }),
+                            } else { 
+                              return const Text('画像がありません');
+                            }
+                          }
+                         );}
+                  }),
 
-        title: const Text('ラウンジページ'),
+        title: const  Text('ラウンジページ'),
+        centerTitle: true,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(15),
+          child: Divider(
+            color: Color.fromARGB(255, 227, 227, 227),
+            height: 0.5,
+          )
+        ),  
+                
         actions: <Widget>[
-
           // ■ リクエスト通知ボタン
           OverlayPortal(
             controller: _overlayController1st, 
@@ -135,9 +160,9 @@ final TextEditingController controller = TextEditingController();
             child: IconButton(
                onPressed: _overlayController1st.toggle,
                icon: const Icon(
-                 Icons.add_outlined,
+                 Icons.person_add_alt_outlined,
                  color: Colors.grey),
-               iconSize: 40,
+               iconSize: 45,
                tooltip: '友達リクエストの通知',  
             )
           ),          
@@ -186,9 +211,9 @@ final TextEditingController controller = TextEditingController();
             child: IconButton(
                onPressed: _overlayController2nd.toggle,
                icon: const Icon(
-                 Icons.visibility,
+                 Icons.notifications_none_outlined,
                  color: Colors.grey),
-               iconSize: 40,
+               iconSize: 45,
                tooltip: '受信メールの通知',
             )
           ), 
@@ -200,9 +225,9 @@ final TextEditingController controller = TextEditingController();
                 onPressed: (){
                   Scaffold.of(context).openEndDrawer();},
                 icon: const Icon(
-                  Icons.alarm_off_sharp,
+                  Icons.contacts_outlined,
                   color: Colors.grey),
-                  iconSize: 40,
+                  iconSize: 37,
                   tooltip: 'マッチング履歴の表示',
                   // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
                   // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
@@ -210,16 +235,7 @@ final TextEditingController controller = TextEditingController();
               );
             }
           )
-
-        ],
-
-        bottom: const PreferredSize(
-                  preferredSize: Size.fromHeight(10),
-                  child: Divider(
-                    color: Color.fromARGB(255, 227, 227, 227),
-                    height: 0.5,
-                  )),      
-
+        ],   
       ),
 
 
