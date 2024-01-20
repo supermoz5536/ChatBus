@@ -16,7 +16,7 @@ import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
 class TalkRoomPage extends StatefulWidget {      
-  final TalkRoom talkRoom;                         
+  final TalkRoom talkRoom;
   const TalkRoomPage(this.talkRoom, {super.key});  //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
 //10,11行で、TalkRoomPageクラスのインスタンス変数に、ルームの基本情報型を備えた変数talkRoomが設定された
 //画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
@@ -85,7 +85,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlueAccent,
+      backgroundColor: const Color.fromARGB(255, 188, 234, 255),
       appBar: AppBar(
         title: const Text('トークルーム'),  //statefulWigetで定義した変数talkRoomは、Widget. の形にしないとStateクラスで使うことができない。
         ),  

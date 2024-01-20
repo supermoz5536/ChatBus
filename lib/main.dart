@@ -3,17 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 
-void main() async{ 
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );  
-  await Shared_Prefes.setPrefsInstance();  //端末へのユーザーデータ保存メソッドを使うため、それを定義してるクラス「Shared_Prefes」のインスタンスをまず生成
+  );
+  await Shared_Prefes
+      .setPrefsInstance(); //端末へのユーザーデータ保存メソッドを使うため、それを定義してるクラス「Shared_Prefes」のインスタンスをまず生成
   // String? uid = Shared_Prefes.fetchUid(); //fetchuid()で端末にユーザー情報が保存されてるかどうか、戻り値を確認して
   // if(uid == null) await UserFirestore.createUser();  //戻り値が空、つまり保存データがなければ、createUserを実行して、DBへのアカウント情報のプッシュ、トークルーム作成、端末へのuidの保存を行う
   // // await RoomFirestore.fetchJoinedRooms();
-  runApp(const MyApp());
+  runApp(DevicePreview(
+    enabled: !kReleaseMode,
+    builder: (context) => const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -21,13 +27,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      useInheritedMediaQuery: true,
+      locale: DevicePreview.locale(context),
+      builder: DevicePreview.appBuilder,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blueGrey,
+        brightness: Brightness.light,
         useMaterial3: true,
       ),
       home: const LoungePage(),
     );
   }
 }
-

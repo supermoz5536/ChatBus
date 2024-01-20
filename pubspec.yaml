@@ -42,6 +42,7 @@ dependencies:
   cloud_functions: ^4.5.8
   synchronized: any
   firebase_storage: ^11.6.0
+  device_preview: ^1.1.0
 
 dev_dependencies:
   flutter_test:
