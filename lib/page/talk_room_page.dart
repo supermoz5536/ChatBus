@@ -73,14 +73,17 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
       });
     });
 
-    UserFirestore.updateHistory(widget.talkRoom.myUid,
-        widget.talkRoom.talkuserUid, widget.talkRoom.roomId);
+    UserFirestore.updateHistory(
+      widget.talkRoom.myUid,
+      widget.talkRoom.talkuserUid,
+      widget.talkRoom.roomId,
+    );
   } // initState
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 188, 234, 255),
+      backgroundColor: Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
         title: const Text('トークルーム'),
       ),
@@ -97,7 +100,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
                     child: ListView.builder(
-                        physics: RangeMaintainingScrollPhysics(),
+                        physics: const RangeMaintainingScrollPhysics(),
                         //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true,
                         //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
@@ -123,8 +126,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                               //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
                               );
 
+                          // 吹き出し部分全体の環境設定
                           return Padding(
-                            //メッセージ吹き出し部分
                             padding: const EdgeInsets.only(
                                 top: 20, left: 11, right: 11, bottom: 20),
                             child: Row(
@@ -133,50 +136,101 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
                               children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                        constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.6), //この書き方で今表示可能な画面幅を取得できる
+                                // 吹き出し部分全体の「背景色」と「丸み」の設定
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: message.isMe
+                                          ? const Color.fromARGB(255, 201, 238, 255)
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(15), // 角の丸みの設定
+                                      border: Border.all(
+                                        color: const Color.fromARGB(255, 195, 195, 195))),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // メッセージ表示の上部分
+                                      Container(
+                                        // 境界線のインデント処理のためのサブ記述
                                         decoration: BoxDecoration(
                                             color: message.isMe
-                                                ? Colors.green
+                                                ? const Color.fromARGB(
+                                                    255, 201, 238, 255)
                                                 : Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(15)),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 18, vertical: 6),
-                                        child: Text(message.message)),
-                                    const Divider(
-                                      height: 0,
-                                      color: Colors.black,
-                                      thickness: 2,
-                                      indent: 7,
-                                      endIndent: 7,
-                                    ),
-                                    Container(
-                                        constraints: BoxConstraints(
-                                            maxWidth: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.6), //この書き方で今表示可能な画面幅を取得できる
+                                                const BorderRadius.only(
+                                              topLeft: Radius.circular(15),
+                                              topRight: Radius.circular(15),
+                                            )),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8, right: 8),
+
+                                          //メイン記述
+                                          child: Container(
+                                              constraints: BoxConstraints(
+                                                  maxWidth: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.6), //この書き方で今表示可能な画面幅を取得できる
+                                              decoration: BoxDecoration(
+                                                  border: const Border(
+                                                      bottom: BorderSide(
+                                                          color: Color.fromARGB(255, 199, 199, 199),
+                                                          width: 1)), // 上下部境界線の縦の太さ
+                                                  color: message.isMe
+                                                      ? const Color.fromARGB(255, 201, 238, 255)
+                                                      : Colors.white,
+                                                  borderRadius: const BorderRadius.only(
+                                                      topLeft: Radius.circular(15),
+                                                      topRight: Radius.circular(15))),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 18,
+                                                      vertical: 6),
+                                              child: Text(message.message)),
+                                        ),
+                                      ),
+
+                                      //メッセージ表示の下部分
+                                      Container(
+                                        // 境界線のインデント処理のためのサブ記述
                                         decoration: BoxDecoration(
                                             color: message.isMe
-                                                ? Colors.green
+                                                ? const Color.fromARGB(255, 201, 238, 255)
                                                 : Colors.white,
                                             borderRadius:
-                                                BorderRadius.circular(15)),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 18, vertical: 6),
-                                        child: Text(message.message))
-                                  ],
+                                                const BorderRadius.only(
+                                              bottomLeft: Radius.circular(15),
+                                              bottomRight: Radius.circular(15),
+                                            )),
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 8, right: 8),
+
+                                          // メイン記述
+                                          child: Container(
+                                              constraints: BoxConstraints(
+                                                  maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                  //この書き方で今表示可能な画面幅を取得できる
+                                              decoration: BoxDecoration(
+                                                  color: message.isMe
+                                                      ? const Color.fromARGB(255, 201, 238, 255,)
+                                                      : Colors.white,
+                                                  borderRadius: const BorderRadius.only(
+                                                      bottomLeft: Radius.circular(15,),
+                                                      bottomRight: Radius.circular(15,),),),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 18,
+                                                      vertical: 6),
+                                              child: Text(message.message)),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                Text(intl.DateFormat('HH:mm')
-                                    .format(message.sendTime.toDate())),
+                                Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate())),
                                 //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
                                 //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
                               ],
