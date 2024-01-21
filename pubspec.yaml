@@ -43,6 +43,9 @@ dependencies:
   synchronized: any
   firebase_storage: ^11.6.0
   device_preview: ^1.1.0
+  http: ^0.13.3
+  deepl_dart: ^1.2.0
+
 
 dev_dependencies:
   flutter_test:
