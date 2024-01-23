@@ -85,7 +85,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 246, 246, 246),
+      backgroundColor: const Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
         title: const Text('トークルーム'),
       ),
@@ -182,7 +182,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 18,
                                                         vertical: 6),
-                                                child: Text(message.message)),
+                                                child: Text(message.message)
+                                                ),
                                           ),
                                         ),
                                       ),
