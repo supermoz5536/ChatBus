@@ -128,6 +128,7 @@ class RoomFirestore {
       final messageCollection = _roomCollection.doc(roomId).collection('message'); 
       await messageCollection.add({
         'message': message,
+        'translated_message': '',
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
       });

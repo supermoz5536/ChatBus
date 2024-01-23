@@ -50,7 +50,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                       
                           final doc = snapshot.data!.docs[index];  //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる                                                       
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
-                          final HistoryMessage historyMessage = HistoryMessage(     //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
+                          final Message message = Message(     //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
                               message: data['message'], 
                               translatedMessage: data['translated_message'], 
                               messageId: doc.id,                              
@@ -64,14 +64,14 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                             padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
-                              textDirection: historyMessage.isMe
+                              textDirection: message.isMe
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
                               children: [
                                 // 吹き出し部分全体の「背景色」と「丸み」の設定
                                 Container(
                                   decoration: BoxDecoration(
-                                      color: historyMessage.isMe
+                                      color: message.isMe
                                           ? const Color.fromARGB(255, 201, 238, 255)
                                           : Colors.white,
                                       borderRadius: BorderRadius.circular(15), // 角の丸みの設定
@@ -85,7 +85,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                       Container(
                                         // 境界線のインデント処理のためのサブ記述
                                         decoration: BoxDecoration(
-                                            color: historyMessage.isMe
+                                            color: message.isMe
                                                 ? const Color.fromARGB(255, 201, 238, 255)
                                                 : Colors.white,
                                             borderRadius:
@@ -110,7 +110,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                                             width: 1
                                                             ),
                                                             ), // 上下部境界線の縦の太さ
-                                                    color: historyMessage.isMe
+                                                    color: message.isMe
                                                         ? const Color.fromARGB(255, 201, 238, 255)
                                                         : Colors.white,
                                                     borderRadius: const BorderRadius.only(
@@ -120,7 +120,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 18,
                                                         vertical: 6),
-                                                child: Text(historyMessage.message),
+                                                child: Text(message.message),
                                                 ),
                                           ),
                                         ),
@@ -131,7 +131,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                       Container(
                                         // 境界線のインデント処理のためのサブ記述
                                         decoration: BoxDecoration(
-                                            color: historyMessage.isMe
+                                            color: message.isMe
                                                 ? const Color.fromARGB(255, 201, 238, 255)
                                                 : Colors.white,
                                             borderRadius:
@@ -156,7 +156,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                                             width: 1
                                                             ),
                                                             ), // 上下部境界線の縦の太さ
-                                                    color: historyMessage.isMe
+                                                    color: message.isMe
                                                         ? const Color.fromARGB(255, 201, 238, 255)
                                                         : Colors.white,
                                                     borderRadius: const BorderRadius.only(
@@ -166,9 +166,9 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 18,
                                                         vertical: 6),
-                                                    child: historyMessage.isMe == true
+                                                    child: message.isMe == true
                                                             ? null
-                                                            : Text(historyMessage.translatedMessage),
+                                                            : Text(message.translatedMessage),
                                             ),
                                           ),
                                         )
@@ -176,7 +176,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                                     ],
                                   ),
                                 ),
-                                Text(intl.DateFormat('HH:mm').format(historyMessage.sendTime.toDate())),
+                                Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate())),
                                 //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
                                 //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
                               ],

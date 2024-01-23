@@ -112,6 +112,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
                                                   message: data['message'],
+                                                  translatedMessage: data['translated_message'], 
                                                   messageId: doc.id,
                                                   isMe: Shared_Prefes.fetchUid() == data['sender_id'],
                                                   sendTime: data['send_time']
@@ -140,12 +141,11 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                       border: Border.all(
                                         color: const Color.fromARGB(255, 195, 195, 195))),
                                   child: Column(
-                                    crossAxisAlignment:CrossAxisAlignment.start,
                                     children: [
 
                                       // メッセージ表示の上部分
                                       Container(
-                                        // 境界線のインデント処理のためのサブ記述
+                                        // 境界線のインデント処理のためのサブ記述 
                                         decoration: BoxDecoration(
                                             color: message.isMe
                                                 ? const Color.fromARGB(255, 201, 238, 255)
@@ -156,12 +156,12 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                               topRight: Radius.circular(15),
                                             )),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 8, right: 8),
+                                          padding: const EdgeInsets.only(left: 6, right: 6),
 
                                           //メイン記述: 上部分
                                           child: IntrinsicWidth(
                                             child: Container(
+                                              alignment: Alignment.center,
                                                 constraints: BoxConstraints(
                                                     maxWidth: MediaQuery.of(context).size.width *0.6), 
                                                     //この書き方で今表示可能な画面幅を取得できる
@@ -180,7 +180,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                         topRight: Radius.circular(15))),
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                        horizontal: 18,
+                                                        horizontal: 10,
                                                         vertical: 6),
                                                 child: Text(message.message)
                                                 ),
@@ -202,45 +202,55 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                               bottomRight: Radius.circular(15),
                                             )),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 8, right: 8),
+                                          padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
+                                             top: 8, bottom: 8, left: 10, right: 10
+                                             ),
 
                                           // メイン記述: 下部分
-                                          child: FutureBuilder(
-                                            future: futureTranslation,
-                                            builder: (context, AsyncSnapshot<String> translationSnapshot) {
-                                              if (translationSnapshot.hasData){
-                                                if (translationSnapshot.connectionState == ConnectionState.waiting) {
-                                                  return const CircularProgressIndicator();
-                                                }
-                                                  RoomFirestore.updateTranslatedMessage(
-                                                    widget.talkRoom.roomId,
-                                                    message.messageId,
-                                                    translationSnapshot.data!,
-                                                  );
-                                              return IntrinsicWidth(
-                                                child: Container(
-                                                    constraints: BoxConstraints(
-                                                        maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                        //この書き方で今表示可能な画面幅を取得できる
-                                                    decoration: BoxDecoration(
-                                                        color: message.isMe
-                                                            ? const Color.fromARGB(255, 201, 238, 255,)
-                                                            : Colors.white,
-                                                        borderRadius: const BorderRadius.only(
-                                                            bottomLeft: Radius.circular(15,),
-                                                            bottomRight: Radius.circular(15,),),),
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                            horizontal: 18,
-                                                            vertical: 6),
-                                                    child: message.isMe == true
-                                                            ? null
-                                                            : Text(translationSnapshot.data!)
-                                                            ),
-                                              );
-                                              } else {
-                                                return const Text('');
+                                          child: message.isMe 
+                                          ? const Text('')
+                                          : message.translatedMessage != ''   
+                                             ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
+                                               child: Container(
+                                                   constraints: BoxConstraints(
+                                                   maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                   color: Colors.white,
+                                                   child: Text(message.translatedMessage)))
+                                             : FutureBuilder( // 翻訳済みmessageがdbに "ない" 場合
+                                                  future: futureTranslation,
+                                                  builder: (context, AsyncSnapshot<String> translationSnapshot) {
+                                                    if (translationSnapshot.hasData){
+                                                      if (translationSnapshot.connectionState == ConnectionState.waiting) {
+                                                        // return const CircularProgressIndicator();
+                                                        return const Text('');
+                                                      }
+                                                        RoomFirestore.updateTranslatedMessage(
+                                                          widget.talkRoom.roomId,
+                                                          message.messageId,
+                                                          translationSnapshot.data!,
+                                                        );
+                                                    return IntrinsicWidth(
+                                                      child: Container(
+                                                          constraints: BoxConstraints(
+                                                              maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                              //この書き方で今表示可能な画面幅を取得できる
+                                                          decoration: BoxDecoration(
+                                                              color: message.isMe
+                                                                  ? const Color.fromARGB(255, 201, 238, 255,)
+                                                                  : Colors.white,
+                                                              borderRadius: const BorderRadius.only(
+                                                                  bottomLeft: Radius.circular(15,),
+                                                                  bottomRight: Radius.circular(15,))),
+                                                          padding: const EdgeInsets.symmetric(
+                                                                     horizontal: 18,
+                                                                     vertical: 6),
+                                                          child: message.isMe == true
+                                                                  ? null
+                                                                  : Text(translationSnapshot.data!)
+                                                      ),
+                                                    );
+                                                    } else {
+                                                      return const Text('');
                                               }
                                             }
                                           ),
