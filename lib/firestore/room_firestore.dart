@@ -53,7 +53,9 @@ class RoomFirestore {
   static Future<String?> getRoomMember(String? myUid, String? roomId) async {
     // print('getRoomMember関数の実行確認');
     try {
+      // ■■■■■■■■■■■■■■■■■■論理エラー頻出ポイント■■■■■■■■■■■■■■■■■■■■■■
       DocumentSnapshot docSnapshot = await _roomCollection.doc(roomId).get();
+      // ■■■■■■■■■■■■■■■■■■論理エラー頻出ポイント■■■■■■■■■■■■■■■■■■■■■■
 
       if (docSnapshot.exists) {
         Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;

@@ -1,7 +1,8 @@
 // FirestoreとCloud Functionsは、各々異なるサーバー上で動作している。
-// Firestore：NoSQL型のdbで、データの保存と取得を担当一方
+// Firestore：NoSQL型のdbで、データの保存と取得を担当
 // Cloud Functions：サーバーレスのコンピューティングサービスで、特定のイベント（Firestoreのデータ変更時など）に反応して関数を実行
-
+const axios = require("axios");
+// Axiosライブラリをインポート（HTTPリクエストを行うために使用）
 const functions = require("firebase-functions");
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 
@@ -15,6 +16,32 @@ initializeApp(); //
 // Firebase Admin SDKの初期化がされた時に
 // Firestoreのインスタンスが作成され
 // メモリにロード（格納）される
+
+// DeepL APIを呼び出すためのFirebase Functionを定義
+exports.translateDeepL = functions.https.onCall(async (data, context) => {
+  // DeepL APIのエンドポイントURL
+  const endpoint = "https://api-free.deepl.com/v2/translate";
+  // あなたのDeepL APIキーを設定
+  const apiKey = "d19b69ea-49a6-ef93-b2cd-dd8f538f00d2:fx";
+
+  // DeepL APIに送信するパラメータを設定
+  const params = new URLSearchParams();
+  params.append("auth_key", apiKey); // 認証用のAPIキー
+  params.append("text", data.text); // 翻訳するテキスト
+  params.append("target_lang", data.target_lang); // 目的の言語
+  if (["DE", "FR", "IT", "ES", "NL", "PL", "PT-BR", "PT-PT", "JA", "RU"]
+      .includes(data.target_lang)) {
+    params.append("formality", "less"); // カジュアルな翻訳スタイルを指定
+  }
+  // DeepL APIへのPOSTリクエストを実行し、結果を取得
+  try {
+    const response = await axios.post(endpoint, params);
+    return response.data; // 翻訳結果を返却
+  } catch (error) {
+    // エラー発生時にはFirebaseのエラーをスロー
+    throw new functions.https.HttpsError("internal", error.message);
+  }
+});
 
 exports.runTransaction = functions.https.onCall(async (data, context) => {
 // onCallはクライアントから直接呼び出し可能関数の作成するメソッド

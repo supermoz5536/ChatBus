@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
@@ -28,6 +29,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
+  Future<String>? futureTranslation;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final TextEditingController controller = TextEditingController();
@@ -99,37 +101,28 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                 if (snapshot.hasData) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
+
                     child: ListView.builder(
-                        physics: const RangeMaintainingScrollPhysics(),
-                        //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
-                        shrinkWrap: true,
-                        //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
-                        reverse: true,
-                        //スクロールがした始まりで上に滑っていく設定になる
+                        physics: const RangeMaintainingScrollPhysics(), //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
+                        shrinkWrap: true, //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
+                        reverse: true, //スクロールがした始まりで上に滑っていく設定になる
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (conxtext, index) {
-                          //ListViewの定型パターン
-
-                          final doc = snapshot.data!.docs[index];
-                          //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
-                          final Map<String, dynamic> data =
-                              doc.data() as Map<String, dynamic>;
-                          //これでオブジェクト型をMap<String dynamic>型に変換
+                          final doc = snapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
+                          final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
-                              // Message()でMessageクラスのコンストラクタを呼び出し
-                              // 変数のmessageにそのインスタンスを代入してる
-                              message: data['message'],
-                              isMe:
-                                  Shared_Prefes.fetchUid() == data['sender_id'],
-                              sendTime: data['send_time']
-                              //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
-                              //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
-                              );
+                                                  message: data['message'],
+                                                  isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                  sendTime: data['send_time']
+                                                  );
+                                                  //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
+                                                  //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
+                          futureTranslation = CloudFunctions.translateDeepL(message.message, 'ja',);
+                                                  
 
                           // 吹き出し部分全体の環境設定
                           return Padding(
-                            padding: const EdgeInsets.only(
-                                top: 20, left: 11, right: 11, bottom: 20),
+                            padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               textDirection: message.isMe
@@ -146,16 +139,15 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                       border: Border.all(
                                         color: const Color.fromARGB(255, 195, 195, 195))),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment:CrossAxisAlignment.start,
                                     children: [
+
                                       // メッセージ表示の上部分
                                       Container(
                                         // 境界線のインデント処理のためのサブ記述
                                         decoration: BoxDecoration(
                                             color: message.isMe
-                                                ? const Color.fromARGB(
-                                                    255, 201, 238, 255)
+                                                ? const Color.fromARGB(255, 201, 238, 255)
                                                 : Colors.white,
                                             borderRadius:
                                                 const BorderRadius.only(
@@ -166,31 +158,34 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                           padding: const EdgeInsets.only(
                                               left: 8, right: 8),
 
-                                          //メイン記述
-                                          child: Container(
-                                              constraints: BoxConstraints(
-                                                  maxWidth: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.6), //この書き方で今表示可能な画面幅を取得できる
-                                              decoration: BoxDecoration(
-                                                  border: const Border(
-                                                      bottom: BorderSide(
-                                                          color: Color.fromARGB(255, 199, 199, 199),
-                                                          width: 1)), // 上下部境界線の縦の太さ
-                                                  color: message.isMe
-                                                      ? const Color.fromARGB(255, 201, 238, 255)
-                                                      : Colors.white,
-                                                  borderRadius: const BorderRadius.only(
-                                                      topLeft: Radius.circular(15),
-                                                      topRight: Radius.circular(15))),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 18,
-                                                      vertical: 6),
-                                              child: Text(message.message)),
+                                          //メイン記述: 上部分
+                                          child: IntrinsicWidth(
+                                            child: Container(
+                                                constraints: BoxConstraints(
+                                                    maxWidth: MediaQuery.of(context).size.width *0.6), 
+                                                    //この書き方で今表示可能な画面幅を取得できる
+                                                decoration: BoxDecoration(
+                                                    border: const Border(
+                                                        bottom: BorderSide(
+                                                            color: Color.fromARGB(255, 199, 199, 199),
+                                                            width: 1
+                                                            ),
+                                                            ), // 上下部境界線の縦の太さ
+                                                    color: message.isMe
+                                                        ? const Color.fromARGB(255, 201, 238, 255)
+                                                        : Colors.white,
+                                                    borderRadius: const BorderRadius.only(
+                                                        topLeft: Radius.circular(15),
+                                                        topRight: Radius.circular(15))),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 18,
+                                                        vertical: 6),
+                                                child: Text(message.message)),
+                                          ),
                                         ),
                                       ),
+
 
                                       //メッセージ表示の下部分
                                       Container(
@@ -208,23 +203,39 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                           padding: const EdgeInsets.only(
                                               left: 8, right: 8),
 
-                                          // メイン記述
-                                          child: Container(
-                                              constraints: BoxConstraints(
-                                                  maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                  //この書き方で今表示可能な画面幅を取得できる
-                                              decoration: BoxDecoration(
-                                                  color: message.isMe
-                                                      ? const Color.fromARGB(255, 201, 238, 255,)
-                                                      : Colors.white,
-                                                  borderRadius: const BorderRadius.only(
-                                                      bottomLeft: Radius.circular(15,),
-                                                      bottomRight: Radius.circular(15,),),),
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 18,
-                                                      vertical: 6),
-                                              child: Text(message.message)),
+                                          // メイン記述: 下部分
+                                          child: FutureBuilder(
+                                            future: futureTranslation,
+                                            builder: (context, AsyncSnapshot<String> translationSnapshot) {
+                                              if (translationSnapshot.hasData){
+                                                if (translationSnapshot.connectionState == ConnectionState.waiting) {
+                                                  return const CircularProgressIndicator();
+                                                }
+                                              return IntrinsicWidth(
+                                                child: Container(
+                                                    constraints: BoxConstraints(
+                                                        maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                        //この書き方で今表示可能な画面幅を取得できる
+                                                    decoration: BoxDecoration(
+                                                        color: message.isMe
+                                                            ? const Color.fromARGB(255, 201, 238, 255,)
+                                                            : Colors.white,
+                                                        borderRadius: const BorderRadius.only(
+                                                            bottomLeft: Radius.circular(15,),
+                                                            bottomRight: Radius.circular(15,),),),
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                            horizontal: 18,
+                                                            vertical: 6),
+                                                    child: message.isMe == true
+                                                            ? null
+                                                            : Text(translationSnapshot.data!)),
+                                              );
+                                              } else {
+                                                return const Text('');
+                                              }
+                                            }
+                                          ),
                                         ),
                                       )
                                     ],
