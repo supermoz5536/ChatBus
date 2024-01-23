@@ -42,6 +42,7 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;  //これでオブジェクト型をMap<String dynamic>型に変換                                                                                                               
                           final Message message = Message(     //Message()でMessageクラスのコンストラクタを呼び出し、変数のmessageにそのインスタンスを代入してる
                               message: data['message'], 
+                              messageId: doc.id,                              
                               isMe: Shared_Prefes.fetchUid() == data['sender_id'], //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
                               sendTime: data['send_time']
                               //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。

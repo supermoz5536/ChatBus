@@ -112,6 +112,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
                                                   message: data['message'],
+                                                  messageId: doc.id,
                                                   isMe: Shared_Prefes.fetchUid() == data['sender_id'],
                                                   sendTime: data['send_time']
                                                   );
@@ -211,6 +212,11 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                 if (translationSnapshot.connectionState == ConnectionState.waiting) {
                                                   return const CircularProgressIndicator();
                                                 }
+                                                  RoomFirestore.updateTranslatedMessage(
+                                                    widget.talkRoom.roomId,
+                                                    message.messageId,
+                                                    translationSnapshot.data!,
+                                                  );
                                               return IntrinsicWidth(
                                                 child: Container(
                                                     constraints: BoxConstraints(
@@ -229,7 +235,8 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                             vertical: 6),
                                                     child: message.isMe == true
                                                             ? null
-                                                            : Text(translationSnapshot.data!)),
+                                                            : Text(translationSnapshot.data!)
+                                                            ),
                                               );
                                               } else {
                                                 return const Text('');
@@ -451,3 +458,5 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
     );
   }
 }
+
+
