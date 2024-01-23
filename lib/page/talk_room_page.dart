@@ -156,7 +156,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                               topRight: Radius.circular(15),
                                             )),
                                         child: Padding(
-                                          padding: const EdgeInsets.only(left: 6, right: 6),
+                                          padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
 
                                           //メイン記述: 上部分
                                           child: IntrinsicWidth(
