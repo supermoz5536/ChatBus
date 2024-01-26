@@ -1,26 +1,35 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/model/user.dart';
+import 'package:udemy_copy/utils/http_functions.dart';
 import '../utils/shared_prefs.dart';
+import 'dart:ui' as ui;
+
 // import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/widgets.dart';
 
 class UserFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore.instance;
-      //FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
+  //FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
   static final _userCollection = _firebasefirestoreInstance.collection('user');
-      //上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
+  //上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
 
 
-  static Future<String?> getAccount() async{                      //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
+  //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
+  static Future<String?> getAccount() async{                      
   try {
-        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();      //端末保存uidの取得
+        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        String? deviceLanguage = ui.window.locale.languageCode;
+        String? ip = await Http.getPublicIPAddress();
+        String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+  
 
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
             print('既存の端末uid = 未登録');
             String? userImageUrl = await UserFirebaseStorage.getProfImage();
-                  final newMyUid = await _userCollection.add({      //DB上に新規アカウント作成
+                  final newMyUid = await _userCollection.add({     
                        'matched_status': true,
                        'room_id': 'none',
                        'progress_marker': true,
@@ -28,6 +37,8 @@ class UserFirestore {
                        'is_lounge': true,
                        'user_name': 'user_name',
                        'user_image_url': '$userImageUrl',
+                       'language': deviceLanguage,
+                       'country': deviceCountry,                       
                       //  'created_at': FieldValue.serverTimestamp(),
                   });
                         // Firestoreから取得したタイムスタンプをミリ秒単位で表示
@@ -81,14 +92,16 @@ class UserFirestore {
                      //新規アカウント作成 ＆ 端末Uid更新
                      String? userImageUrl = await UserFirebaseStorage.getProfImage();
                      final newDoc = await _userCollection.add({                      
-                          'matched_status': true,                         
-                          'room_id': 'none',
-                          'progress_marker': true,
-                          'chatting_status': true,
-                          'is_lounge': true,
-                          'user_name': 'user_name',
-                          'user_image_url': '$userImageUrl',                                                  
-                           // 'created_at': FieldValue.serverTimestamp(),
+                       'matched_status': true,
+                       'room_id': 'none',
+                       'progress_marker': true,
+                       'chatting_status': true,
+                       'is_lounge': true,
+                       'user_name': 'user_name',
+                       'user_image_url': '$userImageUrl',
+                       'language': deviceLanguage,
+                       'country': deviceCountry,                       
+                      //  'created_at': FieldValue.serverTimestamp(),
                  });        
                      await Shared_Prefes.setUid(newDoc.id);                            
                           print('アカウント作成完了');
@@ -102,14 +115,16 @@ class UserFirestore {
                  //新規アカウント作成 ＆ 端末Uid更新
                  String? userImageUrl = await UserFirebaseStorage.getProfImage();
                  final newDoc = await _userCollection.add({                      
-                      'matched_status': true,
-                      'room_id': 'none',
-                      'progress_marker': true,
-                      'chatting_status': true,  
-                      'is_lounge': true,
-                      'user_name': 'user_name',
-                      'user_image_url': '$userImageUrl',                                  
-                      // 'created_at': FieldValue.serverTimestamp(),
+                       'matched_status': true,
+                       'room_id': 'none',
+                       'progress_marker': true,
+                       'chatting_status': true,
+                       'is_lounge': true,
+                       'user_name': 'user_name',
+                       'user_image_url': '$userImageUrl',
+                       'language': deviceLanguage,
+                       'country': deviceCountry,                       
+                      //  'created_at': FieldValue.serverTimestamp(),
             });        
                await Shared_Prefes.setUid(newDoc.id);                            
                      print('アカウント作成完了');

@@ -3,6 +3,8 @@
 // Cloud Functions：サーバーレスのコンピューティングサービスで、特定のイベント（Firestoreのデータ変更時など）に反応して関数を実行
 const axios = require("axios");
 // Axiosライブラリをインポート（HTTPリクエストを行うために使用）
+const geoip = require("geoip-lite");
+// IPアドレスから国名を推測するライブラリ
 const functions = require("firebase-functions");
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 
@@ -16,6 +18,25 @@ initializeApp(); //
 // Firebase Admin SDKの初期化がされた時に
 // Firestoreのインスタンスが作成され
 // メモリにロード（格納）される
+
+exports.getCountryFromIP = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onCall((data, context) => {
+  try {
+    const ip = data.ip; // Flutterアプリから受け取るIPアドレス
+    const geo = geoip.lookup(ip);
+
+    if (geo) {
+      return {country: geo.country};
+    // country というキーを持つオブジェクトを作成
+    // その値として geo.country（国コード）を設定
+    }
+  } catch (e) {
+    throw new functions.https.HttpsError(
+        "Error: getCountryFromIP",
+        `IPアドレスから国名の取得失敗: ${e}`);
+  }
+});
 
 // DeepL APIを呼び出すためのFirebase Functionを定義
 exports.translateDeepL = functions.https.onCall(async (data, context) => {

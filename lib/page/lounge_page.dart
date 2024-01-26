@@ -43,15 +43,16 @@ class _LoungePageState extends State<LoungePage> {
     currentIndex = 0;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
 
-    myUidFuture = UserFirestore
-        .getAccount(); //EndDrawerのstreamがmyUidのgetに先走って実行してエラーになるのを防ぐ処理
-    myUidFuture!.then((uid) {
-      // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+    // EndDrawerのstreamがmyUidのgetに先走って実行してエラーになるのを防ぐ処理
+    // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
+    myUidFuture = UserFirestore.getAccount(); 
+    myUidFuture!.then((uid) {      
       if (uid != null) {
         matchingProgress = MatchingProgress(myUid: uid);
       }
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
