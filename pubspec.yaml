@@ -45,7 +45,7 @@ dependencies:
   device_preview: ^1.1.0
   http: ^0.13.3
   deepl_dart: ^1.2.0
-  riverpod: ^2.4.9
+  flutter_riverpod: ^2.4.9
   
 
 
