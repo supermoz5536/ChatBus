@@ -18,7 +18,7 @@ class _LoungePageState extends State<LoungePage> {
   bool? isDisabled;
   bool isInputEmpty = true;
   TalkRoom? talkRoom;
-  Future<String?>? myUidFuture;
+  Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
   int? currentIndex;
   int? selectedBottomIconIndex;
@@ -31,7 +31,7 @@ class _LoungePageState extends State<LoungePage> {
   @override
   void initState() {
     super.initState();
-    // 追加機能の記述部分であることの明示
+    // 追加機能の記述部分であることの明示　
     // 関数の呼び出し（initStateはFlutter標準メソッド）
     // 親クラスの初期化処理
     //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
@@ -43,12 +43,18 @@ class _LoungePageState extends State<LoungePage> {
     currentIndex = 0;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
 
-    // EndDrawerのstreamがmyUidのgetに先走って実行してエラーになるのを防ぐ処理
-    // .then(引数){コールバック関数}で、親クラス(=initState)の非同期処理が完了したときに実行するサブの関数を定義
-    myUidFuture = UserFirestore.getAccount(); 
-    myUidFuture!.then((uid) {      
-      if (uid != null) {
-        matchingProgress = MatchingProgress(myUid: uid);
+    myDataFuture = UserFirestore.getAccount(); 
+    /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
+    /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
+
+    myDataFuture!.then((result) {      
+      if (result != null) {
+
+        /// 画面遷移に必要なコンストラクタの設定
+        matchingProgress = MatchingProgress(myUid: result['myUid']);
+
+        /// グローバル変数として扱うProviderの更新処理をここに記述　言語コード
+        /// グローバル変数として扱うProviderの更新処理をここに記述　国コード
       }
     });
   }
@@ -64,7 +70,7 @@ class _LoungePageState extends State<LoungePage> {
         shadowColor: Colors.black.withOpacity(0.5),
         surfaceTintColor: Colors.transparent,
         leading: FutureBuilder(
-            future: myUidFuture,
+            future: myDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
@@ -72,7 +78,7 @@ class _LoungePageState extends State<LoungePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(snapshot.data),
+                    stream: UserFirestore.streamProfImage(snapshot.data!['myUid']),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -305,7 +311,7 @@ class _LoungePageState extends State<LoungePage> {
               style: TextStyle(fontSize: 24),
             ))),
         FutureBuilder(
-            future: myUidFuture,
+            future: myDataFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
@@ -314,7 +320,7 @@ class _LoungePageState extends State<LoungePage> {
               } else {
                 return StreamBuilder<QuerySnapshot>(
                     stream:
-                        UserFirestore.streamHistoryCollection(snapshot.data),
+                        UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {

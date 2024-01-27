@@ -7,149 +7,217 @@ import 'package:udemy_copy/utils/http_functions.dart';
 import '../utils/shared_prefs.dart';
 import 'dart:ui' as ui;
 
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:flutter/widgets.dart';
-
 class UserFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore.instance;
-  //FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
+  /// FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
   static final _userCollection = _firebasefirestoreInstance.collection('user');
-  //上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
+  /// 上行で実体化させたインスタンスは、Firestoreの具体的なデータベース情報なので、collectionの中のuserの情報を、変数_userCollectionに代入してる＝データベース連携してると考えていい
 
 
-  //端末のuidでDBを検索し、一致するアカウントがあればuidを取得、なければアカウントを新規作成してそのuidを取得
-  static Future<String?> getAccount() async{                      
+  /// getAccountの条件分岐図
+  /// 端末保存uidが「無い」場合 → 「新規作成」 or 「ログインページ」
+  /// 端末保存uidが「有る」場合は、以下の条件分岐
+  ///   　.getでデータに取得に「成功」した場合ば、さらに条件分岐
+  ///  　　　 .getでデータに取得に「成功」した場合で、DB上に端末保存idと同じidが「ある」場合 → 「db上のidを継続使用」
+  ///   　　　.getでデータに取得に「成功」した場合で、DB上に端末保存idと同じidが「ない」場合 → 「新規作成」 or 「ログインページ」
+  ///  　 .getでデータに取得に「失敗」した場合 → 「新規作成」 or 「ログインページ」
+  /// 補足: 地域と言語の設定情報に関して、ログイン（キャッシュが消えてる）の場合は、dbからreadして端末にsedDataする。
+  static Future<Map<String, dynamic>?> getAccount() async{
   try {
+        /// 端末保存uidが存在しているかを確認
         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        String? deviceLanguage = ui.window.locale.languageCode;
-        String? ip = await Http.getPublicIPAddress();
-        String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
-  
+        print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
-         if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){                             //端末保存uidが「無い」場合
+
+
+         /// ■ 端末保存uidが「無い」場合
+         if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){
             print('既存の端末uid = 未登録');
+
+            /// 画像 言語コード 国コード(IPから) の取得
             String? userImageUrl = await UserFirebaseStorage.getProfImage();
-                  final newMyUid = await _userCollection.add({     
-                       'matched_status': true,
-                       'room_id': 'none',
-                       'progress_marker': true,
-                       'chatting_status': true,
-                       'is_lounge': true,
-                       'user_name': 'user_name',
-                       'user_image_url': '$userImageUrl',
-                       'language': deviceLanguage,
-                       'country': deviceCountry,                       
-                      //  'created_at': FieldValue.serverTimestamp(),
-                  });
-                        // Firestoreから取得したタイムスタンプをミリ秒単位で表示
-                        // DocumentSnapshot docSnap = await _userCollection.doc(newMyUid.id).get();
-                        // Map<String, dynamic> data = docSnap.data() as Map<String, dynamic>;
-                        // Timestamp timestamp = data['created_at'];
-                        // int milliseconds = timestamp.toDate().millisecondsSinceEpoch;
-                        //   print('Timestamp in milliseconds: $milliseconds');
+            String? deviceLanguage = ui.window.locale.languageCode;
+            String? ip = await Http.getPublicIPAddress();
+            String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+            
+              /// 新規アカウントを追加
+              /// supportInitFields()で、全Fieldは初期値に設定
+              final newDoc = await _userCollection.add(    
+                UserFirestore.supportInitFields(
+                  userImageUrl: userImageUrl,
+                  deviceLanguage: deviceLanguage,
+                  deviceCountry: deviceCountry,
+                )
+              );
+                    /// 端末のuid更新              
+                    await Shared_Prefes.setData({
+                        'myUid': newDoc.id,
+                        'language': deviceLanguage,
+                        'country': deviceCountry,              
+                      });
+                      print('アカウント作成完了1');
+                      print('端末のuid更新完了');
+                      print('最新の端末保存uid ${newDoc.id}');  
+                                                  
+                      return {
+                        'myUid': newDoc.id,
+                        'language': deviceLanguage,
+                        'country': deviceCountry,                        
+                      };                      
+         }
 
-                       await Shared_Prefes.setUid(newMyUid.id);              //端末のuid更新
-                          print('アカウント作成完了');
-                          print('端末のuid更新完了');
-                          print('最新の端末保存uid ${newMyUid.id}');  
-                                                      
-                          return newMyUid.id;}
+
           
-          
+         /// ■ 端末保存uidが「有る」場合          
          if(sharedPrefesMyUid.isNotEmpty) {                                    
-         //端末保存uidが「有る」場合
-
-            print('既存の端末uid = ${sharedPrefesMyUid}');
+            print('既存の端末uid = $sharedPrefesMyUid');
             DocumentSnapshot? docIdSnapshot = await _userCollection
                                                     .doc(sharedPrefesMyUid)
-                                                    .get();            //SharedPrefesUidと一致するドキュメントIDを取得
-                                                                       //docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納                 
-                // if (docIdSnapshot.exists) {             
-                //     print('DB上のuid = ${docIdSnapshot.id}');
-                // } else {
-                //     print('DB上のuid = 未登録');    
-                // }  
-      
+                                                    .get();            /// SharedPrefesUidと一致するドキュメントIDを取得
+                                                                       /// docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納                 
+             /// ■ .getでデータに取得に「成功」した場合
              if (docIdSnapshot.exists) {
-                 //.getでデータに取得に「成功」した場合
+
+
+                 /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ある」場合
                  if (docIdSnapshot.id == sharedPrefesMyUid ) {                        
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
-                     //DB上に端末保存idと同じidが「ある」場合
-                     //Filed情報を更新して、既存の端末Uidをそのまま使用
-                     
+
+                     /// Filed情報を更新して、既存の端末Uidをそのまま使用
+
+                    String? deviceLanguage = ui.window.locale.languageCode;
+                    String? deviceCountry = Shared_Prefes.fetchCountry();
+
                      await _userCollection.doc(sharedPrefesMyUid).update({  //■■■■■エラー■■■■■■■■■■■■              
-                           'matched_status': true,                         
-                           'room_id': 'none',
-                           'progress_marker': true,
-                           'chatting_status': true,
-                           'is_lounge': true,                           
-                           // 'created_at': FieldValue.serverTimestamp(),                                                                              
-                   }); 
-                     return sharedPrefesMyUid;                                   
+                        'matched_status': true,                         
+                        'room_id': 'none',
+                        'progress_marker': true,
+                        'chatting_status': true,
+                        'is_lounge': true,                           
+                        'created_at': FieldValue.serverTimestamp(),                                                                              
+                     }); 
+                       return {
+                        'myUid': sharedPrefesMyUid,
+                        'language': deviceLanguage,
+                        'country': deviceCountry,                            
+                       };
+
+
 
                  } else {
-                     //DB上に端末保存idと同じidが「ない」場合
-                     //新規アカウント作成 ＆ 端末Uid更新
+                 /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ない」場合
+
+                     /// 画像 言語コード 国コード(IPから) の取得
                      String? userImageUrl = await UserFirebaseStorage.getProfImage();
-                     final newDoc = await _userCollection.add({                      
-                       'matched_status': true,
-                       'room_id': 'none',
-                       'progress_marker': true,
-                       'chatting_status': true,
-                       'is_lounge': true,
-                       'user_name': 'user_name',
-                       'user_image_url': '$userImageUrl',
-                       'language': deviceLanguage,
-                       'country': deviceCountry,                       
-                      //  'created_at': FieldValue.serverTimestamp(),
-                 });        
-                     await Shared_Prefes.setUid(newDoc.id);                            
-                          print('アカウント作成完了');
-                          print('端末のuid更新完了');
-                          print('最新の端末保存uid ${newDoc.id}');          
-                     return newDoc.id;  
-                 }
-                
+                     String? deviceLanguage = ui.window.locale.languageCode;
+                     String? ip = await Http.getPublicIPAddress();
+                     String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+
+                        /// 新規アカウントを作成
+                        /// supportInitFields()で、全Fieldは初期値に設定
+                        final newDoc = await _userCollection.add(                    
+                            UserFirestore.supportInitFields(
+                              userImageUrl: userImageUrl,
+                              deviceLanguage: deviceLanguage,
+                              deviceCountry: deviceCountry,
+                            )
+                        );        
+                        await Shared_Prefes.setData({
+                          'myUid': newDoc.id,
+                          'language': deviceLanguage,
+                          'country': deviceCountry,                             
+                        });                            
+                           print('アカウント作成完了2');
+                           print('端末のuid更新完了');
+                           print('最新の端末保存uid ${newDoc.id}');    
+
+                        return {
+                          'myUid': newDoc.id,
+                          'language': deviceLanguage,
+                          'country': deviceCountry,                        
+                        };      
+                    }
+
+
+                  
              } else {
-                 //.getでデータに取得に「失敗」した場合 = 既存の端末Uidはあるが、db上にUidが既に削除されてる場合
-                 //新規アカウント作成 ＆ 端末Uid更新
-                 String? userImageUrl = await UserFirebaseStorage.getProfImage();
-                 final newDoc = await _userCollection.add({                      
-                       'matched_status': true,
-                       'room_id': 'none',
-                       'progress_marker': true,
-                       'chatting_status': true,
-                       'is_lounge': true,
-                       'user_name': 'user_name',
-                       'user_image_url': '$userImageUrl',
-                       'language': deviceLanguage,
-                       'country': deviceCountry,                       
-                      //  'created_at': FieldValue.serverTimestamp(),
-            });        
-               await Shared_Prefes.setUid(newDoc.id);                            
-                     print('アカウント作成完了');
-                     print('端末のuid更新完了');
-                     print('最新の端末保存uid ${newDoc.id}');          
-               return newDoc.id;  
-             }
+             /// ■ .getでデータに取得に「失敗」した場合
+             /// つまり、既存の端末Uidはあるが、db上にUidが既に削除されてる場合
+             /// 新規アカウント作成 ＆ 端末Uid更新
+
+                /// 画像 言語コード 国コード(IPから) の取得
+                String? userImageUrl = await UserFirebaseStorage.getProfImage();
+                String? deviceLanguage = ui.window.locale.languageCode;
+                String? ip = await Http.getPublicIPAddress();
+                String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+
+                  /// 新規アカウントを追加
+                  /// supportInitFields()で、全Fieldは初期値に設定
+                  final newDoc = await _userCollection.add(                     
+                      UserFirestore.supportInitFields(
+                        userImageUrl: userImageUrl,
+                        deviceLanguage: deviceLanguage,
+                        deviceCountry: deviceCountry,
+                      )
+                  );        
+                  await Shared_Prefes.setData({
+                    'myUid': newDoc.id,
+                    'language': deviceLanguage,
+                    'country': deviceCountry,                           
+                  });
+                      print('アカウント作成完了3');
+                      print('端末のuid更新完了');
+                      print('最新の端末保存uid ${newDoc.id}');          
+                      
+                  return {
+                    'myUid': newDoc.id,
+                    'language': deviceLanguage,
+                    'country': deviceCountry,                        
+                  };      
+          }
          }
-  return null;
-
-  }catch(e){
-    print('getAccount失敗 $e');
-  return null;
-  }
+         return null;
+         
+      }catch(e){
+         print('getAccount失敗 $e');
+      return null;
+      }
 }
 
-  
 
 
-  static Future<void> createUser() async{
-  final myUid = await UserFirestore.getAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
-  if(myUid != null) {                     //DB上に自分のユーザーアカウントが確認できたなら・・・
-    Shared_Prefes.setUid(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する
-  }
-}
+
+  static Map<String, dynamic> supportInitFields({
+    String? userImageUrl,
+    String? deviceLanguage,
+    String? deviceCountry,
+  }) {
+    return {
+      'matched_status': true,
+      'room_id': 'none',
+      'progress_marker': true,
+      'chatting_status': true,
+      'is_lounge': true,
+      'user_name': 'user_name',
+      'user_image_url': userImageUrl,
+      'language': deviceLanguage,
+      'country': deviceCountry,
+      'created_at': FieldValue.serverTimestamp(),
+    };
+  }  
+
+
+
+
+
+
+
+//   static Future<void> createUser() async{
+//   final myUid = await UserFirestore.getAccount(); //ユーザー情報をpushして、DBにユーザーアカウントを作成
+//   if(myUid != null) {                     //DB上に自分のユーザーアカウントが確認できたなら・・・
+//     Shared_Prefes.setData(myUid);          //setUidメソッドで実際に端末へユーザーデータを保存する
+//   }
+// }
 
 
 

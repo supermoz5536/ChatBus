@@ -19,17 +19,26 @@ static Future<void> setPrefsInstance() async{
 }
 
 
- static Future<void> setUid(String uid) async{       //実際に端末にユーザー情報を保存する関数
-  await _preferences!.setString('uid', uid);       //setStringはライブラリのメソッド、端末保存のコマンド
+ static Future<void> setData(Map<String, String> data,) async{       //実際に端末にユーザー情報を保存する関数
+   data.forEach((key, value) async{
+  await _preferences!.setString(key, value);       //setStringはライブラリのメソッド、端末保存のコマンド  
+   });
+
 }
 
 //shared_Prefesに書いてあるUidの情報をとってくる関数を書く
 static String? fetchUid() {       //staticなので召喚せずに召喚獣コマンド"fetchUid"が使える　出てくる演出はStringで文字だけど、何も発生しない場合（null）もありえる。
-return _preferences!.getString('uid');  //getStringはラリブラリのメソッドで取得のコマンド //returnの結果が返ってくる＝既に端末にuidが保存されてる 返ってこない＝保存されてない　
-
+  return _preferences!.getString('myUid');  //getStringはラリブラリのメソッドで取得のコマンド //returnの結果が返ってくる＝既に端末にuidが保存されてる 返ってこない＝保存されてない　
 }
 
+static String? fetchLanguage() {       
+return _preferences!.getString('language');  
+}
+
+static String? fetchCountry() {       
+return _preferences!.getString('country');  
 }
 
 
+}
 

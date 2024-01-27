@@ -21,9 +21,9 @@ static Future<String?> getProfImage () async{
     // ListResult型オブジェクトの .itemsメソッドは、参照ディレクトリ内の全ての要素のリスト
     // .items の後に [] を記述すると「リストからの特定の要素を取得」することの意味
 
-     print('Download URL: 直前確認');
+    //  print('Download URL: 直前確認');
      String randomImageUrl = await randomImageRef.getDownloadURL();
-     print('Download URL: $randomImageUrl');
+    //  print('Download URL: $randomImageUrl');
      return randomImageUrl;
 
     } catch (e) {
