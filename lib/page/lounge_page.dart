@@ -5,15 +5,30 @@ import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/riverpod/provider.dart';
 
-class LoungePage extends StatefulWidget {
+
+
+class LoungePage extends ConsumerStatefulWidget {
   const LoungePage({super.key});
 
   @override
-  State<LoungePage> createState() => _LoungePageState();
+  ConsumerState<LoungePage> createState() => _LoungePageState();
 }
 
-class _LoungePageState extends State<LoungePage> {
+class _LoungePageState extends ConsumerState<LoungePage> {
+
+/// ■ 通常のstfを使う場合のバックアップ
+// class LoungePage extends StatefulWidget {
+//   const LoungePage({super.key});
+
+//   @override
+//   State<LoungePage> createState() => _LoungePageState();
+// }
+
+// class _LoungePageState extends State<LoungePage> {
+
   String? myUid;
   bool? isDisabled;
   bool isInputEmpty = true;
@@ -48,13 +63,15 @@ class _LoungePageState extends State<LoungePage> {
     /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
 
     myDataFuture!.then((result) {      
-      if (result != null) {
+      if (result != null && mounted) {
 
         /// 画面遷移に必要なコンストラクタの設定
         matchingProgress = MatchingProgress(myUid: result['myUid']);
 
-        /// グローバル変数として扱うProviderの更新処理をここに記述　言語コード
-        /// グローバル変数として扱うProviderの更新処理をここに記述　国コード
+        /// Providerの状態値を更新
+        ref.read(languageCodeProvider.notifier).state = result['language'];
+        /// ■ 通常のstfを使う場合のバックアップ
+        // ProviderScope.containerOf(context).read(languageCodeProvider.notifier).state = result['languageCode'];       
       }
     });
   }
