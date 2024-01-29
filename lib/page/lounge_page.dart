@@ -7,6 +7,7 @@ import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 
@@ -67,9 +68,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
         /// 画面遷移に必要なコンストラクタの設定
         matchingProgress = MatchingProgress(myUid: result['myUid']);
-
+  
         /// Providerの状態値を更新
+  // print('LoungePageのresult[language] == ${result['language']}'); 　
+  print('代入前のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
         ref.read(languageCodeProvider.notifier).state = result['language'];
+  print('代入後のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
         /// ■ 通常のstfを使う場合のバックアップ
         // ProviderScope.containerOf(context).read(languageCodeProvider.notifier).state = result['languageCode'];       
       }
@@ -555,12 +559,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             },
                           ),
                         ),
-                        const Flexible(
+                        Flexible(
                           flex: 1,
                           child: Center(
                             child: Text(
-                              '検索設定',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.search,
+                              style: const TextStyle(
                                 color: Color.fromARGB(255, 176, 176, 176),
                                 fontSize: 10,
                               ),

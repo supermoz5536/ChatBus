@@ -2,7 +2,6 @@
 /// 状態管理したい値を、Providerの中に定義する
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart';
 
 
 
@@ -12,6 +11,6 @@ import 'package:flutter/material.dart';
 /// 呼び出しの記述サンプル：ref.read(languageCodeProvider)
 /// 状態値の更新場所は、lounge_page.dart > initState()
 final languageCodeProvider = StateProvider<String>((ref) {
-  return 'ja';
+  return 'es';
 });
 

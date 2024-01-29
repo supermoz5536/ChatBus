@@ -1,0 +1,12 @@
+{
+"start": "IINICIO",
+"search": "Búsqueda",
+"message": "Mensaje",
+"friends": "Amigos",
+"termsOfUse": "¡Acerca de las condiciones de uso!\n¡No digas nada que pueda ofender a los demás!\n¡No lo utilices para conocer gente!\n¡No facilites tus datos personales!\n¡Es una promesa de pasarlo bien!\n",
+"systemMessageInMatchingProgress": "チャット相手を検索中だよ！",
+"cancel": "cancelar",
+"exit": "SALIR",
+"goNext": "Siguiente",
+"goHome": "Volver a casa"
+}

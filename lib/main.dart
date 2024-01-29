@@ -2,11 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firebase_options.dart';
-import 'package:udemy_copy/l10n.dart';
+import 'package:udemy_copy/l10n/l10n.dart';
+import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 
 void main() async {
@@ -19,9 +23,22 @@ void main() async {
   runApp(DevicePreview(
     enabled: !kReleaseMode,
     builder: (context) => const ProviderScope(child: MyApp()),
-
   ));
 }
+
+/// DevicePreview のOFFパターン
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+//   await Shared_Prefes.setPrefsInstance(); 
+//   runApp(const ProviderScope(child: MyApp()),
+//   );
+// }
+
+
+
+
+
 class MyApp extends ConsumerWidget {
 // class MyApp extends StatelessWidget {
 // Riverpod用の書き換えバックアップ
@@ -31,9 +48,10 @@ class MyApp extends ConsumerWidget {
   // Widget build(BuildContext context) {
   // Riverpod用の書き換えバックアップ  
     return MaterialApp(
+      /// DevicePreview の必須プロパティ
       useInheritedMediaQuery: true,
-      locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
+
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -42,6 +60,14 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       supportedLocales: L10n.all,
+      // locale: const Locale('es'),
+      locale: Locale(ref.watch(languageCodeProvider)),
+      localizationsDelegates: const[
+        AppLocalizations.delegate, 
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const LoungePage(),
     );
   }

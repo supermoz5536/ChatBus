@@ -39,6 +39,7 @@ class UserFirestore {
             String? deviceLanguage = ui.window.locale.languageCode;
             String? ip = await Http.getPublicIPAddress();
             String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+            print('getAccount()内のdeviceLanguage == $deviceLanguage');
             
               /// 新規アカウントを追加
               /// supportInitFields()で、全Fieldは初期値に設定

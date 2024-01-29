@@ -1,0 +1,51 @@
+{
+    "start": "START",
+    "@start": {
+        "description": "Inside the button to start chat in LaungePage."
+    },
+
+    "search": "Search",
+    "@search": {
+        "description": "Under Search Icon."
+    },
+
+    "message": "Message",
+    "@message": {
+        "description": "Under Message Icon."
+    },
+
+    "friends": "Friends",
+    "@friends": {
+        "description": "Under Friends Icon."
+    },
+
+    "termsOfUse": "About the Terms of Use!\nDon't say anything that might offend others!\nDon't use it to meet people.\nDon't give out your personal information!\nIt's a promise to have a good time!\n",
+    "@termsOfUse": {
+        "description": "The terms that the system says in MatchingProgress."
+    },
+
+    "systemMessageInMatchingProgress": "I'm searching for a chat partner!",
+    "@systemMessageInMatchingProgress": {
+        "description": "The message that system says in MatchingProgress."
+    },
+
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Inside the button to cancel in MatchingProgress."
+    },
+
+    "exit": "EXIT",
+    "@exit": {
+        "description": "Inside the button to exit in TalkRoom."
+    },
+
+    "goNext": "Go Next",
+    "@goNext": {
+        "description": "Inside the button to find next chat partner in TalkRoom."
+    },
+
+    "goHome": "Go Home",
+    "@goHome": {
+        "description": "Inside the button to back to Launge in TalkRoom."
+    }
+}

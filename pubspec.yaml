@@ -46,7 +46,8 @@ dependencies:
   http: ^0.13.3
   deepl_dart: ^1.2.0
   flutter_riverpod: ^2.4.9
-  flutter_localization: ^0.2.0
+  flutter_localizations:
+    sdk: flutter
   
 
 
