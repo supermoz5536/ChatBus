@@ -66,7 +66,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     myDataFuture!.then((result) {      
       if (result != null && mounted) {
 
-        /// 画面遷移に必要なコンストラクタの設定
+        /// 画面遷移に必要なコンストラクタ
         matchingProgress = MatchingProgress(myUid: result['myUid']);
   
         /// Providerの状態値を更新
