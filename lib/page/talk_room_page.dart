@@ -89,14 +89,15 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
       appBar: AppBar(
         title: const Text('トークルーム'),
       ),
-      body: Stack(
-        //Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
+      body: Stack(        
         children: [
-          //Stackウィジェットのchildren
           StreamBuilder<QuerySnapshot>(
               //？？？？？<QuerySnapshot>の意味は？
-              stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom
-                  .roomId!), //widgetは、statefulwidgetクラスのプロパティにアクセスするために必要なキーワード
+              stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId!),
+              /// widgetは、statefulwidgetクラスのプロパティにアクセスするために必要なキーワード
+              /// 該当のroomドキュメントに変更があるたびにstreamを取得する
+              /// 変更が新たな変更のトリガーになって、限定的に無限ループしている？
+              /// その場合、「何の変更がトリガーか？」「どのポイントで無限ループが解消してるか？」
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Padding(
@@ -224,6 +225,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                         // return const CircularProgressIndicator();
                                                         return const Text('');
                                                       }
+                                                        /// DeepL API から取得した翻訳済みテキストをdb上に書き込み
                                                         RoomFirestore.updateTranslatedMessage(
                                                           widget.talkRoom.roomId,
                                                           message.messageId,
@@ -393,7 +395,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: const Text("次のチャット相手を探す"),
+          child: const Text("次のチャット"),
         )),
 
         // ■ 「最初の画面に戻る」ボタン
@@ -426,7 +428,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: const Text("最初の画面に戻る"),
+          child: const Text("最初の画面へ"),
         )),
 
         // ■ 入力フィールド

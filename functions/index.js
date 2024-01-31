@@ -39,11 +39,15 @@ exports.getCountryFromIP = functions.runWith({
 });
 
 // DeepL APIを呼び出すためのFirebase Functionを定義
-exports.translateDeepL = functions.https.onCall(async (data, context) => {
+exports.translateDeepL = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onCall(async (data, context) => {
+  // ロギング
+  console.log(`API呼び出し: テキスト="${data.text}", 言語="${data.target_lang}"`);
   // DeepL APIのエンドポイントURL
   const endpoint = "https://api-free.deepl.com/v2/translate";
   // あなたのDeepL APIキーを設定
-  const apiKey = "d19b69ea-49a6-ef93-b2cd-dd8f538f00d2:fx";
+  const apiKey = "037b0c58-a777-75e2-d53d-8e4d47f983a4:fx";
 
   // DeepL APIに送信するパラメータを設定
   const params = new URLSearchParams();
@@ -64,7 +68,9 @@ exports.translateDeepL = functions.https.onCall(async (data, context) => {
   }
 });
 
-exports.runTransaction = functions.https.onCall(async (data, context) => {
+exports.runTransaction = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onCall(async (data, context) => {
 // onCallはクライアントから直接呼び出し可能関数の作成するメソッド
 // 引数dataは、クライアントから渡されるデータ内容 myUid talkuserUid myRoomId
 // 引数contextは、実行する関数の情報(関数名とか)とクライアント自身の情報（IPアドレスとか）

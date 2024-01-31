@@ -17,6 +17,7 @@ static Future<String> getCountryFromIP(String? ip) async {
 
 // 翻訳処理
 static  Future<String>? translateDeepL(String message, String targetLang) async {
+  print('API呼び出し開始: $message');
   final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('translateDeepL');
     try {
       final HttpsCallableResult result = await callable.call(<String?, dynamic>{
@@ -27,6 +28,7 @@ static  Future<String>? translateDeepL(String message, String targetLang) async 
         'target_lang': targetLang,
       });
         // result.data に翻訳結果が含まれています
+              print('API呼び出し完了: ${result.data['translations'][0]['text']}');
         final String translatedText = result.data['translations'][0]['text'];
         return translatedText;
 

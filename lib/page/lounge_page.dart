@@ -63,7 +63,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
     /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
 
-    myDataFuture!.then((result) {      
+    myDataFuture!.then((result) { 
       if (result != null && mounted) {
 
         /// 画面遷移に必要なコンストラクタ
