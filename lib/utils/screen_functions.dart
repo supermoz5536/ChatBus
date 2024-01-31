@@ -22,7 +22,7 @@ static setCurrentScreem(int? currentIndex, TalkRoom talkRoom) {
       case 2:
         return currentScreen[2];
       case 3:
-        return currentScreen[3] = MatchedHistoryPage(talkRoom);
+        return currentScreen[3];
       default:
         return currentScreen[0];
       }

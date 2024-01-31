@@ -370,7 +370,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                                   // グループ処理：index当該リストをザルに通す
                                   String dateLabel = '';
-                                  print('createdAt: $createdAt');
 
                                   if (createdAt.isBefore(oneWeek)) {
                                     dateLabel = '1週間以上前';
@@ -392,7 +391,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                         (snapshot.data!.docs[index - 1]
                                                 ['created_at'] as Timestamp)
                                             .toDate();
-                                    print('prevCreatedAt: $prevCreatedAt');
 
                                     if (prevCreatedAt.isBefore(oneWeek)) {
                                       prevDateLabel = '1週間以上前';

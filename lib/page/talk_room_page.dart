@@ -12,6 +12,7 @@ import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
+import 'package:udemy_copy/utils/unit_functions.dart';
 // import 'package:udemy_copy/utils/screen_transition.dart';
 
 class TalkRoomPage extends StatefulWidget {
@@ -29,7 +30,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
-  Future<String>? futureTranslation;
+  Future<String?>? futureTranslation;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final TextEditingController controller = TextEditingController();
@@ -119,8 +120,18 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                   sendTime: data['send_time']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
-                                                  //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
-                          futureTranslation = CloudFunctions.translateDeepL(message.message, 'ja',);
+                                                  //data()でメソッドを呼ぶと
+                                                  //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
+                                                  //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
+
+                          /// 自分の送信した未翻訳のmessageドキュメントの場合
+                          /// 翻訳したtextを、をdbに書き込み
+                          if (message.isMe == false && message.translatedMessage == '') {
+                             futureTranslation = UnitFunctions.translateAndUpdate(
+                             message.message, 'ja', widget.talkRoom.roomId, message.messageId,);
+                          }
+
+
                                                   
 
                           // 吹き出し部分全体の環境設定
@@ -217,45 +228,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                    maxWidth: MediaQuery.of(context).size.width *0.6),
                                                    color: Colors.white,
                                                    child: Text(message.translatedMessage)))
-                                             : FutureBuilder( // 翻訳済みmessageがdbに "ない" 場合
-                                                  future: futureTranslation,
-                                                  builder: (context, AsyncSnapshot<String> translationSnapshot) {
-                                                    if (translationSnapshot.hasData){
-                                                      if (translationSnapshot.connectionState == ConnectionState.waiting) {
-                                                        // return const CircularProgressIndicator();
-                                                        return const Text('');
-                                                      }
-                                                        /// DeepL API から取得した翻訳済みテキストをdb上に書き込み
-                                                        RoomFirestore.updateTranslatedMessage(
-                                                          widget.talkRoom.roomId,
-                                                          message.messageId,
-                                                          translationSnapshot.data!,
-                                                        );
-                                                    return IntrinsicWidth(
-                                                      child: Container(
-                                                          constraints: BoxConstraints(
-                                                              maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                              //この書き方で今表示可能な画面幅を取得できる
-                                                          decoration: BoxDecoration(
-                                                              color: message.isMe
-                                                                  ? const Color.fromARGB(255, 201, 238, 255,)
-                                                                  : Colors.white,
-                                                              borderRadius: const BorderRadius.only(
-                                                                  bottomLeft: Radius.circular(15,),
-                                                                  bottomRight: Radius.circular(15,))),
-                                                          padding: const EdgeInsets.symmetric(
-                                                                     horizontal: 18,
-                                                                     vertical: 6),
-                                                          child: message.isMe == true
-                                                                  ? null
-                                                                  : Text(translationSnapshot.data!)
-                                                      ),
-                                                    );
-                                                    } else {
-                                                      return const Text('');
-                                              }
-                                            }
-                                          ),
+                                             :  const Text('')
                                         ),
                                       )
                                     ],
