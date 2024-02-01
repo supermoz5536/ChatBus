@@ -11,6 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// 呼び出しの記述サンプル：ref.read(languageCodeProvider)
 /// 状態値の更新場所は、lounge_page.dart > initState()
 final languageCodeProvider = StateProvider<String>((ref) {
-  return 'es';
+  return 'en';
 });
 
