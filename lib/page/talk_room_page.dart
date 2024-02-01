@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
@@ -10,12 +10,13 @@ import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
-// import 'package:udemy_copy/utils/screen_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class TalkRoomPage extends StatefulWidget {
+class TalkRoomPage extends ConsumerStatefulWidget {
   final TalkRoom talkRoom;
   const TalkRoomPage(this.talkRoom,
       {super.key}); //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
@@ -23,10 +24,10 @@ class TalkRoomPage extends StatefulWidget {
 //画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
   @override
-  State<TalkRoomPage> createState() => _TalkRoomPageState();
+  ConsumerState<TalkRoomPage> createState() => _TalkRoomPageState();
 }
 
-class _TalkRoomPageState extends State<TalkRoomPage> {
+class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
@@ -124,15 +125,17 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                                                   //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
+
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
                           /// 翻訳したtextを、をdbに書き込み
                           if (message.isMe == false && message.translatedMessage == '') {
                              futureTranslation = UnitFunctions.translateAndUpdate(
-                             message.message, 'ja', widget.talkRoom.roomId, message.messageId,);
-                          }
+                             message.message,                  /// 未翻訳text
+                             ref.watch(languageCodeProvider),  /// target 言語
+                             widget.talkRoom.roomId,           /// ルームID
+                             message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
+                          }                        
 
-
-                                                  
 
                           // 吹き出し部分全体の環境設定
                           return Padding(
@@ -243,11 +246,14 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                         }),
                   );
                 } else {
-                  return Center(
+                  return const Center(
                     child: Text('メッセージがありません'),
                   );
                 }
               }),
+
+
+
 
           // ■フッター部分(chatting)
           Column(
@@ -285,7 +291,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                 widget.talkRoom.myUid, false);
             // トーク相手にチャット終了を伝える
           },
-          child: const Text("チャットを終了"),
+          child: Text(AppLocalizations.of(context)!.exit),
         )),
 
         // ■ 入力フィールド
@@ -368,7 +374,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: const Text("次のチャット"),
+          child: Text(AppLocalizations.of(context)!.goNext),
         )),
 
         // ■ 「最初の画面に戻る」ボタン
@@ -401,7 +407,7 @@ class _TalkRoomPageState extends State<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: const Text("最初の画面へ"),
+          child: Text(AppLocalizations.of(context)!.goHome),
         )),
 
         // ■ 入力フィールド

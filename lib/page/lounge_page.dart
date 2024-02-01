@@ -526,8 +526,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 // });
                               },
                         style: ElevatedButton.styleFrom(elevation: 4),
-                        child: const Text(
-                          "チャット開始",
+                        child: Text(
+                          AppLocalizations.of(context)!.start,
                           // style: TextStyle(fontSize: 12)
                         ),
                       )),
@@ -535,7 +535,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                     const Spacer(),
 
-                    // FilterPageアイコン
+                    // Searchアイコン
                     Column(
                       children: [
                         const SizedBox(height: 10),
@@ -574,7 +574,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                     const Spacer(),
 
-                    // MessagePageアイコン
+                    // Messageアイコン
                     Column(
                       children: [
                         const SizedBox(height: 10),
@@ -596,12 +596,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             },
                           ),
                         ),
-                        const Flexible(
+                        Flexible(
                           flex: 1,
                           child: Center(
                             child: Text(
-                              'メッセージ',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.message,
+                              style: const TextStyle(
                                 color: Color.fromARGB(255, 176, 176, 176),
                                 fontSize: 10,
                               ),
@@ -613,7 +613,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                     const Spacer(),
 
-                    // FriendListPageアイコン
+                    // Friendアイコン
                     Column(
                       children: [
                         const SizedBox(height: 10),
@@ -635,12 +635,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             },
                           ),
                         ),
-                        const Flexible(
+                        Flexible(
                           flex: 1,
                           child: Center(
                             child: Text(
-                              '友達リスト',
-                              style: TextStyle(
+                              AppLocalizations.of(context)!.friends,
+                              style: const TextStyle(
                                 color: Color.fromARGB(255, 176, 176, 176),
                                 fontSize: 10,
                               ),

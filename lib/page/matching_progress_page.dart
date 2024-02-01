@@ -9,6 +9,8 @@ import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 // initstate()の実行に時間が掛かって、Widget build()の本体の実行が先走ってる。
 
@@ -207,6 +209,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
     }); // initForMatching
   } // initState
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -247,21 +251,17 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
                             decoration: BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(15)),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 6),
-                            child: const ListTile(
+                            child: ListTile(
                               title: // コンテナのchild部分に、[0]のメッセージを表示
                                   Text(
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 17,
                                         color: Colors.white,
                                       ),
-                                      'どもー。ChatBusシステムです(・Д・)ﾉ\n'
-                                      '最初に[利用規約]のお話をさせてね！\n'
-                                      '・相手を不快にさせるような発言はしないでね\n'
-                                      '・出会いを目的にした利用はしないでね\n'
-                                      '・個人情報を相手に教えないでね\n'
-                                      '楽しい時間をすごための約束だよ(・Д・)b\n'),
+                                      AppLocalizations.of(context)!.termsOfUse
+                                      ),
                             )),
                       );
                     }
@@ -277,17 +277,19 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
                             decoration: BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(15)),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 6),
-                            child: const ListTile(
+                            child: ListTile(
                               title: // コンテナのchild部分に、[1]のメッセージを表示
-                                  Text('チャット相手を検索中だよ〜！'),
+                                  Text(AppLocalizations.of(context)!.systemMessageInMatchingProgress),
                             )),
                       );
                     }
                     return null;
                   }),
             ),
+
+
 
           // ■フッター部分
           Column(
@@ -346,7 +348,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
                                   });
                                 }
                               },
-                        child: const Text("キャンセル"),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                     )),
 

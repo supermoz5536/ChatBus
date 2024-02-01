@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
-
 import '../model/user.dart';
+
 
 class RoomFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore
