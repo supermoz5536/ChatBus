@@ -20,16 +20,6 @@ class LoungePage extends ConsumerStatefulWidget {
 
 class _LoungePageState extends ConsumerState<LoungePage> {
 
-/// ■ 通常のstfを使う場合のバックアップ
-// class LoungePage extends StatefulWidget {
-//   const LoungePage({super.key});
-
-//   @override
-//   State<LoungePage> createState() => _LoungePageState();
-// }
-
-// class _LoungePageState extends State<LoungePage> {
-
   String? myUid;
   bool? isDisabled;
   bool isInputEmpty = true;
@@ -58,6 +48,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     isDisabled = false;
     currentIndex = 0;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
+    /// MatchedHistoryPage用のコンストラクタなので
+    /// myUidはnullでも問題が起きてない
 
     myDataFuture = UserFirestore.getAccount(); 
     /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
@@ -66,14 +58,21 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     myDataFuture!.then((result) { 
       if (result != null && mounted) {
 
-        /// 画面遷移に必要なコンストラクタ
-        matchingProgress = MatchingProgress(myUid: result['myUid']);
+        /// Providerの状態値を更新
+        print('代入前のProvierの状態変数値 == ${ref.read(myUidProvider)}');
+        ref.read(myUidProvider.notifier).state = result['myUid'];
+        print('代入後のProvierの状態変数値 == ${ref.read(myUidProvider)}');
   
         /// Providerの状態値を更新
-  // print('LoungePageのresult[language] == ${result['language']}'); 　
-  print('代入前のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
+        print('代入前のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
         ref.read(languageCodeProvider.notifier).state = result['language'];
-  print('代入後のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
+        print('代入後のProvierの状態変数値 == ${ref.read(languageCodeProvider)}');
+
+
+
+        /// 画面遷移に必要なコンストラクタ
+        matchingProgress = MatchingProgress(myUid: result['myUid']);        
+       
         /// ■ 通常のstfを使う場合のバックアップ
         // ProviderScope.containerOf(context).read(languageCodeProvider.notifier).state = result['languageCode'];       
       }
@@ -131,7 +130,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           ),
                         );
                       } else {
-                        return const Text('画像がありません');
+                        return const Text('');
                       }
                     });
               }
@@ -340,8 +339,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<QuerySnapshot>(
-                    stream:
-                        UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
+                    stream: UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -351,11 +349,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             child: ListView.builder(
                                 itemCount: snapshot.data!.docs.length,
                                 itemBuilder: (context, index) {
-                                  DocumentSnapshot talkuserProf =
-                                      snapshot.data!.docs[index];
-                                  DateTime createdAt =
-                                      (talkuserProf['created_at'] as Timestamp)
-                                          .toDate();
+                                  DocumentSnapshot talkuserFields = snapshot.data!.docs[index];
+                                  DateTime createdAt = (talkuserFields['created_at'] as Timestamp)
+                                                       .toDate();
                                   // グループ処理：ザルに通すデータを取得
 
                                   DateTime now = DateTime.now();
@@ -419,9 +415,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       ListTile(
                                         leading: CircleAvatar(
                                             backgroundImage: NetworkImage(
-                                                talkuserProf[
-                                                    'user_image_url'])),
-                                        title: Text(talkuserProf['user_name']),
+                                                talkuserFields['user_image_url'])),
+                                        title: Text(talkuserFields['user_name']),
                                         tileColor: selectedHistoryIndex == index
                                             ? Color.fromARGB(255, 225, 225, 225)
                                             : null,
@@ -430,7 +425,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             selectedHistoryIndex = index;
                                             currentIndex = 3;
                                             talkRoom!.roomId =
-                                                talkuserProf['room_id'];
+                                                talkuserFields['room_id'];
                                           });
                                         },
                                       )
@@ -439,8 +434,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     return ListTile(
                                       leading: CircleAvatar(
                                           backgroundImage: NetworkImage(
-                                              talkuserProf['user_image_url'])),
-                                      title: Text(talkuserProf['user_name']),
+                                              talkuserFields['user_image_url'])),
+                                      title: Text(talkuserFields['user_name']),
                                       tileColor: selectedHistoryIndex == index
                                           ? Color.fromARGB(255, 225, 225, 225)
                                           : null,
@@ -449,7 +444,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           selectedHistoryIndex = index;
                                           currentIndex = 3;
                                           talkRoom!.roomId =
-                                              talkuserProf['room_id'];
+                                              talkuserFields['room_id'];
                                         });
                                       },
                                     );
@@ -473,8 +468,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           // ■フッター部分
           Column(
             // column()の縦移動で、画面1番下に配置
-            mainAxisAlignment: MainAxisAlignment
-                .end, // https://zenn.dev/wm3/articles/7332788c626b39
+            mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
                 decoration: const BoxDecoration(

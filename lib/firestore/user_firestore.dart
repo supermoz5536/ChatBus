@@ -520,4 +520,16 @@ static Future<void> updateHistory (String? myUid, String? talkuserUid, String? r
 }
 
 
+  static Stream<QuerySnapshot> friendSnapshot(String myUid) {
+  /// QuerySnapshot は Firestore ライブラリのクラス
+  /// DBへのクエリ（リクエスト）に対して、結果(snapshot)を出力するクラス
+  /// orderBy()の用法について　https://sl.bing.net/GxKL2wdx1g    
+    return _userCollection
+            .doc(myUid)
+            .collection('friend')
+            // .orderBy('num', descending: true)
+            .snapshots();
+  }
+
+
 }

@@ -14,3 +14,7 @@ final languageCodeProvider = StateProvider<String>((ref) {
   return 'en';
 });
 
+final myUidProvider = StateProvider<String>((ref) {
+  return '';
+});
+

@@ -110,17 +110,26 @@ class RoomFirestore {
 //任意のユーザーとのトークルームのメッセージのスナップショットを取得する関数
 //つまり新しいメッセージがDBに追加されるたびに、トークルームのスナップショットが流れてくるstreamを作る
   static Stream<QuerySnapshot> fetchMessageSnapshot(String roomId) {
-    //QuerySnapshotはcloudfirestoreライブラリのクラス //DBへのクエリ（リクエスト）に対して、結果(snapshot)を出力するクラス
-    //取得したいルームのIDを与える必要があるので、変数roomIdとして受けれるように引数で設定
+    // QuerySnapshotはcloudfirestoreライブラリのクラス 
+    // DBへのクエリ（リクエスト）に対して、結果(snapshot)を出力するクラス
+    // 取得したいルームのIDを与える必要があるので、変数roomIdとして受けれるように引数で設定
 
     return _roomCollection
-        .doc(roomId)
-        .collection('message')
-        .orderBy('send_time', descending: true)
-        .snapshots();
+            .doc(roomId)
+            .collection('message')
+            .orderBy('send_time', descending: true)
+            .snapshots();
     //DB上の、roomのcollectionから、ID指定した任意のルームの、messageのcollectionへのstreamができた。
     //orderBy()の用法について　https://sl.bing.net/GxKL2wdx1g
   }
+
+
+
+
+
+
+
+
 
 //入力フィールドのメッセージ情報を、Firestore上のroomにpushする関数
   static Future<void> sendMessage({required String roomId, required String message}) async {
