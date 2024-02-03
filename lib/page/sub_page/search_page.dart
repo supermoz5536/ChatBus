@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class FilterPage extends StatefulWidget {
-  const FilterPage({super.key});
+class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
 
   @override
-  State<FilterPage> createState() => _FilterPageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _FilterPageState extends State<FilterPage> {
+class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

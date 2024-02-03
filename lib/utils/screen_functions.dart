@@ -9,7 +9,7 @@ class ScreenFunctions {
 
 static setCurrentScreem(int? currentIndex, TalkRoom talkRoom) {
   List<Widget> currentScreen = [
-                                FilterPage(),
+                                SearchPage(),
                                 MessagePage(),
                                 FriendListPage(),
                                 MatchedHistoryPage(talkRoom),
