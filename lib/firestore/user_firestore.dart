@@ -26,6 +26,7 @@ class UserFirestore {
   try {
         /// 端末保存uidが存在しているかを確認
         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        // String? sharedPrefesMyUid = "MGnyDLjf4Qm0P6EpjKKr";
         print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 
@@ -201,6 +202,7 @@ class UserFirestore {
       'is_lounge': true,
       'user_name': 'user_name',
       'user_image_url': userImageUrl,
+      'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
       'created_at': FieldValue.serverTimestamp(),
@@ -389,30 +391,24 @@ try {
     }
   }
 
-
-
-
-
-
-
-//fetchUsers()がDB上の全ユーザーデータを取得する関数なので、自分のデータだけを取得して出力する関数を作る
-//「端末画面の自分のアイコンをタップすると、DBから自分のデータを取得してプロフィールページを表示する」といったアクションに利用できる関数
-static Future<User?> fetchProfile(String uid) async{
+/// 任意のuserUidで、そのプロフィール用のField情報を取得する関数
+static Future<User?> fetchProfile(String? uid) async{
   try{
-String uid = Shared_Prefes.fetchUid()!;                     //端末に保存してあるユーザー情報を取得して、変数uidに代入
-final snapshot = await _userCollection.doc(uid).get();     //uidと一致するデータをDBから取得して、変数myProfileに代入
-User user = User(                                           //class User　のインスタンスを作る
-  name: snapshot.data()!['name'],                          //以下、インスタンスの各々の変数（状態）を設定する
-  ImagePath: snapshot.data()!['image_path'],               //DBから取得した自分のデータを、class Userのインスタンスに代入
-  uid: uid,
-);
+      final snapshot = await _userCollection.doc(uid).get(); 
+      User user = User(
+        userName: snapshot.data()!['user_name'],
+        uid: uid,
+        userImageUrl: snapshot.data()!['user_image_url'],
+        statement: snapshot.data()!['statement'],
+      );
+
 return user;                                                //DBから取得した自分のデータを代入した、プロフィール情報を出力する
 
   }catch(e) {
-print('自分のユーザー情報取得失敗 ----- &e');
-return null;
-    }
+    print('ユーザー情報取得失敗 ----- $e');
+    return null;
   }
+}
 
 
 
@@ -530,6 +526,61 @@ static Future<void> updateHistory (String? myUid, String? talkuserUid, String? r
             // .orderBy('num', descending: true)
             .snapshots();
   }
+
+
+
+
+static Future<void> setFriendUid(String? targetUid, String? setUid, User userData) async {
+    try {
+      await _userCollection.doc(targetUid)
+                           .collection('friend')
+                           .doc(setUid)
+                           .set({
+                            'user_name': userData.userName,
+                            'user_image_url': userData.userImageUrl,
+                            'statement': userData.statement,
+                           });
+      return;
+    } catch (e) {
+      print('friendUidの削除失敗 ===== $e');
+      return;
+    }
+  }
+
+
+
+  static Future<void> deleteFriendUid(String? targetUid, String? deleteUid) async {
+    try {
+      await _userCollection.doc(targetUid)
+                           .collection('friend')
+                           .doc(deleteUid)
+                           .delete();
+      return;
+    } catch (e) {
+      print('friendUidの削除失敗 ===== $e');
+      return;
+    }
+  }
+
+
+
+  static Future<bool> checkExistFriendUid(String? targetUid, String? friendUid) async {
+    try {
+      final DocumentSnapshot documentSnapshot =  await _userCollection.doc(targetUid)
+                                                        .collection('friend')
+                                                        .doc(friendUid)
+                                                        .get();
+        print('checkExistFriendUid == ${documentSnapshot.exists}');
+
+      return documentSnapshot.exists;
+    } catch (e) {
+      print('friendUidの削除失敗 ===== $e');
+      return false;
+    }
+  }
+
+
+
 
 
 }

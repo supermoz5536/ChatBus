@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
@@ -11,14 +12,15 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 
-class LoungePage extends ConsumerStatefulWidget {
-  const LoungePage({super.key});
+class LoungeBackPage extends ConsumerStatefulWidget {
+  final LoungeBack? loungeBack;
+  const LoungeBackPage(this.loungeBack, {super.key});
 
   @override
-  ConsumerState<LoungePage> createState() => _LoungePageState();
+  ConsumerState<LoungeBackPage> createState() => _LoungeBackPageState();
 }
 
-class _LoungePageState extends ConsumerState<LoungePage> {
+class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
   String? myUid;
   bool? isDisabled;
@@ -37,40 +39,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   @override
   void initState() {
     super.initState();
-    // 追加機能の記述部分であることの明示　
-    // 関数の呼び出し（initStateはFlutter標準メソッド）
-    // 親クラスの初期化処理
-    //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-    // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-    // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-    // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
     isDisabled = false;
-    currentIndex = 0;
-    talkRoom = TalkRoom(myUid: myUid, roomId: '');
+    currentIndex = widget.loungeBack!.currentIndex;
+
     /// MatchedHistoryPage用のコンストラクタなので
-    /// myUidはnullでも問題が起きてない
-
-    myDataFuture = UserFirestore.getAccount(); 
-    /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
-    /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
-
-    myDataFuture!.then((result) { 
-      if (result != null && mounted) {
-
-        /// Providerの状態値を更新
-        ref.read(myUidProvider.notifier).state = result['myUid'];
+    /// myUidはnullでも問題が起きてない  
+    talkRoom = TalkRoom(myUid: myUid, roomId: '');
         
-        /// Providerの状態値を更新
-        ref.read(languageCodeProvider.notifier).state = result['language'];
-
-        /// 画面遷移に必要なコンストラクタ
-        matchingProgress = MatchingProgress(myUid: result['myUid']);        
-       
-        /// ■ 通常のstfを使う場合のバックアップ
-        // ProviderScope.containerOf(context).read(languageCodeProvider.notifier).state = result['languageCode'];       
-      }
-    });
   }
   
 
@@ -80,8 +56,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.7),
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.5),
         surfaceTintColor: Colors.transparent,
         leading: FutureBuilder(
             future: myDataFuture,
@@ -92,7 +68,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(snapshot.data!['myUid']),
+                    stream: UserFirestore.streamProfImage(ref.watch(myUidProvider)),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -138,8 +114,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               height: 0,
             )),
         actions: <Widget>[
-
-
           // ■ リクエスト通知ボタン
           OverlayPortal(
               controller: _overlayController1st,
@@ -186,56 +160,43 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 tooltip: '友達リクエストの通知',
               )),
 
-
           // ■ DMの通知ボタン
           OverlayPortal(
-
-            /// controller: 表示と非表示を制御するコンポーネント
-            /// overlayChildBuilder: OverlayPortal内の表示ウィジェットを構築する応答関数です。
-            controller: _overlayController2nd,
-            overlayChildBuilder: (BuildContext context) {
-            
-            /// 画面サイズ情報を取得
-            final Size screenSize = MediaQuery.of(context).size;
-
-              return Stack(
-                children: [
-
-                  /// 範囲外をタップしたときにOverlayを非表示する処理
-                  /// Stack()最下層の全領域がスコープの範囲
-                  GestureDetector(
-                    onTap: () {
-                      _overlayController2nd.toggle();
-                    },
-                    child: Container(color: Colors.transparent),
-                  ),
-
-                  /// ポップアップの表示位置, 表示内容
-                  Positioned(
-                    top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
-                    left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
-                    height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.9, // 画面幅の90%の幅
-                    child: const Card(
-                      elevation: 20,
-                      color: Color.fromARGB(255, 140, 182, 255),
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text('DM通知の表示'),
-                          ],
+              controller: _overlayController2nd,
+              overlayChildBuilder: (BuildContext context) {
+                return Stack(
+                  children: [
+                    GestureDetector(
+                      // Stack()最下層の全領域がスコープの範囲
+                      onTap: () {
+                        _overlayController2nd.toggle();
+                      },
+                      child: Container(color: Colors.transparent),
+                    ),
+                    const Positioned(
+                      top: 120,
+                      left: 20,
+                      height: 200,
+                      width: 375,
+                      child: Card(
+                        elevation: 20,
+                        color: Color.fromARGB(255, 156, 156, 156),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text('DM通知の表示'),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-
+                  ],
+                );
               },
               child: IconButton(
                 onPressed: _overlayController2nd.toggle,
@@ -244,7 +205,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 iconSize: 35,
                 tooltip: '受信メールの通知',
               )),
-
 
           // ■ マッチングヒストリーの表示ボタン
           Builder(builder: (context) {
@@ -263,8 +223,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           })
         ],
       ),
-
-      
       drawer: Drawer(
         child: Column(
           children: [
@@ -326,8 +284,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           ],
         ),
       ),
-
-
       endDrawer: Drawer(
           child: Column(children: <Widget>[
         Container(
@@ -353,7 +309,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
+                    stream: UserFirestore.streamHistoryCollection(ref.watch(myUidProvider)),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -526,6 +482,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 );
 
                                 if (context.mounted) {
+                                  /// 画面遷移に必要なコンストラクタ
+                                  matchingProgress = MatchingProgress(myUid: ref.watch(myUidProvider));                                          
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

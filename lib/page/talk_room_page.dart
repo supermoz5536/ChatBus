@@ -8,6 +8,7 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
@@ -18,8 +19,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TalkRoomPage extends ConsumerStatefulWidget {
   final TalkRoom talkRoom;
-  const TalkRoomPage(this.talkRoom,
-      {super.key}); //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
+  const TalkRoomPage(this.talkRoom, {super.key}); //this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
 //10,11行で、TalkRoomPageクラスのインスタンス変数に、ルームの基本情報型を備えた変数talkRoomが設定された
 //画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
@@ -28,12 +28,15 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 }
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
+  Future<User?>? futureTalkuserProfile;
+  User? talkuserProfile;
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
   Future<String?>? futureTranslation;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
+  final _overlayController3rd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
 
   @override // 追加機能の記述部分であることの明示
@@ -47,52 +50,68 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     isChatting = true;
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
-        .then((_) async {
-      await Future.delayed(
-        const Duration(milliseconds: 400), //リスナー開始までの時間
-      );
+     .then((_) async {
+        await Future.delayed(
+          const Duration(milliseconds: 400), //リスナー開始までの時間
+        );
 
-      var talkuserDocStream =
-          UserFirestore.streamTalkuserDoc(widget.talkRoom.talkuserUid);
-      print('トークルーム: streamの起動(リスンの参照を取得)');
-      // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');
+          var talkuserDocStream = UserFirestore.streamTalkuserDoc(widget.talkRoom.talkuserUid);
+          print('トークルーム: streamの起動(リスンの参照を取得)');
+          // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');
 
-      talkuserDocSubscription = talkuserDocStream.listen((snapshot) {
-        print('トークルーム: streamデータをリスン');
-        print(
-            'トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
+          talkuserDocSubscription = talkuserDocStream.listen((snapshot) {
+            print('トークルーム: streamデータをリスン');
+            print(
+                'トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
 
-        if (snapshot.data()!.isNotEmpty &&
-            (snapshot.data()!['chatting_status'] == false ||
-                snapshot.data()!['is_lounge'] == true)) {
-          // ■■■■■■islounge を実装したら、上記のコメントアウトを実装する
+            if (snapshot.data()!.isNotEmpty &&
+                (snapshot.data()!['chatting_status'] == false ||
+                    snapshot.data()!['is_lounge'] == true)) {
+              // ■■■■■■islounge を実装したら、上記のコメントアウトを実装する
 
-          print('トークルーム: [chatting_status == false] OR [is_lounge == true]');
-          print('トークルーム: isDisabled == false にしてフッター再描画');
-          setState(() {
-            isChatting = false;
-            // 状態を更新：フッターUIを再描画
+              print('トークルーム: [chatting_status == false] OR [is_lounge == true]');
+              print('トークルーム: isDisabled == false にしてフッター再描画');
+              setState(() {
+                isChatting = false;
+                // 状態を更新：フッターUIを再描画
+              });
+            }
           });
-        }
-      });
-    });
+        });
 
     UserFirestore.updateHistory(
       widget.talkRoom.myUid,
       widget.talkRoom.talkuserUid,
       widget.talkRoom.roomId,
     );
+
+    /// アイコンの表示とポップアップ描画に必要な情報のFuture
+    futureTalkuserProfile = UserFirestore.fetchProfile(widget.talkRoom.talkuserUid);
+    
+
   } // initState
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 246, 246, 246),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 3,
+        shadowColor: Colors.black.withOpacity(0.7),
+        surfaceTintColor: Colors.transparent,
         title: const Text('トークルーム'),
+        centerTitle: true,
+        bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(15),
+            child: Divider(
+              color: Colors.white,
+              height: 0,
+            )),
       ),
       body: Stack(        
         children: [
+          
           StreamBuilder<QuerySnapshot>(
               //？？？？？<QuerySnapshot>の意味は？
               stream: RoomFirestore.fetchMessageSnapshot(widget.talkRoom.roomId!),
@@ -100,8 +119,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               /// 該当のroomドキュメントに変更があるたびにstreamを取得する
               /// 変更が新たな変更のトリガーになって、限定的に無限ループしている？
               /// その場合、「何の変更がトリガーか？」「どのポイントで無限ループが解消してるか？」
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
+              builder: (context, streamSnapshot) {
+                if (streamSnapshot.hasData) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
 
@@ -109,21 +128,22 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                         physics: const RangeMaintainingScrollPhysics(), //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true, //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
                         reverse: true, //スクロールがした始まりで上に滑っていく設定になる
-                        itemCount: snapshot.data!.docs.length,
+                        itemCount: streamSnapshot.data!.docs.length,
                         itemBuilder: (conxtext, index) {
-                          final doc = snapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
+                          final doc = streamSnapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
-                                                  message: data['message'],
-                                                  translatedMessage: data['translated_message'], 
-                                                  messageId: doc.id,
-                                                  isMe: Shared_Prefes.fetchUid() == data['sender_id'],
-                                                  sendTime: data['send_time']
+                                                    message: data['message'],
+                                                    translatedMessage: data['translated_message'], 
+                                                    messageId: doc.id,
+                                                    isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                    sendTime: data['send_time']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
                                                   //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
+
 
 
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
@@ -141,11 +161,62 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                           return Padding(
                             padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                              /// リスト[index]ごとに
+                              /// 各吹き出し部分を
+                              /// 1番下(.end)に指定して
+                              /// 左右の一方から配置する、結果として
+                              /// 右下(isMe == true)か、左下に(isMe == false)になる
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               textDirection: message.isMe
                                   ? TextDirection.rtl
                                   : TextDirection.ltr,
                               children: [
+                            
+                                /// アイコンの記述
+                                /// 必要な情報は、image_path, user_name, statement, 
+                                if (message.isMe == false) 
+                                FutureBuilder(
+                                   future: futureTalkuserProfile,
+                                   builder: (context, futureSnapshot) {
+                                     if (futureSnapshot.hasData) {
+
+                                      /// ■ アイコンタップ時のポップアップ
+                                      /// ポップアップ表示用のトリガー処理 → アイコン
+                                      return GestureDetector(
+                                          onTap: _overlayController3rd.toggle,
+                                          child: Padding(
+                                                    padding: const EdgeInsets.only(left: 0, right: 4),
+                                                    child: CircleAvatar(
+                                                      radius: 22.5,
+                                                      backgroundImage: NetworkImage(
+                                                        futureSnapshot.data!.userImageUrl!),
+                                                    ),
+                                                  ),
+                                      );
+                                         
+                                                                    
+                                     } else {
+                                       // データがない場合やエラーが発生した場合のプレースホルダー
+                                       return const Padding(
+                                           padding: EdgeInsets.only(left: 0, right: 4),
+                                           child: CircleAvatar(
+                                             radius: 22.5, // 明示的にサイズを指定
+                                             backgroundColor: Colors.transparent,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  ),
+                                
+                            
+                                IntrinsicHeight(
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    textDirection: message.isMe
+                                      ? TextDirection.rtl
+                                      : TextDirection.ltr,                                    
+                                    children: [
+
                                 // 吹き出し部分全体の「背景色」と「丸み」の設定
                                 Container(
                                   decoration: BoxDecoration(
@@ -157,7 +228,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                         color: const Color.fromARGB(255, 195, 195, 195))),
                                   child: Column(
                                     children: [
-
+                            
                                       // メッセージ表示の上部分
                                       Container(
                                         // 境界線のインデント処理のためのサブ記述 
@@ -172,7 +243,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                             )),
                                         child: Padding(
                                           padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
-
+                            
                                           //メイン記述: 上部分
                                           child: IntrinsicWidth(
                                             child: Container(
@@ -202,8 +273,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           ),
                                         ),
                                       ),
-
-
+                            
+                            
                                       //メッセージ表示の下部分
                                       Container(
                                         // 境界線のインデント処理のためのサブ記述
@@ -220,7 +291,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
                                              top: 8, bottom: 8, left: 10, right: 10
                                              ),
-
+                            
                                           // メイン記述: 下部分
                                           child: message.isMe 
                                           ? const Text('')
@@ -237,11 +308,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     ],
                                   ),
                                 ),
-                                Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate())),
+                                Container(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate()))),
                                 //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
                                 //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
-                              ],
-                            ),
+                                  ]),
+                                ),
+                              ]),
                           );
                         }),
                   );
@@ -251,6 +325,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   );
                 }
               }),
+
 
 
 
@@ -270,10 +345,152 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               ),
             ],
           ),
+
+
+
+
+
+          /// ポップアップ表示関数の記述
+          FutureBuilder(
+            future: futureTalkuserProfile,
+            builder: (context, futureSnapshot) {
+              if (futureSnapshot.hasData) {
+                return OverlayPortal(
+                
+                  /// controller: 表示と非表示を制御するコンポーネント
+                  /// overlayChildBuilder: OverlayPortal内の表示ウィジェットを構築する応答関数です。
+                  controller: _overlayController3rd,
+                  overlayChildBuilder: (BuildContext context) {
+                  
+                  /// 画面サイズ情報を取得
+                  final Size screenSize = MediaQuery.of(context).size;
+                
+                    return Stack(
+                      children: [
+                
+                        /// 範囲外をタップしたときにOverlayを非表示する処理
+                        /// Stack()最下層の全領域がスコープの範囲
+                        GestureDetector(
+                          onTap: () {
+                            _overlayController3rd.toggle();
+                          },
+                          child: Container(color: Colors.transparent),
+                        ),
+                
+                        /// ポップアップの表示位置
+                        Positioned(
+                          top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
+                          left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
+                          height: screenSize.height * 0.6, // 画面高さの30%の高さ
+                          width: screenSize.width * 0.9, // 画面幅の90%の幅
+                          child: Card(
+                            elevation: 20,
+                            color: const Color.fromARGB(255, 140, 182, 255),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                
+                              /// ポップアップの表示内容
+                              /// Userクラスのインスタンスが必要
+                              ///
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                                    
+                                  children: [
+                                
+                                    const Spacer(flex: 2),
+                                    
+                                    CircleAvatar(            
+                                      backgroundImage: NetworkImage(futureSnapshot.data!.userImageUrl!),
+                                      radius: 60,
+                                      ),
+                                
+                                    const Spacer(flex: 1),
+                                
+                                    Text(
+                                      futureSnapshot.data!.userName!,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 35,
+                                      ),
+                                    ),
+                                
+                                    const Spacer(flex: 1),
+                                
+                                    
+                                    SizedBox(
+                                    height: 100,
+                                    width: 300,
+                                      child: Text(
+                                        futureSnapshot.data!.statement!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 17.5,
+                                        ), 
+                                      )
+                                    ),
+
+                                    const Spacer(flex: 1),
+
+                                    /// 友達リクエストボタン
+                                    ElevatedButton(
+                                      onPressed: () async{
+                                      bool isUidExist = await UserFirestore.checkExistFriendUid(
+                                                               ref.watch(myUidProvider),
+                                                               futureSnapshot.data!.uid
+                                                         );
+                                       
+                                       if (isUidExist == false) {
+                                        /// 自分のfirendサブコレクションに相手のuidを追加
+                                        await UserFirestore.setFriendUid(
+                                          ref.watch(myUidProvider),  // tartgetUid
+                                          futureSnapshot.data!.uid,  // addUid
+                                          futureSnapshot.data!,      // talkserData
+                                          );
+
+                                        /// 相手のfirendサブコレクションに自分のuidを追加
+                                        await UserFirestore.setFriendUid(
+                                          futureSnapshot.data!.uid,   // tartgetUid
+                                          ref.watch(myUidProvider),   // addUid
+                                          futureSnapshot.data!,       // myData   ■■■■■■■■■　自分のUser userを取得する必要がある■■■■■■■■
+                                          );
+
+                                      } else { // ある場合は追加する必要がないのでnull
+
+                                      /// ■■■■■なぜ、既にあるDocがあるはずなのに2回目以降も追加されてしまうのか？
+                                      }
+
+
+                                      },
+
+                                      child: const Text('友達に追加'),
+                                      ),
+                
+                                    const Spacer(flex: 6),
+                
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
+              }
+            )
+
+
+
         ],
       ),
     );
   }
+
 
   // ■ フッター（チャット中）
   Row buildChattingFooter(BuildContext context) {

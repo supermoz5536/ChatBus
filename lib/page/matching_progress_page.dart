@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 import 'package:synchronized/synchronized.dart';
@@ -303,54 +305,53 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
                 child: Row(
                   children: [
                     // ■「キャンセル」ボタン
-                    Container(
-                        child: Padding(
+                    Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: ElevatedButton(
-                        // onPressed: isDisabled! ? null : () async{
-                        onPressed: isDisabled!
-                            ? () {}
-                            : () async {
-                                print('キャンセルボタンクリック');
-                                setState(() {
-                                  isDisabled = true;
-                                  // 二重タップ防止
-                                  // isProcessingの使い方は、progressMarkerと同じ
-                                  // trueにして、タップをブロック
-                                });
-
-                                await Future.delayed(
-                                  const Duration(milliseconds: 25), //無効にする時間
-                                );
-
-                                shouldBreak = true;
-                                await myDocSubscription!.cancel();
-                                await UserFirestore.updateMatchedStatus(
-                                    myUid, true);
-                                await UserFirestore.updateProgressMarker(
-                                    myUid, false);
-                                await UserFirestore.updateIsLounge(myUid, true);
-                                // Lounge_pageに戻る時の一連の処理
-                                // リスナーを反応させないために両方trueする
-
-                                if (isTransitioned == false) {
-                                  await RoomFirestore.deleteRoom(myRoomId);
-                                  await lock.synchronized(() async {
-                                    if (context.mounted) {
-                                      print('キャンセルボタンの画面遷移の実行');
-                                      await Navigator.pushAndRemoveUntil(
-                                          context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                                          SlideRightRoute(
-                                              page:
-                                                  const LoungePage()), //遷移先の画面を構築する関数を指定
-                                          (_) => false);
-                                    }
-                                  });
+                      // onPressed: isDisabled! ? null : () async{
+                      onPressed: isDisabled!
+                        ? () {}
+                        : () async {
+                            print('キャンセルボタンクリック');
+                            setState(() {
+                              isDisabled = true;
+                              // 二重タップ防止
+                              // isProcessingの使い方は、progressMarkerと同じ
+                              // trueにして、タップをブロック
+                            });
+                    
+                            await Future.delayed(
+                              const Duration(milliseconds: 25), //無効にする時間
+                            );
+                    
+                            shouldBreak = true;
+                            await myDocSubscription!.cancel();
+                            await UserFirestore.updateMatchedStatus(
+                                myUid, true);
+                            await UserFirestore.updateProgressMarker(
+                                myUid, false);
+                            await UserFirestore.updateIsLounge(myUid, true);
+                            // Lounge_pageに戻る時の一連の処理
+                            // リスナーを反応させないために両方trueする
+                    
+                            if (isTransitioned == false) {
+                              await RoomFirestore.deleteRoom(myRoomId);
+                              await lock.synchronized(() async {
+                                if (context.mounted) {
+                                LoungeBack loungeBack = LoungeBack(currentIndex: 0);
+                                  print('キャンセルボタンの画面遷移の実行');
+                                  await Navigator.pushAndRemoveUntil(
+                                      context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                      SlideRightRoute(
+                                          page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
+                                      (_) => false);
                                 }
-                              },
-                        child: Text(AppLocalizations.of(context)!.cancel),
-                      ),
-                    )),
+                              });
+                            }
+                          },
+                    child: Text(AppLocalizations.of(context)!.cancel),
+                                          ),
+                                        ),
 
                     // ■入力フィールド
                     Expanded(
