@@ -5,10 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
+import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
@@ -93,6 +95,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -151,7 +154,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                           if (message.isMe == false && message.translatedMessage == '') {
                              futureTranslation = UnitFunctions.translateAndUpdate(
                              message.message,                  /// 未翻訳text
-                             ref.watch(languageCodeProvider),  /// target 言語
+                             meUser!.language,                 /// target 言語
                              widget.talkRoom.roomId,           /// ルームID
                              message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
                           }                        
@@ -435,32 +438,34 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     /// 友達リクエストボタン
                                     ElevatedButton(
                                       onPressed: () async{
+
+                                      /// フレンドに追加しようとするuidが既に登録済みかを確認
                                       bool isUidExist = await UserFirestore.checkExistFriendUid(
-                                                               ref.watch(myUidProvider),
-                                                               futureSnapshot.data!.uid
+                                                               meUser!.myUid,
+                                                               futureSnapshot.data!.myUid
                                                          );
                                        
-                                       if (isUidExist == false) {
+                                        if (isUidExist == false) {
+                                        /// 登録済みではない場合
                                         /// 自分のfirendサブコレクションに相手のuidを追加
-                                        await UserFirestore.setFriendUid(
-                                          ref.watch(myUidProvider),  // tartgetUid
-                                          futureSnapshot.data!.uid,  // addUid
-                                          futureSnapshot.data!,      // talkserData
-                                          );
+                                          await UserFirestore.setFriendUid(
+                                            meUser.myUid,                // tartgetUid
+                                            futureSnapshot.data!.myUid,  // addUid
+                                            futureSnapshot.data!,      // UserData of talkser
+                                            );
 
-                                        /// 相手のfirendサブコレクションに自分のuidを追加
-                                        await UserFirestore.setFriendUid(
-                                          futureSnapshot.data!.uid,   // tartgetUid
-                                          ref.watch(myUidProvider),   // addUid
-                                          futureSnapshot.data!,       // myData   ■■■■■■■■■　自分のUser userを取得する必要がある■■■■■■■■
-                                          );
+                                          /// 相手のfirendサブコレクションに自分のuidを追加
+                                          await UserFirestore.setFriendUid(
+                                            futureSnapshot.data!.myUid,   // tartgetUid
+                                            meUser.myUid,                 // addUid
+                                            meUser,                     // UserData of mine
+                                            );
 
-                                      } else { // ある場合は追加する必要がないのでnull
-
-                                      /// ■■■■■なぜ、既にあるDocがあるはずなのに2回目以降も追加されてしまうのか？
-                                      }
-
-
+                                        } else { // ある場合は追加する必要がないのでnull
+                                        /// 登録済みの場合
+                                        /// 何もする必要がないので空関数を実行
+                                        (){};
+                                        }
                                       },
 
                                       child: const Text('友達に追加'),
@@ -615,10 +620,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   // lounge_pageに戻る時の一連の処理
 
                   if (context.mounted) {
+                    LoungeBack loungeBack = LoungeBack(currentIndex: 0);
                     Navigator.pushAndRemoveUntil(
                         context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                         SlideRightRoute(
-                            page: const LoungePage()), //遷移先の画面を構築する関数を指定
+                            page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
                         (_) => false);
                   }
                   isDisabled = false;

@@ -15,15 +15,16 @@ class FriendListPage extends ConsumerStatefulWidget {
 }
 
 class _FriendListPageState extends ConsumerState<FriendListPage> {
-  // int? selectedFriendIndex;
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
+
    return Scaffold(
     body: Stack(
         children: [                           
           StreamBuilder<QuerySnapshot>(       
-            stream: UserFirestore.friendSnapshot(ref.watch(myUidProvider)),
+            stream: UserFirestore.friendSnapshot(meUser!.myUid),
             builder: (context, snapshot) {
               if (snapshot.hasData) {              
                 return Padding(
@@ -42,7 +43,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                         final Map<String, dynamic> talkuserFields = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                         User user = User(
                                       userName: talkuserFields['user_name'],
-                                      uid: doc.id,
+                                      myUid: doc.id,
                                       userImageUrl: talkuserFields['user_image_url'],
                                       statement: talkuserFields['statement'],
                         );

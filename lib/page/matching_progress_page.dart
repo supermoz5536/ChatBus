@@ -338,7 +338,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
                               await RoomFirestore.deleteRoom(myRoomId);
                               await lock.synchronized(() async {
                                 if (context.mounted) {
-                                LoungeBack loungeBack = LoungeBack(currentIndex: 0);
+                                  LoungeBack loungeBack = LoungeBack(currentIndex: 0);
                                   print('キャンセルボタンの画面遷移の実行');
                                   await Navigator.pushAndRemoveUntil(
                                       context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し

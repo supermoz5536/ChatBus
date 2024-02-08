@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -57,12 +58,34 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
     myDataFuture!.then((result) { 
       if (result != null && mounted) {
+        User? user = User(
+                        myUid: result['myUid'],
+                        userName: result['userName'], 
+                        userImageUrl: result['userImageUrl'],
+                        statement: result['statement'],
+                        language: result['language'],
+                        country: result['country'],
+                     );
 
-        /// Providerの状態値を更新
-        ref.read(myUidProvider.notifier).state = result['myUid'];
-        
-        /// Providerの状態値を更新
-        ref.read(languageCodeProvider.notifier).state = result['language'];
+         print('Before myUid == ${result['myUid']}');
+         print('Before userName == ${result['userName']}');
+         print('Before userImageUrl == ${result['userImageUrl']}');
+         print('Before statement == ${result['statement']}');
+         print('Before language == ${result['language']}');
+         print('Before country == ${result['country']}');
+
+         /// Providerの状態変数を更新
+         ref.read(meUserProvider.notifier).setUser(user);
+
+        User? testUser = ref.watch(meUserProvider);
+          print('After myUid == ${testUser!.myUid}');
+          print('After userName == ${testUser.userName}');
+          print('After userImageUrl == ${testUser.userImageUrl}');
+          print('After statement == ${testUser.statement}');
+          print('After language == ${testUser.language}');
+          print('After country == ${testUser.country}');
+
+
 
         /// 画面遷移に必要なコンストラクタ
         matchingProgress = MatchingProgress(myUid: result['myUid']);        

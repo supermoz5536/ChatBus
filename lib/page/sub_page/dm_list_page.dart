@@ -5,6 +5,7 @@ import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
 
@@ -20,6 +21,8 @@ class _DMListPageState extends ConsumerState<DMListPage> {
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
+
     return Scaffold(
         // appBar: AppBar(
         //   title: const Text('data'),
@@ -31,7 +34,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
 
 
         body:StreamBuilder<QuerySnapshot>(
-                stream: DMRoomFirestore.fetchDMSnapshot(ref.watch(myUidProvider)),  
+                stream: DMRoomFirestore.fetchDMSnapshot(meUser!.myUid),  
                 builder: (context, streamSnapshot) {
                   if(streamSnapshot.hasData){
 
@@ -50,7 +53,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                     /// error：非同期操作中に発生したエラー。
                     final Future<List<DMRoom>?> futureDMRooms = DMRoomFirestore
                                                                 .fetchJoinedDMRooms(
-                                                                  ref.watch(myUidProvider),
+                                                                  meUser.myUid,
                                                                   streamSnapshot.data
                                                                   );
 
@@ -82,7 +85,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                     /// DMRoomPageへの画面遷移
                                                     if (context.mounted) {
                                                         DMRoom dMRoom = DMRoom(
-                                                          myUid: ref.watch(myUidProvider),
+                                                          myUid: meUser.myUid,
                                                           talkuserUid: dMRooms[index].talkuserUid,
                                                           dMRoomId: dMRooms[index].dMRoomId);
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/l10n/l10n.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
@@ -47,6 +48,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
   // Widget build(BuildContext context) {
   // Riverpod用の書き換えバックアップ  
+  User? user = ref.watch(meUserProvider);
     return MaterialApp(
       /// DevicePreview の必須プロパティ
       useInheritedMediaQuery: true,
@@ -61,7 +63,7 @@ class MyApp extends ConsumerWidget {
       ),
       supportedLocales: L10n.all,
       // locale: const Locale('es'),
-      locale: Locale(ref.watch(languageCodeProvider)),
+      locale: Locale(user!.language!),
       localizationsDelegates: const[
         AppLocalizations.delegate, 
         GlobalMaterialLocalizations.delegate,

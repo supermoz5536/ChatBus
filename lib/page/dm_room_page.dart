@@ -9,6 +9,7 @@ import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
@@ -84,6 +85,8 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
@@ -129,7 +132,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           if (message.isMe == false && message.translatedMessage == '') {
                              futureTranslation = UnitFunctions.translateAndUpdate(
                              message.message,                  /// 未翻訳text
-                             ref.watch(languageCodeProvider),  /// target 言語
+                             meUser!.language,                 /// target 言語
                              widget.dMRoom.dMRoomId,           /// ルームID
                              message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
                           }                        

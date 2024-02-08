@@ -63,6 +63,9 @@ class UserFirestore {
                                                   
                       return {
                         'myUid': newDoc.id,
+                        'userName': 'user_name',
+                        'userImageUrl': userImageUrl,
+                        'statement': 'statement',
                         'language': deviceLanguage,
                         'country': deviceCountry,                        
                       };                      
@@ -87,6 +90,7 @@ class UserFirestore {
 
                      /// Filed情報を更新して、既存の端末Uidをそのまま使用
 
+                    String? userImageUrl = await UserFirebaseStorage.getProfImage();
                     String? deviceLanguage = ui.window.locale.languageCode;
                     String? deviceCountry = Shared_Prefes.fetchCountry();
 
@@ -100,8 +104,11 @@ class UserFirestore {
                      }); 
                        return {
                         'myUid': sharedPrefesMyUid,
+                        'userName': 'user_name',
+                        'userImageUrl': userImageUrl,
+                        'statement': 'statement',
                         'language': deviceLanguage,
-                        'country': deviceCountry,                            
+                        'country': deviceCountry,                               
                        };
 
 
@@ -134,9 +141,12 @@ class UserFirestore {
                            print('最新の端末保存uid ${newDoc.id}');    
 
                         return {
-                          'myUid': newDoc.id,
-                          'language': deviceLanguage,
-                          'country': deviceCountry,                        
+                        'myUid': newDoc.id,
+                        'userName': 'user_name',
+                        'userImageUrl': userImageUrl,
+                        'statement': 'statement',
+                        'language': deviceLanguage,
+                        'country': deviceCountry,                        
                         };      
                     }
 
@@ -172,9 +182,12 @@ class UserFirestore {
                       print('最新の端末保存uid ${newDoc.id}');          
                       
                   return {
-                    'myUid': newDoc.id,
-                    'language': deviceLanguage,
-                    'country': deviceCountry,                        
+                        'myUid': newDoc.id,
+                        'userName': 'user_name',
+                        'userImageUrl': userImageUrl,
+                        'statement': 'statement',
+                        'language': deviceLanguage,
+                        'country': deviceCountry,                          
                   };      
           }
          }
@@ -396,10 +409,12 @@ static Future<User?> fetchProfile(String? uid) async{
   try{
       final snapshot = await _userCollection.doc(uid).get(); 
       User user = User(
+        myUid: uid,
         userName: snapshot.data()!['user_name'],
-        uid: uid,
         userImageUrl: snapshot.data()!['user_image_url'],
         statement: snapshot.data()!['statement'],
+        language: snapshot.data()!['language'],
+        country: snapshot.data()!['country'],
       );
 
 return user;                                                //DBから取得した自分のデータを代入した、プロフィール情報を出力する
@@ -496,7 +511,7 @@ static Future<void> initForMatching (String? myUid,) async{
          'chatting_status': true,
          'is_lounge': false,         
         }); 
-      return null;    
+      return ;    
   
 }
 
@@ -516,7 +531,7 @@ static Future<void> updateHistory (String? myUid, String? talkuserUid, String? r
 }
 
 
-  static Stream<QuerySnapshot> friendSnapshot(String myUid) {
+  static Stream<QuerySnapshot> friendSnapshot(String? myUid) {
   /// QuerySnapshot は Firestore ライブラリのクラス
   /// DBへのクエリ（リクエスト）に対して、結果(snapshot)を出力するクラス
   /// orderBy()の用法について　https://sl.bing.net/GxKL2wdx1g    

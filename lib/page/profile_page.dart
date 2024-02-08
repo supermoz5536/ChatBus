@@ -55,7 +55,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    User? meUser = ref.watch(meUserProvider);
+        return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -71,7 +72,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(ref.watch(myUidProvider)),
+                    stream: UserFirestore.streamProfImage(meUser!.myUid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -309,7 +310,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
         ),
 
                 StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(ref.watch(myUidProvider)),
+                    stream: UserFirestore.streamHistoryCollection(meUser!.myUid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -560,8 +561,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                             setState(() async{
                               /// db上にmyUidと相手のuid のjoinedされたDMRoomを参照してget()
                              String? dMRoomId = await DMRoomFirestore.getDMRoomId(
-                                                  ref.watch(myUidProvider),
-                                                  widget.user!.uid
+                                                  meUser!.myUid,
+                                                  widget.user!.myUid
                                                   );
 
                               if (dMRoomId != null) {
@@ -569,8 +570,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               /// ある場合：返り値のdMRoomIdでdm_room_page.dartに画面遷移
                               if (context.mounted) {
                                 DMRoom dMRoom = DMRoom(
-                                  myUid: ref.watch(myUidProvider),
-                                  talkuserUid: widget.user!.uid,
+                                  myUid: meUser!.myUid,
+                                  talkuserUid: widget.user!.myUid,
                                   dMRoomId: dMRoomId);
                                 Navigator.pushAndRemoveUntil(
                                     context,
@@ -582,14 +583,14 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               } else {
                               /// ない場合：dmroomCollectionにdmroomを作成して画面遷移
                               dMRoomId = await DMRoomFirestore.createDmRoom(
-                                           ref.watch(myUidProvider),
-                                           widget.user!.uid
+                                           meUser!.myUid,
+                                           widget.user!.myUid
                                            );
 
                                 if (context.mounted) {
                                   DMRoom dMRoom = DMRoom(
-                                    myUid: ref.watch(myUidProvider),
-                                    talkuserUid: widget.user!.uid,
+                                    myUid: meUser!.myUid,
+                                    talkuserUid: widget.user!.myUid,
                                     dMRoomId: dMRoomId);
                                   Navigator.pushAndRemoveUntil(
                                       context,
@@ -633,10 +634,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                             onPressed: () async{
                                 if (deleteConfirmedMarker){
                                   /// 自分のfriendサブコレクションから相手のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(ref.watch(myUidProvider), widget.user!.uid);
+                                    await UserFirestore.deleteFriendUid(meUser.myUid, widget.user!.myUid);
 
                                     /// 相手のfriendサブコレクションから自分のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(widget.user!.uid, ref.watch(myUidProvider));
+                                    await UserFirestore.deleteFriendUid(widget.user!.myUid, meUser.myUid);
 
                                     /// LoungeBackPage に画面遷移
                                     if (context.mounted) {

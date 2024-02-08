@@ -4,6 +4,7 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,6 +53,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -68,7 +70,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(ref.watch(myUidProvider)),
+                    stream: UserFirestore.streamProfImage(meUser!.myUid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -230,6 +232,9 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
               //ListView が無限の長さを持つので直接 column でラップすると不具合
               //Expanded で長さを限界値に指定
               child: ListView(children: [
+
+                /// ■■■■■■■■■■■■■■■■■■■■このSizedBox部分で描画エラーが出てるので、■■■■■■■■■■■■■■■■■■■■
+                /// ■■■■■■■■■■■■■■■■■■■■作り込んでいく際に対処する■■■■■■■■■■■■■■■■■■■■
                 SizedBox(
                   height: 160.0,
                   child: DrawerHeader(
@@ -244,9 +249,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                       SizedBox(
                           child: ElevatedButton(
                               onPressed: () {}, child: Text('ランダムネーミングのボタン'))),
-                    ],
-                  )),
-                ),
+                    ]))),
                 ListTile(title: Text('設定しておくと安心だよ！')),
                 ListTile(title: Text('IDの設定 :')),
                 Spacer(
@@ -309,7 +312,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(ref.watch(myUidProvider)),
+                    stream: UserFirestore.streamHistoryCollection(meUser!.myUid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -483,7 +486,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
-                                  matchingProgress = MatchingProgress(myUid: ref.watch(myUidProvider));                                          
+                                  matchingProgress = MatchingProgress(myUid: meUser!.myUid);                                          
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
@@ -628,7 +631,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                       ],
                     ),
 
-                    const Spacer(),
+                    // const Spacer(),
                   ],
                 ),
               ),
