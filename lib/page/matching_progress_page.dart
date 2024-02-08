@@ -85,8 +85,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
 
           // 「自分がマッチングする場合」の処理
           if (talkuserUid != null) {
-            bool myProgressMarker =
-                await UserFirestore.checkMyProgressMarker(myUid);
+            bool myProgressMarker = await UserFirestore.checkMyProgressMarker(myUid);
             // print('myUidのマッチング処理状況の確認');
 
             if (myProgressMarker == true) {
@@ -97,8 +96,8 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
               });
               throw Exception('End Retry'); // retry終了
             } else {
-              await UserFirestore.updateProgressMarker(myUid,
-                  true); // falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
+              await UserFirestore.updateProgressMarker(myUid, true); 
+              // falseの場合は「される場合」は実行されてないので、trueにして競合防止してからtransactionを開始
               print('「する場合」の処理開始直前に progress_marker を trueに変更');
 
               await CloudFunctions.runTransactionDB(
