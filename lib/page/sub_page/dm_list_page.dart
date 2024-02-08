@@ -36,7 +36,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
         body:StreamBuilder<QuerySnapshot>(
                 stream: DMRoomFirestore.fetchDMSnapshot(meUser!.myUid),  
                 builder: (context, streamSnapshot) {
-                  if(streamSnapshot.hasData){
+                  if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {
 
                     /// 事前のFutureBuilder用のFutureを生成
                     /// StreamBuilderは、更新データをリスンし、利用可能になるたびにビルダー関数を再実行します。
@@ -147,20 +147,26 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                 } else {
                                 return Text('トークの取得に失敗しました');
                                 }                    
-                      }
+                          }
+                        }
+                      );            
+                    }else{
+                    return const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                         Center(child: Text('まだメッセージがありません。')),
+                         Center(child: Text('友達にメッセージを送りましょう!')),
+                      ],
+                    );
+                    }
+               }
+           ),
+       );
+   }
 
-  
-                }
-              );            
-          }else{
-            return CircularProgressIndicator();
 
-         }
-      }
-     ),
-    );
-  }
 }
+
 
 
 
