@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import '../model/user.dart';
@@ -122,6 +123,100 @@ class RoomFirestore {
       print('メッセージ送信失敗 ===== $e');
     }
   }
+
+
+
+
+ static Future<String?> fetchJoinedRoom(String? myUid, String? talkuserUid) async{
+  try {
+        QuerySnapshot querySnapshot = await _roomCollection
+                                      .where('jointed_user', arrayContains: myUid)
+                                      .get();
+    /// TalkuserUidを取得するための予備記述
+    /// 'jointed_user'フィールドの各配列に記述されたIDを
+    /// リスト型変数 userIds に各々代入する
+    for(var doc in querySnapshot.docs){
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      List<dynamic> userIds = data['jointed_user'];
+
+      /// userIdsの、myUidでない方のUidが
+      /// talkuserUidと一致する場合は
+      /// joinedRoomが存在してるので
+      /// そのドキュメントのID（=roomId）をreturnする
+      for(var userId in userIds){
+        if (userId == myUid) continue;
+        if (userId == talkuserUid) return doc.id;
+      }
+    }
+
+      /// for(){}で、talkuserUidと一致するidが見つからなかった場合は
+      /// joinedRoomが存在しないので
+      /// nullをreturnする
+      return null;
+    
+  } catch (e){
+    print('fetchJoinedRoom()が失敗しました === $e');
+    return null;
+  }
+ }
+
+
+
+/// roomコレクション > roomドキュメント > messageコレクション のQuerySnapshotをfetchする関数です
+/// addMessagesDMRoom()を連携して用いるのが前提です
+static Future<QuerySnapshot?> fetchRoomMessages(String? roomId) async{
+  try {
+    QuerySnapshot roomMessages = await _roomCollection
+                                          .doc(roomId)
+                                          .collection('message')
+                                          .orderBy('send_time', descending: true)
+                                          .limit(15)
+                                          .get();
+    return roomMessages;   
+    } catch (e) {
+      print('fetchRoomMessages()が失敗しました === $e');
+      return null;
+   }                                
+}
+
+
+
+
+/// addMessagesDMRoom()から取得したmessage情報を
+/// dmroomコレクション > dmroomドキュメント > messageコレクションに
+/// .addする関数です
+static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
+
+   // batchメソッドの宣言
+   final batch = FirebaseFirestore.instance.batch();
+  
+  // QuerySnapshot型のメッセージの集合データを、
+  // 個別の doc(=message) ごとにMap型にデータ内容を整理
+  for (final messageDoc in roomMessages!.docs) {  
+    final messageData = messageDoc.data() as Map<String, dynamic>;
+
+    // batchの参照先を格納した変数を定義
+    final newMessageDocRef = FirebaseFirestore.instance
+        .collection('dmroom')
+        .doc(dMRoomId)
+        .collection('message')
+        .doc(); 
+
+    // batchメソッドを設定
+    // 参照先：newMessageDocRef
+    // 書き込み内容：messageData
+    batch.set(newMessageDocRef, messageData);
+  }
+
+  // POINT: batchメソッドでは
+  // 「参照先」「書き込み内容」を
+  // for(){}内で.setするだけで、
+  // 参照先への追加操作がバッチされます。
+  await batch.commit();
+}
+
+
+
 
 
 

@@ -59,7 +59,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     myDataFuture!.then((result) { 
       if (result != null && mounted) {
         User? user = User(
-                        myUid: result['myUid'],
+                        uid: result['myUid'],
                         userName: result['userName'], 
                         userImageUrl: result['userImageUrl'],
                         statement: result['statement'],
@@ -78,7 +78,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
          ref.read(meUserProvider.notifier).setUser(user);
 
         User? testUser = ref.watch(meUserProvider);
-          print('After myUid == ${testUser!.myUid}');
+          print('After myUid == ${testUser!.uid}');
           print('After userName == ${testUser.userName}');
           print('After userImageUrl == ${testUser.userImageUrl}');
           print('After statement == ${testUser.statement}');

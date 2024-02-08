@@ -441,23 +441,23 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                                       /// フレンドに追加しようとするuidが既に登録済みかを確認
                                       bool isUidExist = await UserFirestore.checkExistFriendUid(
-                                                               meUser!.myUid,
-                                                               futureSnapshot.data!.myUid
+                                                               meUser!.uid,
+                                                               futureSnapshot.data!.uid
                                                          );
                                        
                                         if (isUidExist == false) {
                                         /// 登録済みではない場合
                                         /// 自分のfirendサブコレクションに相手のuidを追加
                                           await UserFirestore.setFriendUid(
-                                            meUser.myUid,                // tartgetUid
-                                            futureSnapshot.data!.myUid,  // addUid
+                                            meUser.uid,                // tartgetUid
+                                            futureSnapshot.data!.uid,  // addUid
                                             futureSnapshot.data!,      // UserData of talkser
                                             );
 
                                           /// 相手のfirendサブコレクションに自分のuidを追加
                                           await UserFirestore.setFriendUid(
-                                            futureSnapshot.data!.myUid,   // tartgetUid
-                                            meUser.myUid,                 // addUid
+                                            futureSnapshot.data!.uid,   // tartgetUid
+                                            meUser.uid,                 // addUid
                                             meUser,                     // UserData of mine
                                             );
 

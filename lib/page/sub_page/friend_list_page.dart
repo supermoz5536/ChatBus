@@ -24,7 +24,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
     body: Stack(
         children: [                           
           StreamBuilder<QuerySnapshot>(       
-            stream: UserFirestore.friendSnapshot(meUser!.myUid),
+            stream: UserFirestore.friendSnapshot(meUser!.uid),
             builder: (context, snapshot) {
               if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {              
                 return Padding(
@@ -43,7 +43,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                             final Map<String, dynamic> talkuserFields = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                             User user = User(
                                           userName: talkuserFields['user_name'],
-                                          myUid: doc.id,
+                                          uid: doc.id,
                                           userImageUrl: talkuserFields['user_image_url'],
                                           statement: talkuserFields['statement'],
                                           );

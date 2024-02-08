@@ -70,7 +70,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(meUser!.myUid),
+                    stream: UserFirestore.streamProfImage(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -312,7 +312,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(meUser!.myUid),
+                    stream: UserFirestore.streamHistoryCollection(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -486,7 +486,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
-                                  matchingProgress = MatchingProgress(myUid: meUser!.myUid);                                          
+                                  matchingProgress = MatchingProgress(myUid: meUser!.uid);                                          
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

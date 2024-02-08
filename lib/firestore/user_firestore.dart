@@ -409,7 +409,7 @@ static Future<User?> fetchProfile(String? uid) async{
   try{
       final snapshot = await _userCollection.doc(uid).get(); 
       User user = User(
-        myUid: uid,
+        uid: uid,
         userName: snapshot.data()!['user_name'],
         userImageUrl: snapshot.data()!['user_image_url'],
         statement: snapshot.data()!['statement'],

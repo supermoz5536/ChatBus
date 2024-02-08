@@ -93,7 +93,7 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
 
 
   /// DM用のトークルーム作成関数
-  static Future<String?> createDmRoom(String? myUid, String? talkUserUid) async {
+  static Future<String?> createDMRoom(String? myUid, String? talkUserUid) async {
     try {
       DocumentReference docRef = await _dMRoomCollection.add({
         'jointed_user': [myUid, talkUserUid],

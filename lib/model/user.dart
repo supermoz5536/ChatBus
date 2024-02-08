@@ -4,7 +4,7 @@
 /// StateNotifireProviderの状態変数に代入
 
 class User {  
- final String? myUid;
+ final String? uid;
  final String? userName;  
  final String? userImageUrl;
  final String? statement;
@@ -14,7 +14,7 @@ class User {
 
   /// コンストラクタの設定
   User({
-     this.myUid,
+     this.uid,
      this.userName, 
      this.userImageUrl,
      this.statement, 
@@ -24,7 +24,7 @@ class User {
 
   /// USER型インスタンスの個別プロパティの更新用関数
   User copyWith({
-    String? myUid,
+    String? uid,
     String? userName,
     String? userImageUrl,
     String? statement,
@@ -45,7 +45,7 @@ class User {
     ///結果として、変更されていないプロパティはそのまま残り、
     ///指定されたuserNameのみが更新された新しいUserインスタンスが生成されます。
     return User(
-      myUid: myUid ?? this.myUid,
+      uid: uid ?? this.uid,
       userName: userName ?? this.userName,
       userImageUrl: userImageUrl ?? this.userImageUrl,
       statement: statement ?? this.statement,

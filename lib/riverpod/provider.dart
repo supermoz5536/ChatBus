@@ -22,7 +22,7 @@ import 'package:udemy_copy/riverpod/notifier.dart';
 final meUserProvider = StateNotifierProvider<MeUserNotifier, User?>((ref) {
   User? initialUser = User(
     /// StateNotifierProvider の初期値の設定（初めて参照された時にのみ使用される）
-    myUid: '',
+    uid: '',
     userName: '',
     userImageUrl: '',
     statement: '', 

@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
+import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
+import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
@@ -21,8 +23,8 @@ import 'package:udemy_copy/utils/screen_transition.dart';
 
 
 class ProfilePage extends ConsumerStatefulWidget {
-  final User? user;
-  const ProfilePage(this.user, {super.key});
+  final User? talkuserProfile;
+  const ProfilePage(this.talkuserProfile, {super.key});
 
   @override
   ConsumerState<ProfilePage> createState() => _LoungePageState();
@@ -72,7 +74,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                 return Text('エラーが発生しました');
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(meUser!.myUid),
+                    stream: UserFirestore.streamProfImage(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -310,7 +312,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
         ),
 
                 StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(meUser!.myUid),
+                    stream: UserFirestore.streamHistoryCollection(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -446,14 +448,14 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                 const Spacer(flex: 2),
                 
                 CircleAvatar(            
-                  backgroundImage: NetworkImage(widget.user!.userImageUrl!),
+                  backgroundImage: NetworkImage(widget.talkuserProfile!.userImageUrl!),
                   radius: 60,
                   ),
 
                 const Spacer(flex: 1),
 
                 Text(
-                  widget.user!.userName!,
+                  widget.talkuserProfile!.userName!,
                   style: const TextStyle(
                     fontSize: 35
                   ),
@@ -466,7 +468,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                   height: 100,
                   width: 300,
                     child: Text(
-                      widget.user!.statement!,
+                      widget.talkuserProfile!.statement!,
                       style: const TextStyle(
                         color: Color.fromARGB(255, 34, 34, 34),
                         fontSize: 17.5,
@@ -554,15 +556,14 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                         IconButton(
                           icon: const Icon(Icons.chat_bubble_outline),
                           iconSize: 35,
-                          // tooltip: 'マッチングしたい相手の設定ができます',
+                          // tooltip: 'DMを送ります',
                           color: const Color.fromARGB(255, 79, 155, 255),
                           padding: EdgeInsets.zero,
-                          onPressed: () {
-                            setState(() async{
-                              /// db上にmyUidと相手のuid のjoinedされたDMRoomを参照してget()
+                          onPressed: () async{
+                             /// db上にmyUidと相手のuid のjoinedされたDMRoomを参照してget()
                              String? dMRoomId = await DMRoomFirestore.getDMRoomId(
-                                                  meUser!.myUid,
-                                                  widget.user!.myUid
+                                                  meUser!.uid,
+                                                  widget.talkuserProfile!.uid
                                                   );
 
                               if (dMRoomId != null) {
@@ -570,8 +571,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               /// ある場合：返り値のdMRoomIdでdm_room_page.dartに画面遷移
                               if (context.mounted) {
                                 DMRoom dMRoom = DMRoom(
-                                  myUid: meUser!.myUid,
-                                  talkuserUid: widget.user!.myUid,
+                                  myUid: meUser!.uid,
+                                  talkuserUid: widget.talkuserProfile!.uid,
                                   dMRoomId: dMRoomId);
                                 Navigator.pushAndRemoveUntil(
                                     context,
@@ -582,15 +583,33 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               
                               } else {
                               /// ない場合：dmroomCollectionにdmroomを作成して画面遷移
-                              dMRoomId = await DMRoomFirestore.createDmRoom(
-                                           meUser!.myUid,
-                                           widget.user!.myUid
+                              dMRoomId = await DMRoomFirestore.createDMRoom(
+                                           meUser!.uid,
+                                           widget.talkuserProfile!.uid
                                            );
+
+                                /// ■ 新規dMRoom作成の際は
+                                /// db上にmyUidとtalkuserUid の joined された room が存在するか確認する
+                                String? historyRoomId = await RoomFirestore
+                                                             .fetchJoinedRoom(
+                                                                meUser.uid,
+                                                                widget.talkuserProfile!.uid,
+                                                              );
+
+                                /// roomがあれば、チャット内容の引き継ぎ処理をします。                
+                                if (historyRoomId != null) {
+                                  /// roomのmessageコレクションでdocsをfetch
+                                  QuerySnapshot? roomMessages = await RoomFirestore.fetchRoomMessages(historyRoomId);
+                                  /// fetch した roomMessages を
+                                  /// create した dmroomコレクションのdmroomドキュメントのmessageサブコレクションに追加
+                                  await RoomFirestore.addMessagesDMRoom(dMRoomId, roomMessages);
+                                } 
+                                  
 
                                 if (context.mounted) {
                                   DMRoom dMRoom = DMRoom(
-                                    myUid: meUser!.myUid,
-                                    talkuserUid: widget.user!.myUid,
+                                    myUid: meUser!.uid,
+                                    talkuserUid: widget.talkuserProfile!.uid,
                                     dMRoomId: dMRoomId);
                                   Navigator.pushAndRemoveUntil(
                                       context,
@@ -600,7 +619,6 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                                       (_) => false);
                                 }
                               }
-                            });
                           },
                         ),
                         const Spacer(flex: 1),
@@ -634,10 +652,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                             onPressed: () async{
                                 if (deleteConfirmedMarker){
                                   /// 自分のfriendサブコレクションから相手のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(meUser.myUid, widget.user!.myUid);
+                                    await UserFirestore.deleteFriendUid(meUser.uid, widget.talkuserProfile!.uid);
 
                                     /// 相手のfriendサブコレクションから自分のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(widget.user!.myUid, meUser.myUid);
+                                    await UserFirestore.deleteFriendUid(widget.talkuserProfile!.uid, meUser.uid);
 
                                     /// LoungeBackPage に画面遷移
                                     if (context.mounted) {

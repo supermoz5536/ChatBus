@@ -46,7 +46,7 @@ class MeUserNotifier extends StateNotifier<User?> {
   /// 設定するためのメソッドの定義をしています 
   void updateUid(String? uid) {
     if (state != null) {
-      state = state!.copyWith(myUid: uid);
+      state = state!.copyWith(uid: uid);
     }
   }
   

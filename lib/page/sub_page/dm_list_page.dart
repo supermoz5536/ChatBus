@@ -34,7 +34,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
 
 
         body:StreamBuilder<QuerySnapshot>(
-                stream: DMRoomFirestore.fetchDMSnapshot(meUser!.myUid),  
+                stream: DMRoomFirestore.fetchDMSnapshot(meUser!.uid),  
                 builder: (context, streamSnapshot) {
                   if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {
 
@@ -53,7 +53,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                     /// error：非同期操作中に発生したエラー。
                     final Future<List<DMRoom>?> futureDMRooms = DMRoomFirestore
                                                                 .fetchJoinedDMRooms(
-                                                                  meUser.myUid,
+                                                                  meUser.uid,
                                                                   streamSnapshot.data
                                                                   );
 
@@ -85,7 +85,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                     /// DMRoomPageへの画面遷移
                                                     if (context.mounted) {
                                                         DMRoom dMRoom = DMRoom(
-                                                          myUid: meUser.myUid,
+                                                          myUid: meUser.uid,
                                                           talkuserUid: dMRooms[index].talkuserUid,
                                                           dMRoomId: dMRooms[index].dMRoomId);
 
