@@ -35,7 +35,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
-  Future<String?>? futureTranslation;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final _overlayController3rd = OverlayPortalController();
@@ -141,7 +140,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                     translatedMessage: data['translated_message'], 
                                                     isMe: Shared_Prefes.fetchUid() == data['sender_id'],
                                                     sendTime: data['send_time'],
-                                                    isDivider: data['is_Divider']
+                                                    isDivider: data['is_divider']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
@@ -155,11 +154,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                           if (message.isMe == false
                            && message.translatedMessage == ''
                            && message.isDivider == false ) {
-                                futureTranslation = UnitFunctions.translateAndUpdate(
+                                UnitFunctions.translateAndUpdateRoom(
                                 message.message,                  /// 未翻訳text
                                 meUser!.language,                 /// target 言語
                                 widget.talkRoom.roomId,           /// ルームID
-                                message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
+                                message.messageId,
+                                );              /// 翻訳済textをwriteするメッセージのドキュメントID
                           }                        
 
 

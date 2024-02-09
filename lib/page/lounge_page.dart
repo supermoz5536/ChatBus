@@ -67,25 +67,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         country: result['country'],
                      );
 
-         print('Before myUid == ${result['myUid']}');
-         print('Before userName == ${result['userName']}');
-         print('Before userImageUrl == ${result['userImageUrl']}');
-         print('Before statement == ${result['statement']}');
-         print('Before language == ${result['language']}');
-         print('Before country == ${result['country']}');
-
-         /// Providerの状態変数を更新
-         ref.read(meUserProvider.notifier).setUser(user);
-
-        User? testUser = ref.watch(meUserProvider);
-          print('After myUid == ${testUser!.uid}');
-          print('After userName == ${testUser.userName}');
-          print('After userImageUrl == ${testUser.userImageUrl}');
-          print('After statement == ${testUser.statement}');
-          print('After language == ${testUser.language}');
-          print('After country == ${testUser.country}');
-
-
+        /// Providerの状態変数を更新
+        ref.read(meUserProvider.notifier).setUser(user);
 
         /// 画面遷移に必要なコンストラクタ
         matchingProgress = MatchingProgress(myUid: result['myUid']);        

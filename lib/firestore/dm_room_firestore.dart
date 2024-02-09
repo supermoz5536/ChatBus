@@ -152,7 +152,7 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
         'translated_message': '',
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
-        'is_Divider': false,
+        'is_divider': false,
       });
 
       /// messageドキュメントを作成後
@@ -217,7 +217,7 @@ static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
                                                 'translated_message': '', 
                                                 'sender_id': Shared_Prefes.fetchUid(),
                                                 'send_time': Timestamp.now(),
-                                                'is_Divider': true,
+                                                'is_divider': true,
                                                 };
     final newMessageDocRef = _dMRoomCollection
                         .doc(dMRoomId)
@@ -231,6 +231,20 @@ static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
   // 参照先への追加操作がバッチされます。
   await batch.commit();
 }
+
+
+
+
+  static Future<void> updateTranslatedMessageForDMRoom(String? roomId, String? messageId, String? translatedMessage) async {
+    try {
+      final messageDoc = _dMRoomCollection.doc(roomId).collection('message').doc(messageId); 
+      await messageDoc.update({
+        'translated_message': translatedMessage
+      });
+    } catch (e) {
+      print('メッセージ送信失敗 ===== $e');
+    }
+  }
 
 
 

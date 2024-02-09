@@ -18,7 +18,7 @@ class RoomFirestore {
     try {
       DocumentReference docRef = await _roomCollection.add({
         'jointed_user': [myUid, 'none'],
-        'created time': Timestamp.now(),
+        'created_time': Timestamp.now(),
       });
       return docRef.id;
     } catch (e) {
@@ -102,7 +102,7 @@ class RoomFirestore {
         'translated_message': '',
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
-        'is_Divider': false,
+        'is_divider': false,
       });
 
       await _roomCollection.doc(roomId).update({
@@ -114,7 +114,7 @@ class RoomFirestore {
   }
 
 
-  static Future<void> updateTranslatedMessage(String? roomId, String? messageId, String? translatedMessage) async {
+  static Future<void> updateTranslatedMessageForRoom(String? roomId, String? messageId, String? translatedMessage) async {
     try {
       final messageDoc = _roomCollection.doc(roomId).collection('message').doc(messageId); 
       await messageDoc.update({
@@ -132,7 +132,9 @@ class RoomFirestore {
   try {
         QuerySnapshot querySnapshot = await _roomCollection
                                       .where('jointed_user', arrayContains: myUid)
+                                      .orderBy('created_time', descending: true)
                                       .get();
+
     /// TalkuserUidを取得するための予備記述
     /// 'jointed_user'フィールドの各配列に記述されたIDを
     /// リスト型変数 userIds に各々代入する
