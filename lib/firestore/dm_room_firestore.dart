@@ -152,6 +152,7 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
         'translated_message': '',
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
+        'is_Divider': false,
       });
 
       /// messageドキュメントを作成後
@@ -176,6 +177,60 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
             .orderBy('send_time', descending: true)
             .snapshots();
   }
+
+
+
+
+
+
+/// addMessagesDMRoom()から取得したmessage情報を
+/// dmroomコレクション > dmroomドキュメント > messageコレクションに
+/// .addする関数です
+static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
+
+   // batchメソッドの宣言
+   final batch = FirebaseFirestore.instance.batch();
+   // batchの参照先を格納した変数を定義
+  
+  // QuerySnapshot型のメッセージの集合データを、
+  // 個別の doc(=message) ごとにMap型にデータ内容を整理
+  for (final messageDoc in roomMessages!.docs) {  
+    Map<String, dynamic> messageData = messageDoc.data() as Map<String, dynamic>;
+    // batchメソッドを設定
+    // 参照先：newMessageDocRef
+    // 書き込み内容：messageData
+
+    // 参照は定義するたびに個別のドキュメントIDを生成するので
+    // for(){}の内外でそれぞれ設定する必要があります。
+    final newMessageDocRef = _dMRoomCollection
+                        .doc(dMRoomId)
+                        .collection('message')
+                        .doc(); 
+
+
+    batch.set(newMessageDocRef, messageData);
+  }
+
+    //最新のメッセージとして、区切りメッセージの追加
+    Map<String, dynamic> dividerMessageData = {
+                                                'message': '-------ここから新しいメッセージ------',
+                                                'translated_message': '', 
+                                                'sender_id': Shared_Prefes.fetchUid(),
+                                                'send_time': Timestamp.now(),
+                                                'is_Divider': true,
+                                                };
+    final newMessageDocRef = _dMRoomCollection
+                        .doc(dMRoomId)
+                        .collection('message')
+                        .doc(); 
+    batch.set(newMessageDocRef, dividerMessageData);
+
+  // POINT: batchメソッドでは
+  // 「参照先」「書き込み内容」を
+  // for(){}内で.setするだけで、
+  // 参照先への追加操作がバッチされます。
+  await batch.commit();
+}
 
 
 

@@ -102,6 +102,7 @@ class RoomFirestore {
         'translated_message': '',
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
+        'is_Divider': false,
       });
 
       await _roomCollection.doc(roomId).update({
@@ -178,44 +179,6 @@ static Future<QuerySnapshot?> fetchRoomMessages(String? roomId) async{
       return null;
    }                                
 }
-
-
-
-
-/// addMessagesDMRoom()から取得したmessage情報を
-/// dmroomコレクション > dmroomドキュメント > messageコレクションに
-/// .addする関数です
-static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
-
-   // batchメソッドの宣言
-   final batch = FirebaseFirestore.instance.batch();
-  
-  // QuerySnapshot型のメッセージの集合データを、
-  // 個別の doc(=message) ごとにMap型にデータ内容を整理
-  for (final messageDoc in roomMessages!.docs) {  
-    final messageData = messageDoc.data() as Map<String, dynamic>;
-
-    // batchの参照先を格納した変数を定義
-    final newMessageDocRef = FirebaseFirestore.instance
-        .collection('dmroom')
-        .doc(dMRoomId)
-        .collection('message')
-        .doc(); 
-
-    // batchメソッドを設定
-    // 参照先：newMessageDocRef
-    // 書き込み内容：messageData
-    batch.set(newMessageDocRef, messageData);
-  }
-
-  // POINT: batchメソッドでは
-  // 「参照先」「書き込み内容」を
-  // for(){}内で.setするだけで、
-  // 参照先への追加操作がバッチされます。
-  await batch.commit();
-}
-
-
 
 
 

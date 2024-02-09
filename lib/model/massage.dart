@@ -6,6 +6,7 @@ String translatedMessage;
 String messageId;
 bool isMe; 
 Timestamp sendTime; //Datetimeは日付を管理するための型
+bool isDivider;
 
 Message ({
  required this.message,
@@ -13,5 +14,6 @@ Message ({
  required this.messageId,
  required this.isMe,
  required this.sendTime,
+ required this.isDivider,
 });
 }

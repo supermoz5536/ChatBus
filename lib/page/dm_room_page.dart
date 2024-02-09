@@ -119,7 +119,8 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                                   translatedMessage: data['translated_message'], 
                                                   messageId: doc.id,
                                                   isMe: Shared_Prefes.fetchUid() == data['sender_id'],
-                                                  sendTime: data['send_time']
+                                                  sendTime: data['send_time'],
+                                                  isDivider: data['is_Divider']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
@@ -127,17 +128,31 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
 
+                          /// 「----新しいメッセージ----」を表示するmessageの場合
+                          if (message.isDivider == true) {
+                          return const Center(
+                            child: Text(
+                              '------ ここから新しいメッセージ ------',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 176, 176, 176),
+                                fontWeight: FontWeight.bold
+                              ),),
+                          );
+                          } 
+
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
                           /// 翻訳したtextを、をdbに書き込み
-                          if (message.isMe == false && message.translatedMessage == '') {
+                          if (message.isMe == false
+                           && message.translatedMessage == ''
+                           && message.isDivider == false) {
                              futureTranslation = UnitFunctions.translateAndUpdate(
                              message.message,                  /// 未翻訳text
                              meUser!.language,                 /// target 言語
                              widget.dMRoom.dMRoomId,           /// ルームID
                              message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
-                          }                        
+                          }
 
-
+                            
                           // 吹き出し部分全体の環境設定
                           return Padding(
                             padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
@@ -244,6 +259,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                               ],
                             ),
                           );
+                        
                         }),
                   );
                 } else {

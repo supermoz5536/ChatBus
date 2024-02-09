@@ -136,11 +136,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                           final doc = streamSnapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
+                                                    messageId: doc.id,
                                                     message: data['message'],
                                                     translatedMessage: data['translated_message'], 
-                                                    messageId: doc.id,
                                                     isMe: Shared_Prefes.fetchUid() == data['sender_id'],
-                                                    sendTime: data['send_time']
+                                                    sendTime: data['send_time'],
+                                                    isDivider: data['is_Divider']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
@@ -151,12 +152,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
                           /// 翻訳したtextを、をdbに書き込み
-                          if (message.isMe == false && message.translatedMessage == '') {
-                             futureTranslation = UnitFunctions.translateAndUpdate(
-                             message.message,                  /// 未翻訳text
-                             meUser!.language,                 /// target 言語
-                             widget.talkRoom.roomId,           /// ルームID
-                             message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
+                          if (message.isMe == false
+                           && message.translatedMessage == ''
+                           && message.isDivider == false ) {
+                                futureTranslation = UnitFunctions.translateAndUpdate(
+                                message.message,                  /// 未翻訳text
+                                meUser!.language,                 /// target 言語
+                                widget.talkRoom.roomId,           /// ルームID
+                                message.messageId,);              /// 翻訳済textをwriteするメッセージのドキュメントID
                           }                        
 
 

@@ -55,7 +55,8 @@ class _MatchedHistoryPageState extends State<MatchedHistoryPage> {
                               translatedMessage: data['translated_message'], 
                               messageId: doc.id,                              
                               isMe: Shared_Prefes.fetchUid() == data['sender_id'], //自分のIDとsnapshotから取得したメッセージのIDが一致してたら、それは自分のメッセージでTRUE
-                              sendTime: data['send_time']
+                              sendTime: data['send_time'],
+                              isDivider: data['is_Divider']
                               //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                               //data()でメソッドを呼ぶと、ドキュメントデータがdynamic型(オブジェクト型)で返されるため、キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある                                            
                               );
