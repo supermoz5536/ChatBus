@@ -12,8 +12,6 @@ static Future<void> translateAndUpdateRoom (
   ) async{
   String? translatedMessage = await CloudFunctions.translateDeepL(message, targetLang);
   await RoomFirestore.updateTranslatedMessageForRoom(roomId, messageId, translatedMessage);
-
-  return;
 }
 
 
@@ -25,8 +23,6 @@ static Future<void> translateAndUpdateDMRoom (
   ) async{
   String? translatedMessage = await CloudFunctions.translateDeepL(message, targetLang);
   await DMRoomFirestore.updateTranslatedMessageForDMRoom(roomId, messageId, translatedMessage);
-
-  return;
 }
 
 

@@ -153,7 +153,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                           /// 翻訳したtextを、をdbに書き込み
                           if (message.isMe == false
                            && message.translatedMessage == ''
-                           && message.isDivider == false ) {
+                           && message.isDivider == false) {
                                 UnitFunctions.translateAndUpdateRoom(
                                 message.message,                  /// 未翻訳text
                                 meUser!.language,                 /// target 言語
