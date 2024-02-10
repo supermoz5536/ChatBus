@@ -502,8 +502,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black,
-                        offset: Offset(0, 3), // 上方向への影
-                        blurRadius: 5, // ぼかしの量
+                        offset: Offset(0, 4.5), // 上方向への影
+                        blurRadius: 7, // ぼかしの量
                       )
                     ]),
                 // color: Colors.white,

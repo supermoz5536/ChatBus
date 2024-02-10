@@ -150,17 +150,17 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
 
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
-                          /// 翻訳したtextを、をdbに書き込み
-                          if (message.isMe == false
-                           && message.translatedMessage == ''
-                           && message.isDivider == false) {
-                                UnitFunctions.translateAndUpdateRoom(
-                                message.message,                  /// 未翻訳text
-                                meUser!.language,                 /// target 言語
-                                widget.talkRoom.roomId,           /// ルームID
-                                message.messageId,
-                                );              /// 翻訳済textをwriteするメッセージのドキュメントID
-                          }                        
+                          // /// 翻訳したtextを、をdbに書き込み
+                          // if (message.isMe == false
+                          //  && message.translatedMessage == ''
+                          //  && message.isDivider == false) {
+                          //       UnitFunctions.translateAndUpdateRoom(
+                          //       message.message,                  /// 未翻訳text
+                          //       meUser!.language,                 /// target 言語
+                          //       widget.talkRoom.roomId,           /// ルームID
+                          //       message.messageId,
+                          //       );              /// 翻訳済textをwriteするメッセージのドキュメントID
+                          // }                        
 
 
                           // 吹き出し部分全体の環境設定
@@ -223,102 +223,175 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       : TextDirection.ltr,                                    
                                     children: [
 
-                                // 吹き出し部分全体の「背景色」と「丸み」の設定
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: message.isMe
-                                          ? const Color.fromARGB(255, 201, 238, 255)
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(15), // 角の丸みの設定
-                                      border: Border.all(
-                                        color: const Color.fromARGB(255, 195, 195, 195))),
-                                  child: Column(
-                                    children: [
-                            
-                                      // メッセージ表示の上部分
-                                      Container(
-                                        // 境界線のインデント処理のためのサブ記述 
-                                        decoration: BoxDecoration(
-                                            color: message.isMe
-                                                ? const Color.fromARGB(255, 201, 238, 255)
-                                                : Colors.white,
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              topLeft: Radius.circular(15),
-                                              topRight: Radius.circular(15),
-                                            )),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
-                            
-                                          //メイン記述: 上部分
-                                          child: IntrinsicWidth(
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                                constraints: BoxConstraints(
-                                                    maxWidth: MediaQuery.of(context).size.width *0.6), 
-                                                    //この書き方で今表示可能な画面幅を取得できる
+                                      // 吹き出し部分全体の「背景色」と「丸み」の設定。
+                                      GestureDetector(
+                                        onLongPressStart: (details) {
+                                          final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                                          final RenderBox referenceBox = context.findRenderObject() as RenderBox;
+                                          final Offset tapPosition = referenceBox.globalToLocal(details.globalPosition);
+
+                                          // タップされた位置に基づいてRelativeRectを計算
+                                            // 取得ポジションにoffset-115分のズレがあるので
+                                            // 手動で調整
+                                            // overlayの左上隅が原点（0,0）にあり、
+                                            // その右下隅がoverlay.size（幅と高さ）に
+                                            // 基づく位置にある長方形領域を定義しています。
+                                          final RelativeRect menuPosition = RelativeRect.fromRect(
+                                            Rect.fromPoints(
+                                              tapPosition - const Offset(0, -115),
+                                              tapPosition - const Offset(0, -115),
+                                            ),
+                                            Offset.zero & overlay.size,
+                                          );
+
+                                            showMenu(
+                                              context: context,
+                                              position: menuPosition,
+                                              color: const Color.fromARGB(255, 48, 48, 48),
+                                              // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                              elevation: 4,
+                                              items: <PopupMenuEntry<dynamic>>[
+
+                                                const PopupMenuItem(
+                                                  value: 1,
+                                                  padding: EdgeInsets.only(left: 20, right: 1),
+                                                  child: ListTile(
+                                                    leading: Icon(
+                                                      Icons.translate_outlined,
+                                                      color: Colors.white,
+                                                      ),
+                                                    title: Text(
+                                                      '翻訳',
+                                                      style: TextStyle(color: Colors.white)),
+                                                    tileColor: Color.fromARGB(255, 48, 48, 48),
+                                                    dense: true,
+                                                  ),
+                                                ),
+
+                                              ]
+                                            ).then((value) {
+                                                if (value == null) return;
+                                                /// textを翻訳して、dbに書き込み
+                                                if (message.translatedMessage == ''
+                                                && message.isDivider == false) {
+                                                      UnitFunctions.translateAndUpdateRoom(
+                                                      message.message,                  /// 未翻訳text
+                                                      meUser!.language,                 /// target 言語
+                                                      widget.talkRoom.roomId,           /// ルームID
+                                                      message.messageId,                /// 翻訳済textを書き込む、メッセージドキュメントID
+                                                      );              
+                                                }      
+                                            });
+                                        },
+                                        
+
+                                        // メッセージ表示の全体を覆ってる部分
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: message.isMe
+                                                  ? const Color.fromARGB(255, 201, 238, 255)
+                                                  : Colors.white,
+                                              borderRadius: BorderRadius.circular(15), // 角の丸みの設定
+                                              border: Border.all(
+                                                color: const Color.fromARGB(255, 195, 195, 195))),
+                                          child: Column(
+                                            children: [
+                                                                          
+                                              // メッセージ表示の上部分
+                                              Container(
+                                                // 境界線のインデント処理のためのサブ記述 
                                                 decoration: BoxDecoration(
-                                                    border: const Border(
-                                                        bottom: BorderSide(
-                                                            color: Color.fromARGB(255, 199, 199, 199),
-                                                            width: 1
-                                                            ),
-                                                            ), // 上下部境界線の縦の太さ
                                                     color: message.isMe
                                                         ? const Color.fromARGB(255, 201, 238, 255)
                                                         : Colors.white,
-                                                    borderRadius: const BorderRadius.only(
-                                                        topLeft: Radius.circular(15),
-                                                        topRight: Radius.circular(15))),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 6),
-                                                child: Text(message.message)
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                      topLeft: Radius.circular(15),
+                                                      topRight: Radius.circular(15),
+                                                    )),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
+                                                                          
+                                                  //メイン記述: 上部分
+                                                  child: IntrinsicWidth(
+                                                    child: Container(
+                                                      alignment: Alignment.center,
+                                                        constraints: BoxConstraints(
+                                                            maxWidth: MediaQuery.of(context).size.width *0.6), 
+                                                            //この書き方で今表示可能な画面幅を取得できる
+                                                        decoration: BoxDecoration(
+                                                            border: const Border(
+                                                                bottom: BorderSide(
+                                                                    color: Color.fromARGB(255, 199, 199, 199),
+                                                                    width: 1
+                                                                    ),
+                                                                    ), // 上下部境界線の縦の太さ
+                                                            color: message.isMe
+                                                                ? const Color.fromARGB(255, 201, 238, 255)
+                                                                : Colors.white,
+                                                            borderRadius: const BorderRadius.only(
+                                                                topLeft: Radius.circular(15),
+                                                                topRight: Radius.circular(15))),
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 6),
+                                                        child: Text(message.message)
+                                                        ),
+                                                  ),
                                                 ),
+                                              ),
+                                                                          
+                                                                          
+                                              //メッセージ表示の下部分
+                                              Container(
+                                                // 境界線のインデント処理のためのサブ記述
+                                                decoration: BoxDecoration(
+                                                    color: message.isMe
+                                                        ? const Color.fromARGB(255, 201, 238, 255)
+                                                        : Colors.white,
+                                                    borderRadius:
+                                                        const BorderRadius.only(
+                                                      bottomLeft: Radius.circular(15),
+                                                      bottomRight: Radius.circular(15),
+                                                    )),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
+                                                    top: 8, bottom: 8, left: 10, right: 10
+                                                    ),
+                                                                          
+                                                  // メイン記述: 下部分
+                                                  child: message.isMe 
+                                                  ? message.translatedMessage != ''   
+                                                    ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
+                                                      child: Container(
+                                                          constraints: BoxConstraints(
+                                                          maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                          color: const Color.fromARGB(255, 201, 238, 255),
+                                                          child: Text(message.translatedMessage)))
+                                                    :  const Text('')
+                                        
+                                                  : message.translatedMessage != ''   
+                                                    ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
+                                                      child: Container(
+                                                          constraints: BoxConstraints(
+                                                          maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                          color: Colors.white,
+                                                          child: Text(message.translatedMessage)))
+                                                    :  const Text('')
+                                                ),
+                                              )
+                                            ],
                                           ),
                                         ),
                                       ),
-                            
-                            
-                                      //メッセージ表示の下部分
+                                      
+                                      
                                       Container(
-                                        // 境界線のインデント処理のためのサブ記述
-                                        decoration: BoxDecoration(
-                                            color: message.isMe
-                                                ? const Color.fromARGB(255, 201, 238, 255)
-                                                : Colors.white,
-                                            borderRadius:
-                                                const BorderRadius.only(
-                                              bottomLeft: Radius.circular(15),
-                                              bottomRight: Radius.circular(15),
-                                            )),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
-                                             top: 8, bottom: 8, left: 10, right: 10
-                                             ),
-                            
-                                          // メイン記述: 下部分
-                                          child: message.isMe 
-                                          ? const Text('')
-                                          : message.translatedMessage != ''   
-                                             ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
-                                               child: Container(
-                                                   constraints: BoxConstraints(
-                                                   maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                   color: Colors.white,
-                                                   child: Text(message.translatedMessage)))
-                                             :  const Text('')
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate()))),
-                                //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
-                                //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
+                                        alignment: Alignment.bottomCenter,
+                                        child: Text(intl.DateFormat('HH:mm').format(message.sendTime.toDate()))),
+                                      //①DateFormatは、DateTime型のオブジェクトをString型に変えるメソッド。
+                                      //②DateFormatを機能させるために、sendTimeでDBから取得するオブジェクトはtimestamp型に設定されてるので、toDate()で型を一致させる
                                   ]),
                                 ),
                               ]),
@@ -343,7 +416,15 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                 .end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
-                color: Colors.white,
+                decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 250, 250, 250),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 4.5), // 上方向への影
+                        blurRadius: 7, // ぼかしの量
+                      )
+                    ]),
                 height: 68, // フッター領域の縦幅
                 child: isChatting!
                     ? buildChattingFooter(context)
@@ -351,9 +432,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               ),
             ],
           ),
-
-
-
 
 
           /// ポップアップ表示関数の記述
@@ -504,20 +582,21 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Row buildChattingFooter(BuildContext context) {
     return Row(
       children: [
+        
         // ■「チャットを終了」ボタン
-        Container(
-            child: ElevatedButton(
+        const SizedBox(width: 20,),
+
+        ElevatedButton(
           onPressed: () async {
+            // 状態を更新：フッターUIを再描画
             setState(() {
               isChatting = false;
-              // 状態を更新：フッターUIを再描画
             });
-            await UserFirestore.updateChattingStatus(
-                widget.talkRoom.myUid, false);
             // トーク相手にチャット終了を伝える
+            await UserFirestore.updateChattingStatus(widget.talkRoom.myUid, false);
           },
-          child: Text(AppLocalizations.of(context)!.exit),
-        )),
+           child: Text(AppLocalizations.of(context)!.exit),
+        ),
 
         // ■ 入力フィールド
         Expanded(
@@ -546,9 +625,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
         // ■ 送信アイコン
         IconButton(
-            onPressed: () async {
+            onPressed: controller.text.isEmpty
+            ? null
+            : () async {
               await RoomFirestore.sendMessage(
-                  roomId: widget.talkRoom.roomId!, message: controller.text);
+                  roomId: widget.talkRoom.roomId!,
+                  message: controller.text);
               controller.clear();
               setState(() {
                 isInputEmpty = true;
@@ -636,45 +718,38 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
           child: Text(AppLocalizations.of(context)!.goHome),
         )),
 
-        // ■ 入力フィールド
-        Expanded(
-            child: Padding(
-          // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
-          padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
-
-          child: TextField(
-            controller:
-                controller, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-            onChanged: (value) {
-              // TextFiledの値(value)を引数
-              setState(() {
-                // valueに変化があったら、応答関数で状態を更新
-                isInputEmpty = value.isEmpty; // isEmptyメソッドは、bool値を返す
-              });
-            },
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Color.fromARGB(255, 244, 241, 241),
-              contentPadding: EdgeInsets.only(left: 10),
-              border: InputBorder.none,
-            ),
-          ),
-        )),
-
-        //■送信アイコン
-        IconButton(
-            onPressed: () async {
-              await RoomFirestore.sendMessage(
-                  roomId: widget.talkRoom.roomId!, message: controller.text);
-              controller.clear();
-            },
-            icon: Icon(
-              Icons.send,
-              color: isInputEmpty ? Colors.grey : Colors.blue,
-            ))
       ],
     );
   }
 }
 
 
+
+
+
+
+                                      // GestureDetector(
+                                      //   onLongPressStart: (details) {
+                                      //     final position = details.globalPosition;
+                                      //     final Size screenSize = MediaQuery.of(context).size; // 画面のサイズを取得   
+                                      //     bool isBelowCenter = position.dy > screenSize.height / 2;  // 画面中央よりタップ位置が上にあるか下にあるかを判断
+
+                                      //     // メニューの表示位置を計算
+                                      //     RelativeRect menuPosition;
+                                      //     if (isBelowCenter) {
+                                      //       // メッセージが画面中央より下にある場合、メッセージの上にメニューを表示
+                                      //       menuPosition = RelativeRect.fromLTRB(
+                                      //         position.dx, // 左端
+                                      //         position.dy, // タップ位置より少し上（メニューの高さ分を考慮）
+                                      //         screenSize.width - position.dx, // 右側の余白
+                                      //         screenSize.height - position.dy, // 下側の余白
+                                      //       );
+                                      //     } else {
+                                      //       // メッセージが画面中央より上にある場合、メッセージの下にメニューを表示
+                                      //       menuPosition = RelativeRect.fromLTRB(
+                                      //         position.dx, // 左端
+                                      //         position.dy, // タップ位置
+                                      //         screenSize.width - position.dx, // 右側の余白
+                                      //         screenSize.height - position.dy, // 下側の余白
+                                      //       );
+                                      //     }
