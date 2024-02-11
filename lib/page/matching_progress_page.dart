@@ -7,7 +7,6 @@ import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
-import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 import 'package:synchronized/synchronized.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';

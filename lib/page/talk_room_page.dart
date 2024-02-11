@@ -11,7 +11,6 @@ import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
-import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';

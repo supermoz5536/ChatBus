@@ -1,17 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:udemy_copy/firestore/user_firestore.dart';
-import 'package:udemy_copy/model/massage.dart';
-import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
-import '../model/user.dart';
+
 
 
 class RoomFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore.instance; //FirebaseFirestore.instanceは、FirebaseFirestoreというクラスのインスタンスを返す機能。FirebaseFirestore.instanceはライブラリで定義されたものをimportしてる
   static final _roomCollection = _firebasefirestoreInstance.collection('room');
-  static final _jointRoomSnapshot = _roomCollection
-                                    .where('jointed_user', arrayContains: Shared_Prefes.fetchUid())
-                                    .snapshots(); //.snapshots()で部屋をリアルタイムで更新するstreamができた //https://sl.bing.net/j0zROaXAUVM
+
 
   static Future<String?> createRoom(String? myUid, String? talkUserUid) async {
     //AさんとBさんがすでにuserにいて、Cさんが作成されたら、A-C B-Cの部屋を作る

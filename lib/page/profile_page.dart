@@ -5,19 +5,13 @@ import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
-import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
-import 'package:udemy_copy/page/matching_progress_page.dart';
-import 'package:udemy_copy/page/sub_page/dm_list_page.dart';
-import 'package:udemy_copy/page/sub_page/friend_list_page.dart';
-import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 
 
@@ -512,7 +506,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                         // height: 40,
                         // width: 130,
                         child: ElevatedButton(
-                      onPressed: isDisabled!
+                      onPressed: isDisabled
                           ? null
                           : () async {
                               setState(() {
@@ -562,7 +556,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                           onPressed: () async{
                              /// db上にmyUidと相手のuid のjoinedされたDMRoomを参照してget()
                              String? dMRoomId = await DMRoomFirestore.getDMRoomId(
-                                                  meUser!.uid,
+                                                  meUser.uid,
                                                   widget.talkuserProfile!.uid
                                                   );
 
@@ -571,7 +565,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               /// ある場合：返り値のdMRoomIdでdm_room_page.dartに画面遷移
                               if (context.mounted) {
                                 DMRoom dMRoom = DMRoom(
-                                  myUid: meUser!.uid,
+                                  myUid: meUser.uid,
                                   talkuserUid: widget.talkuserProfile!.uid,
                                   dMRoomId: dMRoomId);
                                 Navigator.pushAndRemoveUntil(
@@ -584,7 +578,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               } else {
                               /// ない場合：dmroomCollectionにdmroomを作成して画面遷移
                               dMRoomId = await DMRoomFirestore.createDMRoom(
-                                           meUser!.uid,
+                                           meUser.uid,
                                            widget.talkuserProfile!.uid
                                            );
 
@@ -608,7 +602,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
 
                                 if (context.mounted) {
                                   DMRoom dMRoom = DMRoom(
-                                    myUid: meUser!.uid,
+                                    myUid: meUser.uid,
                                     talkuserUid: widget.talkuserProfile!.uid,
                                     dMRoomId: dMRoomId);
                                   Navigator.pushAndRemoveUntil(
