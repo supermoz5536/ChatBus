@@ -75,7 +75,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 8),
+                          padding: const EdgeInsets.only(top: 8, left: 10),
                           child: Material(
                             color: Colors.transparent,
                             child: Ink(

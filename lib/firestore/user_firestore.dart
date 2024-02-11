@@ -88,13 +88,13 @@ class UserFirestore {
                  if (docIdSnapshot.id == sharedPrefesMyUid ) {                        
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
 
-                     /// Filed情報を更新して、既存の端末Uidをそのまま使用
+                     /// Field情報をリフレッシュして、既存の端末Uidをそのまま使用
 
                     String? userImageUrl = await UserFirebaseStorage.getProfImage();
                     String? deviceLanguage = ui.window.locale.languageCode;
                     String? deviceCountry = Shared_Prefes.fetchCountry();
 
-                     await _userCollection.doc(sharedPrefesMyUid).update({  //■■■■■エラー■■■■■■■■■■■■              
+                     await _userCollection.doc(sharedPrefesMyUid).update({ 
                         'matched_status': true,                         
                         'room_id': 'none',
                         'progress_marker': true,
@@ -482,20 +482,25 @@ static updateProgressMarker(String? uid, bool progressStatus) async{
         await _userCollection.doc(uid).update({'progress_marker': progressStatus});     
 }
 
+
 static updateMatchedStatus(String? uid, bool matchedStatus) async{
         await _userCollection.doc(uid).update({'matched_status': matchedStatus});     
 }
 
+
 static Future<void> updateChattingStatus(String? uid, bool chattingStatus) async{
-      // print('updateChattingStatusの実行');
       return await _userCollection.doc(uid).update({'chatting_status': chattingStatus});     
-}                                               
+}
+
 
 static Future<void> updateIsLounge(String? uid, bool isLounge) async{
-      // print('updateChattingStatusの実行');
       return await _userCollection.doc(uid).update({'is_lounge': isLounge});     
-}                                               
+}
 
+
+static Future<void> updateLanguage(String? uid, String? language) async{
+      return await _userCollection.doc(uid).update({'language': language});     
+}
 
 
 static checkMyProgressMarker(String? myUid,) async{

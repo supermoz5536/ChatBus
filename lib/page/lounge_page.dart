@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
@@ -9,6 +10,8 @@ import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:udemy_copy/utils/service_notifier.dart';
+
 
 
 
@@ -22,6 +25,7 @@ class LoungePage extends ConsumerStatefulWidget {
 class _LoungePageState extends ConsumerState<LoungePage> {
 
   String? myUid;
+  String? currentLanguageCode;
   bool? isDisabled;
   bool isInputEmpty = true;
   TalkRoom? talkRoom;
@@ -34,6 +38,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
 // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
+
+String? dropDownValue = 'one';
 
   @override
   void initState() {
@@ -82,6 +88,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
   @override
   Widget build(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
+    final serviceNotifier = ServiceNotifier(ref);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -103,7 +112,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
                         return Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 8),
+                          padding: const EdgeInsets.only(top: 8, left: 10),
                           child: Material(
                             color: Colors.transparent,
                             child: Ink(
@@ -135,8 +144,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     });
               }
             }),
-        title: const Text('ラウンジページ'),
-        centerTitle: true,
+        // title: const Text('ラウンジページ'),
+        // centerTitle: true,
         bottom: const PreferredSize(
             preferredSize: Size.fromHeight(15),
             child: Divider(
@@ -145,6 +154,35 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             )),
         actions: <Widget>[
 
+          const Spacer(flex: 9),
+
+
+          DropdownButton(
+            isDense: true,
+            underline: Container(
+              height: 1,
+              color: const Color.fromARGB(255, 198, 198, 198),),
+            icon: const Icon(Icons.keyboard_arrow_down_outlined),
+            iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+            value: currentLanguageCode = meUser!.language,
+            items: <String>['en', 'ja', 'es']
+              .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,   //引数の言語コードをシステム識別用に設定
+                  child: Text(
+                    languageNames[value]!,
+                    style: const TextStyle(color: Colors.black)));
+               }).toList(),
+            onChanged: (String? newLanguageCode) {
+                setState(() {
+                  currentLanguageCode = newLanguageCode!;
+                });
+                  // UIの再描画の後に、「状態変数のlanguage」と「dbのlanguage」を更新
+                  serviceNotifier.changeLanguage(newLanguageCode);
+            },
+          ),
+
+          const Spacer(flex: 1),
 
           // ■ リクエスト通知ボタン
           OverlayPortal(
@@ -297,16 +335,44 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 ),
                 ListTile(title: Text('設定しておくと安心だよ！')),
                 ListTile(title: Text('IDの設定 :')),
-                Spacer(
-                  flex: 1,
-                ),
+                Spacer(flex: 1),
                 ListTile(title: Text('パスワードの設定 :')),
               ]),
             ),
+
             const Divider(),
-            const Spacer(
-              flex: 1,
-            ),
+
+            // Row(
+            //   children: [
+            //     const Text('翻訳言語'),
+            //     const SizedBox(width: 30,),
+            //     DropdownButton(
+            //       isDense: true,
+            //       underline: Container(
+            //         height: 1,
+            //         color: const Color.fromARGB(255, 198, 198, 198),),
+            //       icon: const Icon(Icons.keyboard_arrow_down_outlined),
+            //       iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+            //       value: currentTargetLanguage = プロバイダーの翻訳ターゲットの言語コードの状態変数を代入,
+            //       items: <String>['en', 'ja', 'es']
+            //         .map<DropdownMenuItem<String>>((String value) {
+            //           return DropdownMenuItem<String>(
+            //             value: value,   //引数の言語コードをシステム識別用に設定
+            //             child: Text(
+            //               languageNames[value]!,
+            //               style: const TextStyle(color: Colors.black)));
+            //         }).toList(),
+            //       onChanged: (String? newLanguageCode) {
+            //           setState(() {
+            //             currentTargetLanguage = newTargetLanguageCode!;
+            //             // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
+            //           });
+            //       },
+            //     ),
+            //   ],
+            // ),
+
+
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
@@ -318,6 +384,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 child: const Row(children: [
                   Text('サブスクリプション： フリープラン'),
                 ])),
+
+
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
