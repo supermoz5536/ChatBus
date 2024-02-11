@@ -32,9 +32,10 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Future<User?>? futureTalkuserProfile;
   User? talkuserProfile;
-  bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
+  bool isInputEmpty = true;
+  String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final _overlayController3rd = OverlayPortalController();
@@ -223,9 +224,13 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       : TextDirection.ltr,                                    
                                     children: [
 
-                                      // 吹き出し部分全体の「背景色」と「丸み」の設定。
-                                      GestureDetector(
+                                      // 吹き出し部分全体の「背景色」と「丸み」の設定
+                                      GestureDetector(                                        
                                         onLongPressStart: (details) {
+                                          setState(() {
+                                            longPressedItemId = doc.id;
+                                          });
+
                                           final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
                                           final RenderBox referenceBox = context.findRenderObject() as RenderBox;
                                           final Offset tapPosition = referenceBox.globalToLocal(details.globalPosition);
@@ -270,7 +275,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                                               ]
                                             ).then((value) {
-                                                if (value == null) return;
+                                                if (value == null) {
+                                                  setState(() {
+                                                    longPressedItemId = null;
+                                                  });
+                                                  return;
+                                                }
                                                 /// textを翻訳して、dbに書き込み
                                                 if (message.translatedMessage == ''
                                                 && message.isDivider == false) {
@@ -279,113 +289,144 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                       meUser!.language,                 /// target 言語
                                                       widget.talkRoom.roomId,           /// ルームID
                                                       message.messageId,                /// 翻訳済textを書き込む、メッセージドキュメントID
-                                                      );              
+                                                      );
+                                                      setState(() {
+                                                        longPressedItemId = null;
+                                                      });        
                                                 }      
                                             });
                                         },
                                         
-
-                                        // メッセージ表示の全体を覆ってる部分
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: message.isMe
-                                                  ? const Color.fromARGB(255, 201, 238, 255)
-                                                  : Colors.white,
-                                              borderRadius: BorderRadius.circular(15), // 角の丸みの設定
-                                              border: Border.all(
-                                                color: const Color.fromARGB(255, 195, 195, 195))),
-                                          child: Column(
-                                            children: [
-                                                                          
-                                              // メッセージ表示の上部分
-                                              Container(
-                                                // 境界線のインデント処理のためのサブ記述 
-                                                decoration: BoxDecoration(
-                                                    color: message.isMe
-                                                        ? const Color.fromARGB(255, 201, 238, 255)
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        const BorderRadius.only(
-                                                      topLeft: Radius.circular(15),
-                                                      topRight: Radius.circular(15),
-                                                    )),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
-                                                                          
-                                                  //メイン記述: 上部分
-                                                  child: IntrinsicWidth(
-                                                    child: Container(
-                                                      alignment: Alignment.center,
-                                                        constraints: BoxConstraints(
-                                                            maxWidth: MediaQuery.of(context).size.width *0.6), 
-                                                            //この書き方で今表示可能な画面幅を取得できる
-                                                        decoration: BoxDecoration(
-                                                            border: const Border(
-                                                                bottom: BorderSide(
-                                                                    color: Color.fromARGB(255, 199, 199, 199),
-                                                                    width: 1
-                                                                    ),
-                                                                    ), // 上下部境界線の縦の太さ
-                                                            color: message.isMe
-                                                                ? const Color.fromARGB(255, 201, 238, 255)
-                                                                : Colors.white,
-                                                            borderRadius: const BorderRadius.only(
-                                                                topLeft: Radius.circular(15),
-                                                                topRight: Radius.circular(15))),
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
-                                                                horizontal: 10,
-                                                                vertical: 6),
-                                                        child: Text(message.message)
-                                                        ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                          
-                                                                          
-                                              //メッセージ表示の下部分
-                                              Container(
-                                                // 境界線のインデント処理のためのサブ記述
-                                                decoration: BoxDecoration(
-                                                    color: message.isMe
-                                                        ? const Color.fromARGB(255, 201, 238, 255)
-                                                        : Colors.white,
-                                                    borderRadius:
-                                                        const BorderRadius.only(
-                                                      bottomLeft: Radius.circular(15),
-                                                      bottomRight: Radius.circular(15),
-                                                    )),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
-                                                    top: 8, bottom: 8, left: 10, right: 10
-                                                    ),
-                                                                          
-                                                  // メイン記述: 下部分
-                                                  child: message.isMe 
-                                                  ? message.translatedMessage != ''   
-                                                    ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
-                                                      child: Container(
-                                                          constraints: BoxConstraints(
-                                                          maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                          color: const Color.fromARGB(255, 201, 238, 255),
-                                                          child: Text(message.translatedMessage)))
-                                                    :  const Text('')
                                         
-                                                  : message.translatedMessage != ''   
-                                                    ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
-                                                      child: Container(
-                                                          constraints: BoxConstraints(
-                                                          maxWidth: MediaQuery.of(context).size.width *0.6),
-                                                          color: Colors.white,
-                                                          child: Text(message.translatedMessage)))
-                                                    :  const Text('')
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
+                                        // 未翻訳の表示形式
+                                        child: message.translatedMessage == ''
+                                          ? Container(
+                                              decoration: BoxDecoration(
+                                                  color: message.isMe
+                                                    ? doc.id == longPressedItemId 
+                                                      ? const Color.fromARGB(255, 192, 227, 244)
+                                                      : const Color.fromARGB(255, 201, 238, 255)
+                                                    : doc.id == longPressedItemId 
+                                                      ? const Color.fromARGB(255, 229, 229, 229)
+                                                      : Colors.white,
+                                                  borderRadius: BorderRadius.circular(15), // 角の丸みの設定
+                                                  border: Border.all(
+                                                    color: const Color.fromARGB(255, 195, 195, 195))),
+                                              child: IntrinsicWidth(
+                                                 child: Container(
+                                                    alignment: Alignment.center,
+                                                    constraints: BoxConstraints(
+                                                       maxWidth: MediaQuery.of(context).size.width *0.6), 
+                                                    padding:
+                                                       const EdgeInsets.symmetric(
+                                                          horizontal: 13,
+                                                          vertical: 9),
+                                                    child: Text(message.message)
+                                                 ),
+                                              ),
+                                            )
+
+
+                                          // 翻訳済の表示形式
+                                          // メッセージ表示の全体を覆ってる部分
+                                          : Container(
+                                              decoration: BoxDecoration(
+                                                  color: message.isMe
+                                                    ? doc.id == longPressedItemId 
+                                                      ? const Color.fromARGB(255, 192, 227, 244)
+                                                      : const Color.fromARGB(255, 201, 238, 255)
+                                                    : doc.id == longPressedItemId 
+                                                      ? const Color.fromARGB(255, 229, 229, 229)
+                                                      : Colors.white,
+                                                  borderRadius: BorderRadius.circular(15), // 角の丸みの設定
+                                                  border: Border.all(
+                                                    color: const Color.fromARGB(255, 195, 195, 195))),
+                                              child: Column(
+                                                children: [
+                                                                              
+                                                  // メッセージ表示の上部分
+                                                  Container(
+                                                    // 境界線のインデント処理のためのサブ記述 
+                                                    decoration: const BoxDecoration(
+                                                        color: Colors.transparent,
+                                                        borderRadius:
+                                                          BorderRadius.only(
+                                                            topLeft: Radius.circular(15),
+                                                            topRight: Radius.circular(15),
+                                                        )),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(left: 6, right: 6), // 上下境界線のインデント設定
+                                                                              
+                                                      //メイン記述: 上部分
+                                                      child: IntrinsicWidth(
+                                                        child: Container(
+                                                          alignment: Alignment.center,
+                                                            constraints: BoxConstraints(
+                                                                maxWidth: MediaQuery.of(context).size.width *0.6), 
+                                                                //この書き方で今表示可能な画面幅を取得できる
+                                                            decoration: const BoxDecoration(
+                                                                border: Border(
+                                                                    bottom: BorderSide(
+                                                                        color: Color.fromARGB(255, 199, 199, 199),
+                                                                        width: 1)),
+                                                                color: Colors.transparent,
+                                                                borderRadius: BorderRadius.only(
+                                                                    topLeft: Radius.circular(15),
+                                                                    topRight: Radius.circular(15))),
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                    horizontal: 10,
+                                                                    vertical: 6),
+                                                            child: Text(message.message)
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                                              
+                                                                              
+                                                  //メッセージ表示の下部分
+                                                  Container(
+                                                    // 境界線のインデント処理のためのサブ記述
+                                                    decoration: const BoxDecoration(
+                                                        color: Colors.transparent,
+                                                        borderRadius:
+                                                          BorderRadius.only(
+                                                            bottomLeft: Radius.circular(15),
+                                                            bottomRight: Radius.circular(15),
+                                                        )),
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only( // 下部の翻訳済文章領域のpadding設定
+                                                        top: 8, bottom: 8, left: 10, right: 10
+                                                        ),
+                                                                              
+                                                      // メイン記述: 下部分
+                                                      child: message.isMe 
+                                                      ? message.translatedMessage != ''   
+                                                        ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
+                                                          child: Container(
+                                                              constraints: BoxConstraints(
+                                                              maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                              color: Colors.transparent,
+                                                              child: Text(message.translatedMessage)))
+                                                        :  const Text('')
+                                            
+                                                      : message.translatedMessage != ''   
+                                                        ? IntrinsicWidth( // 翻訳済みmessageがdbに "ある" 場合
+                                                          child: Container(
+                                                              constraints: BoxConstraints(
+                                                              maxWidth: MediaQuery.of(context).size.width *0.6),
+                                                              color: Colors.transparent,
+                                                              child: Text(message.translatedMessage)))
+                                                        :  const Text('')
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )
                                       ),
                                       
+
+                 
                                       
                                       Container(
                                         alignment: Alignment.bottomCenter,
