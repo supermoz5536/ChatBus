@@ -15,7 +15,7 @@ import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 /// MeUserNotifier のインスタンスを生成していますが
 /// これは StateNotifierProvider が初めて参照された時にのみ行われます。
 /// この時点で initialUser を MeUserNotifier に渡して初期化していますが、
-/// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
+/// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
 
 /// StateNotifierProvider の初期値の設定
