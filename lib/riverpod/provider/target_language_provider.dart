@@ -1,6 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:udemy_copy/model/user.dart';
-import 'package:udemy_copy/riverpod/notifier/me_user_notifier.dart';
 import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 
 
@@ -19,7 +17,7 @@ import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 /// これは StateNotifierProvider が初めて参照された時にのみ行われます。
 /// この時点で initialUser を MeUserNotifier に渡して初期化していますが、
 /// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
-/// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます。
+/// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
 final targetLanguageProvider = StateNotifierProvider<TartgetLanguageNotifier, String?>((ref) {
 
     // 生成したインスタンスの保持する状態を consumer が読み取る。

@@ -13,6 +13,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
+import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
@@ -95,6 +96,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   @override
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
+    String? targetLanguageCode = ref.watch(targetLanguageProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -146,21 +149,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                   //data()でメソッドを呼ぶと
                                                   //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
-
-
-
-                          /// 自分の送信した未翻訳のmessageドキュメントの場合
-                          // /// 翻訳したtextを、をdbに書き込み
-                          // if (message.isMe == false
-                          //  && message.translatedMessage == ''
-                          //  && message.isDivider == false) {
-                          //       UnitFunctions.translateAndUpdateRoom(
-                          //       message.message,                  /// 未翻訳text
-                          //       meUser!.language,                 /// target 言語
-                          //       widget.talkRoom.roomId,           /// ルームID
-                          //       message.messageId,
-                          //       );              /// 翻訳済textをwriteするメッセージのドキュメントID
-                          // }                        
+                   
 
 
                           // 吹き出し部分全体の環境設定
@@ -285,7 +274,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 && message.isDivider == false) {
                                                       UnitFunctions.translateAndUpdateRoom(
                                                       message.message,                  /// 未翻訳text
-                                                      meUser!.language,                 /// target 言語
+                                                      targetLanguageCode,               /// target 言語
                                                       widget.talkRoom.roomId,           /// ルームID
                                                       message.messageId,                /// 翻訳済textを書き込む、メッセージドキュメントID
                                                       );
