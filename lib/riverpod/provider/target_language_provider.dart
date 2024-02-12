@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 
-
-
 /// ■ StateNotifierProviderの基本的な説明
 /// meUserProvider は
 /// Userオブジェクト の状態を管理するUserNotifierクラス の
@@ -20,7 +18,7 @@ import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
 final targetLanguageProvider = StateNotifierProvider<TartgetLanguageNotifier, String?>((ref) {
 
-    // 生成したインスタンスの保持する状態を consumer が読み取る。
+  // 生成したインスタンスの保持する状態を consumer が読み取る。
   return TartgetLanguageNotifier('en');
 });
 

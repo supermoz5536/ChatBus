@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/user.dart';
 
-
 /// UserNotifierクラスは
 /// StateNotifier<User?>を拡張しており、
 /// 状態を編集するのが目的のクラスです。
@@ -29,9 +28,8 @@ class MeUserNotifier extends StateNotifier<User?> {
   /// initialUserを受け取ります。
   MeUserNotifier(User? initialUser) : super(initialUser);
 
-
-/// User型の状態を管理するのが目的なので
-/// 管理する状態にUser型のuserを割り当てています。
+  /// User型の状態を管理するのが目的なので
+  /// 管理する状態にUser型のuserを割り当てています。
   void setUser(User? user) {
     state = user;
   }

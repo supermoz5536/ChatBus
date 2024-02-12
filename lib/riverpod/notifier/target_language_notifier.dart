@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
-
 /// UserNotifierクラスは
 /// StateNotifier<User?>を拡張しており、
 /// 状態を編集するのが目的のクラスです。
@@ -29,9 +27,8 @@ class TartgetLanguageNotifier extends StateNotifier<String?> {
   /// initialUserを受け取ります。
   TartgetLanguageNotifier(String? initialUser) : super(initialUser);
 
-
-/// User型の状態を管理するのが目的なので
-/// 管理する状態にUser型のuserを割り当てています。
+  /// User型の状態を管理するのが目的なので
+  /// 管理する状態にUser型のuserを割り当てています。
   void setTargetLanguage(String? targetLanguage) {
     state = targetLanguage;
   }

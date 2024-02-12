@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 
-
 /// ■ StateNotifierProviderの基本的な説明
 /// meUserProvider は
 /// Userオブジェクト の状態を管理するUserNotifierクラス の
