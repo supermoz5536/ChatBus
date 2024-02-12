@@ -60,7 +60,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
     // 関数の呼び出し（initStateはFlutter標準メソッド）
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
     //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
-    // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
+    // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます
     // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
     // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
     isInputEmpty = true;
