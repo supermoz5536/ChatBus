@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,12 +81,6 @@ String? dropDownValue = 'one';
         ref.read(meUserProvider.notifier).setUser(user);
         /// TargetLanguageProvider の状態変数を更新
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
-
-        /// 画面遷移に必要なコンストラクタ
-        matchingProgress = MatchingProgress(myUid: result['myUid']);        
-       
-        /// ■ 通常のstfを使う場合のバックアップ
-        // ProviderScope.containerOf(context).read(languageCodeProvider.notifier).state = result['languageCode'];       
       }
     });
   }
@@ -94,6 +90,7 @@ String? dropDownValue = 'one';
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
+    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     final serviceNotifier = ServiceNotifier(ref);
 
     return Scaffold(
@@ -605,6 +602,15 @@ String? dropDownValue = 'one';
                                 );
 
                                 if (context.mounted) {
+                                  /// 画面遷移に必要なコンストラクタ
+                                  List<String?>? selectedLanguageList = SelectedLanguage
+                                                                         .getSelectedLanguageList(selectedLanguage);
+                                  print('LoungePage $selectedLanguage');                                       
+                                  print('LoungePage $selectedLanguageList');
+                                  matchingProgress = MatchingProgress(
+                                                       myUid: meUser.uid,
+                                                       selectedLanguage: selectedLanguageList, 
+                                                     );
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

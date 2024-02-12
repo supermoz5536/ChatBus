@@ -32,8 +32,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   _checkedEn = newValue;
                   selectedLanguage.en = newValue;
                 });
+                // print('Before $selectedLanguage');
                 ref.read(selectedLanguageProvider.notifier)
                    .setSelectedLanguage(selectedLanguage);
+                // print('after $selectedLanguage');
               },
             ),
 
@@ -46,7 +48,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   selectedLanguage.ja = newValue;
                 });
                 ref.read(selectedLanguageProvider.notifier)
-                   .setSelectedLanguage(selectedLanguage);                
+                   .setSelectedLanguage(selectedLanguage);
               },
             ),
 

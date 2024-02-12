@@ -6,20 +6,19 @@ class SelectedLanguage{
   bool? ja = false;
   bool? es = false;
 
-
   /// MatchingProgressPageへの画面遷移時に
   /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedLanguageList(){
-    SelectedLanguage selectedLanguage = SelectedLanguage();
+  static List<String?>? getSelectedLanguageList(SelectedLanguage? selectedLanguage){
     List<String?>? selectedLanguageList = [];
 
     // インスタンス化したselectedLanguageオブジェクトは
     // 言語フィルターUIの真偽出力結果が格納されている
     // MatchingProgressPageへのコンストラクタ用に
     // そのうち、TrueのものだけListの配列に加えて出力する
-    if (selectedLanguage.en = true) selectedLanguageList.add('en'); 
-    if (selectedLanguage.ja = true) selectedLanguageList.add('ja'); 
-    if (selectedLanguage.es = true) selectedLanguageList.add('es'); 
+    if (selectedLanguage!.en == true) selectedLanguageList.add('en'); 
+    if (selectedLanguage.ja == true) selectedLanguageList.add('ja'); 
+    if (selectedLanguage.es == true) selectedLanguageList.add('es'); 
+
     
     return selectedLanguageList;
   } 

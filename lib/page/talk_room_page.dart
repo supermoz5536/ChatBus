@@ -8,13 +8,16 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
+import 'package:udemy_copy/utils/service_notifier.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -97,6 +100,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
+    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    final serviceNotifier = ServiceNotifier(ref);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -673,8 +678,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     );
   }
 
+
   // ■ フッター（チャット終了後）
   Row buildEndedFooter(BuildContext context) {
+    User? meUser = ref.watch(meUserProvider);
+    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    
     return Row(
       children: [
         // ■ 「次の相手を探す」ボタン
@@ -698,8 +707,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   // matching_progress_pageに戻る時の一連の処理
 
                   if (context.mounted) {
-                    matchingProgress =
-                        MatchingProgress(myUid: widget.talkRoom.myUid);
+                    /// 画面遷移に必要なコンストラクタ
+                    List<String?>? selectedLanguageList = SelectedLanguage
+                                                            .getSelectedLanguageList(selectedLanguage);
+                    
+                    matchingProgress = MatchingProgress(
+                                          myUid: meUser!.uid,
+                                          selectedLanguage: selectedLanguageList, 
+                                        ); 
                     Navigator.pushAndRemoveUntil(
                         context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                         SlideRightRoute(
@@ -752,33 +767,3 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   }
 }
 
-
-
-
-
-
-                                      // GestureDetector(
-                                      //   onLongPressStart: (details) {
-                                      //     final position = details.globalPosition;
-                                      //     final Size screenSize = MediaQuery.of(context).size; // 画面のサイズを取得   
-                                      //     bool isBelowCenter = position.dy > screenSize.height / 2;  // 画面中央よりタップ位置が上にあるか下にあるかを判断
-
-                                      //     // メニューの表示位置を計算
-                                      //     RelativeRect menuPosition;
-                                      //     if (isBelowCenter) {
-                                      //       // メッセージが画面中央より下にある場合、メッセージの上にメニューを表示
-                                      //       menuPosition = RelativeRect.fromLTRB(
-                                      //         position.dx, // 左端
-                                      //         position.dy, // タップ位置より少し上（メニューの高さ分を考慮）
-                                      //         screenSize.width - position.dx, // 右側の余白
-                                      //         screenSize.height - position.dy, // 下側の余白
-                                      //       );
-                                      //     } else {
-                                      //       // メッセージが画面中央より上にある場合、メッセージの下にメニューを表示
-                                      //       menuPosition = RelativeRect.fromLTRB(
-                                      //         position.dx, // 左端
-                                      //         position.dy, // タップ位置
-                                      //         screenSize.width - position.dx, // 右側の余白
-                                      //         screenSize.height - position.dy, // 下側の余白
-                                      //       );
-                                      //     }

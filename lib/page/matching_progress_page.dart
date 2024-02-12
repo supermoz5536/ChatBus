@@ -44,6 +44,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
   String? myRoomId;
   // StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
+  List<String?>? selectedLanguage;
   bool? isInputEmpty;
   bool? isDisabled;
   bool? shouldBreak;
@@ -67,9 +68,10 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
     shouldBreak = false;
     isTransitioned = false;
     myUid = widget.matchingProgress.myUid;
+    selectedLanguage = widget.matchingProgress.selectedLanguage;
 
     // 起動時に1度行うmyUidを確認する処理
-    UserFirestore.initForMatching(myUid).then((_) async {
+    UserFirestore.initForMatching(myUid, selectedLanguage).then((_) async {
       myRoomId = await RoomFirestore.createRoom(myUid, talkuserUid);
       TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: myRoomId);
 

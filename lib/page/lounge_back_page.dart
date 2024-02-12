@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
+import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:udemy_copy/utils/service_notifier.dart';
 
 
 
@@ -54,6 +58,10 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
   @override
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
+    String? targetLanguageCode = ref.watch(targetLanguageProvider);
+    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    final serviceNotifier = ServiceNotifier(ref);
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -486,7 +494,14 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
-                                  matchingProgress = MatchingProgress(myUid: meUser!.uid);                                          
+                                  List<String?>? selectedLanguageList = SelectedLanguage
+                                                                         .getSelectedLanguageList(selectedLanguage);
+                                  print('LoungePage $selectedLanguage');
+                                  print('LoungeBackPage $selectedLanguageList');
+                                  matchingProgress = MatchingProgress(
+                                                       myUid: meUser!.uid,
+                                                       selectedLanguage: selectedLanguageList, 
+                                                     );                                        
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(

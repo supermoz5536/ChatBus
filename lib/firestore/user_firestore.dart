@@ -218,6 +218,7 @@ class UserFirestore {
       'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
+      'selected_language': '',
       'created_at': FieldValue.serverTimestamp(),
     };
   }  
@@ -508,13 +509,15 @@ static checkMyProgressMarker(String? myUid,) async{
       return docMyUid['progress_marker'];
 }
 
-static Future<void> initForMatching (String? myUid,) async{
+static Future<void> initForMatching (String? myUid, List<String?>? selectedLanguageList) async{
+  print('initForMatching: $selectedLanguageList');
       await _userCollection.doc(myUid).update({
          'matched_status': false,
          'room_id': 'none',
          'progress_marker': false,
          'chatting_status': true,
-         'is_lounge': false,         
+         'is_lounge': false,
+         'selected_language': selectedLanguageList,
         }); 
       return ;    
   

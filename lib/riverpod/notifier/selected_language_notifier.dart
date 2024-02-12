@@ -26,23 +26,16 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
   /// StateNotifier<User?> のコンストラクタは、
   /// state プロパティの初期値として使用される値、つまり
   /// initialUserを受け取ります。
-  SelectedLanguageNotifier(SelectedLanguage? initialUser) : super(initialUser);
+  SelectedLanguageNotifier(SelectedLanguage? initialSelectedLanguage) : super(initialSelectedLanguage);
 
   /// User型の状態を管理するのが目的なので
-  /// 管理する状態にUser型のuserを割り当てています。
+  /// 管理する状態にUser型のuserを割り当てています
   void setSelectedLanguage(SelectedLanguage? selectedLanguage) {
     state = selectedLanguage;
   }
 
   void clearUser() {
     state = null;
-  }
-
-  /// 翻訳先言語を更新するメソッドを定義をしています 
-  void updateSelectedLanguage(SelectedLanguage? selectedLanguage) {
-    if (state != null) {
-      state = selectedLanguage;
-    }
   }
 
 }

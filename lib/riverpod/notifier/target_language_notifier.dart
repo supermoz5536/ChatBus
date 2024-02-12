@@ -25,7 +25,7 @@ class TartgetLanguageNotifier extends StateNotifier<String?> {
   /// StateNotifier<User?> のコンストラクタは、
   /// state プロパティの初期値として使用される値、つまり
   /// initialUserを受け取ります。
-  TartgetLanguageNotifier(String? initialUser) : super(initialUser);
+  TartgetLanguageNotifier(String? initialTartgetLanguage) : super(initialTartgetLanguage);
 
   /// User型の状態を管理するのが目的なので
   /// 管理する状態にUser型のuserを割り当てています。
