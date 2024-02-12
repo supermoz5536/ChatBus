@@ -11,7 +11,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:udemy_copy/riverpod/provider.dart';
+import 'package:udemy_copy/riverpod/provider/provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 
 

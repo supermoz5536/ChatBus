@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/l10n/l10n.dart';
 import 'package:udemy_copy/model/user.dart';
-import 'package:udemy_copy/riverpod/provider.dart';
+import 'package:udemy_copy/riverpod/provider/provider.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:device_preview/device_preview.dart';

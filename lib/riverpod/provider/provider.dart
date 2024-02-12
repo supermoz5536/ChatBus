@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/user.dart';
-import 'package:udemy_copy/riverpod/notifier.dart';
+import 'package:udemy_copy/riverpod/notifier/notifier.dart';
 
 
 

@@ -5,7 +5,7 @@ import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
-import 'package:udemy_copy/riverpod/provider.dart';
+import 'package:udemy_copy/riverpod/provider/provider.dart';
 
 class DMListPage extends ConsumerStatefulWidget {
   const DMListPage({super.key});
