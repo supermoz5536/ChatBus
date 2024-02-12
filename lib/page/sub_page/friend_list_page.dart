@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/profile_page.dart';
-import 'package:udemy_copy/riverpod/provider/provider.dart';
+import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 
 class FriendListPage extends ConsumerStatefulWidget {
   const FriendListPage({super.key});

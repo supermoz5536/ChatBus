@@ -8,7 +8,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:udemy_copy/riverpod/provider/provider.dart';
+import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
