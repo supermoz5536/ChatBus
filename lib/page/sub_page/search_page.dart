@@ -11,6 +11,7 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
+  String? currentGender;
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +33,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
 
-            CheckboxListTile(
+            SwitchListTile(
               title: const Text('日本語'),
-              value: selectedLanguage.ja,
-              onChanged: (bool? newValue) {
+              value: selectedLanguage.ja!,
+              onChanged: (bool newValue) {
                 setState(() {
                   // Providerの状態を最新に更新。
                   ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
@@ -44,10 +45,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               },
             ),
 
-            CheckboxListTile(
+            SwitchListTile(
               title: const Text('スペイン語'),
-              value: selectedLanguage.es,
-              onChanged: (bool? newValue) {
+              value: selectedLanguage.es!,
+              onChanged: (bool newValue) {
                 setState(() {
                   // 最新値に状態変数のプロパティに代入して
                   // Providerの状態を最新に更新
@@ -55,6 +56,48 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 });
               },
             ),
+
+
+            CheckboxListTile(
+              title: const Text('男性'),
+              value: currentGender == 'male'
+                ? true
+                : false,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  // 最新値に状態変数のプロパティに代入して
+                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                });
+              },
+            ),
+
+            CheckboxListTile(
+              title: const Text('女性'),
+              value: currentGender == 'female'
+                ? true
+                : false,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  // 最新値に状態変数のプロパティに代入して
+                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                });
+              },
+            ),
+
+            CheckboxListTile(
+              title: const Text('男性 & 女性'),
+              value: currentGender == 'both'
+                ? true
+                : false,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  // 最新値に状態変数のプロパティに代入して
+                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                });
+              },
+            ),
+
+
 
           ],
         )
