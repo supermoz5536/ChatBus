@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_language.dart';
+import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
+
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -17,7 +19,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Center(
         child: ListView(
@@ -31,6 +32,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   _checkedEn = newValue;
                   selectedLanguage.en = newValue;
                 });
+                ref.read(selectedLanguageProvider.notifier)
+                   .setSelectedLanguage(selectedLanguage);
               },
             ),
 
@@ -42,6 +45,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   _checkedJa = newValue;
                   selectedLanguage.ja = newValue;
                 });
+                ref.read(selectedLanguageProvider.notifier)
+                   .setSelectedLanguage(selectedLanguage);                
               },
             ),
 
@@ -53,6 +58,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   _checkedEs = newValue;
                   selectedLanguage.es = newValue;
                 });
+                ref.read(selectedLanguageProvider.notifier)
+                   .setSelectedLanguage(selectedLanguage);
               },
             ),
 
