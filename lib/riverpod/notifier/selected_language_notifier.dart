@@ -38,5 +38,27 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
     state = null;
   }
 
+
+
+  /// 以下はSelectedLanguage型の状態変数の
+  /// 各言語のパラメーターを更新するメソッド
+  void updateEn(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(en: newValue);
+    }
+  }
+
+  void updateJa(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(ja: newValue);
+    }
+  }
+
+  void updateEs(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(es: newValue);
+    }
+  }
+
 }
 

@@ -22,7 +22,11 @@ import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 /// SelectedLanguageのインスタンスは全てのメンバ変数の初期値がfalseなので
 /// 初期値の設定は必要ない
 final selectedLanguageProvider = StateNotifierProvider<SelectedLanguageNotifier, SelectedLanguage?>((ref) {
-  SelectedLanguage? initialSelectedLanguage = SelectedLanguage();
+  SelectedLanguage? initialSelectedLanguage = SelectedLanguage(
+  en: false,
+  ja: false,
+  es: false,
+  );
     return SelectedLanguageNotifier(initialSelectedLanguage);
 });
 

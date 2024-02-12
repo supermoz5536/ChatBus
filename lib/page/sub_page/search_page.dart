@@ -10,15 +10,12 @@ class SearchPage extends ConsumerStatefulWidget {
   @override
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
-
 class _SearchPageState extends ConsumerState<SearchPage> {
-  SelectedLanguage selectedLanguage = SelectedLanguage();
-  bool _checkedEn = false;
-  bool? _checkedJa = false;
-  bool? _checkedEs = false;
 
   @override
   Widget build(BuildContext context) {
+    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    
     return Scaffold(
       body: Center(
         child: ListView(
@@ -26,42 +23,36 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
             SwitchListTile(
               title: const Text('英語'),
-              value: _checkedEn,
+              value: selectedLanguage!.en!,
               onChanged: (bool newValue) {
                 setState(() {
-                  _checkedEn = newValue;
-                  selectedLanguage.en = newValue;
+                  // Providerの状態を最新に更新
+                  ref.read(selectedLanguageProvider.notifier).updateEn(newValue);
                 });
-                // print('Before $selectedLanguage');
-                ref.read(selectedLanguageProvider.notifier)
-                   .setSelectedLanguage(selectedLanguage);
-                // print('after $selectedLanguage');
               },
             ),
 
             CheckboxListTile(
               title: const Text('日本語'),
-              value: _checkedJa,
+              value: selectedLanguage.ja,
               onChanged: (bool? newValue) {
                 setState(() {
-                  _checkedJa = newValue;
-                  selectedLanguage.ja = newValue;
+                  // Providerの状態を最新に更新。
+                  ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
                 });
-                ref.read(selectedLanguageProvider.notifier)
-                   .setSelectedLanguage(selectedLanguage);
+
               },
             ),
 
             CheckboxListTile(
               title: const Text('スペイン語'),
-              value: _checkedEs,
+              value: selectedLanguage.es,
               onChanged: (bool? newValue) {
                 setState(() {
-                  _checkedEs = newValue;
-                  selectedLanguage.es = newValue;
+                  // 最新値に状態変数のプロパティに代入して
+                  // Providerの状態を最新に更新
+                  ref.read(selectedLanguageProvider.notifier).updateEs(newValue);
                 });
-                ref.read(selectedLanguageProvider.notifier)
-                   .setSelectedLanguage(selectedLanguage);
               },
             ),
 
