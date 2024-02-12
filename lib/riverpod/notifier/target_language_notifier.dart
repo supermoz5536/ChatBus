@@ -32,7 +32,7 @@ class TartgetLanguageNotifier extends StateNotifier<String?> {
 
 /// User型の状態を管理するのが目的なので
 /// 管理する状態にUser型のuserを割り当てています。
-  void setUser(String? targetLanguage) {
+  void setTargetLanguage(String? targetLanguage) {
     state = targetLanguage;
   }
 

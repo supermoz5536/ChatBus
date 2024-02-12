@@ -6,6 +6,7 @@ import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
@@ -26,6 +27,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
   String? myUid;
   String? currentLanguageCode;
+  String? currentTargetLanguageCode;
   bool? isDisabled;
   bool isInputEmpty = true;
   TalkRoom? talkRoom;
@@ -73,8 +75,10 @@ String? dropDownValue = 'one';
                         country: result['country'],
                      );
 
-        /// Providerの状態変数を更新
+        /// MeUserProvider の状態変数を更新
         ref.read(meUserProvider.notifier).setUser(user);
+        /// TargetLanguageProvider の状態変数を更新
+        ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
 
         /// 画面遷移に必要なコンストラクタ
         matchingProgress = MatchingProgress(myUid: result['myUid']);        
@@ -89,6 +93,7 @@ String? dropDownValue = 'one';
   @override
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
+    String? targetLanguageCode = ref.watch(targetLanguageProvider);
     final serviceNotifier = ServiceNotifier(ref);
 
     return Scaffold(
@@ -342,35 +347,35 @@ String? dropDownValue = 'one';
 
             const Divider(),
 
-            // Row(
-            //   children: [
-            //     const Text('翻訳言語'),
-            //     const SizedBox(width: 30,),
-            //     DropdownButton(
-            //       isDense: true,
-            //       underline: Container(
-            //         height: 1,
-            //         color: const Color.fromARGB(255, 198, 198, 198),),
-            //       icon: const Icon(Icons.keyboard_arrow_down_outlined),
-            //       iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-            //       value: currentTargetLanguage = プロバイダーの翻訳ターゲットの言語コードの状態変数を代入,
-            //       items: <String>['en', 'ja', 'es']
-            //         .map<DropdownMenuItem<String>>((String value) {
-            //           return DropdownMenuItem<String>(
-            //             value: value,   //引数の言語コードをシステム識別用に設定
-            //             child: Text(
-            //               languageNames[value]!,
-            //               style: const TextStyle(color: Colors.black)));
-            //         }).toList(),
-            //       onChanged: (String? newLanguageCode) {
-            //           setState(() {
-            //             currentTargetLanguage = newTargetLanguageCode!;
-            //             // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
-            //           });
-            //       },
-            //     ),
-            //   ],
-            // ),
+            Row(
+              children: [
+                const Text('翻訳言語'),
+                const SizedBox(width: 30,),
+                DropdownButton(
+                  isDense: true,
+                  underline: Container(
+                    height: 1,
+                    color: const Color.fromARGB(255, 198, 198, 198),),
+                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                  value: currentTargetLanguageCode = targetLanguageCode,
+                  items: <String>['en', 'ja', 'es']
+                    .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,   //引数の言語コードをシステム識別用に設定
+                        child: Text(
+                          languageNames[value]!,
+                          style: const TextStyle(color: Colors.black)));
+                    }).toList(),
+                  onChanged: (String? newTargetLanguageCode) {
+                      setState(() {
+                        ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
+                        // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
+                      });
+                  },
+                ),
+              ],
+            ),
 
 
             Container(
