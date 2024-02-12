@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:udemy_copy/model/selected_language.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -8,63 +9,54 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  SelectedLanguage selectedLanguage = SelectedLanguage();
+  bool _checkedEn = false;
+  bool? _checkedJa = false;
+  bool? _checkedEs = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: Center(
-      child: Column(
+      body: Center(
+        child: ListView(
+          children: [
 
-        children: <Widget>[
-      
-        const Spacer(),
-        
-        SizedBox(
-          height: 50,
-          width: 150,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 167, 167, 167)
+            SwitchListTile(
+              title: const Text('英語'),
+              value: _checkedEn,
+              onChanged: (bool newValue) {
+                setState(() {
+                  _checkedEn = newValue;
+                  selectedLanguage.en = newValue;
+                });
+              },
             ),
-            onPressed: (){},
-            child: const Text('男女フィルター')
-          ),
-        ),
-      
-        const Spacer(),
-      
-        SizedBox(
-          height: 50,
-          width: 150,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 167, 167, 167)
+
+            CheckboxListTile(
+              title: const Text('日本語'),
+              value: _checkedJa,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  _checkedJa = newValue;
+                  selectedLanguage.ja = newValue;
+                });
+              },
             ),
-            onPressed: (){},
-            child: const Text('国別フィルター')
-          ),
-        ),
-      
-        const Spacer(),      
-      
-        SizedBox(
-          height: 50,
-          width: 150,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 167, 167, 167)
+
+            CheckboxListTile(
+              title: const Text('スペイン語'),
+              value: _checkedEs,
+              onChanged: (bool? newValue) {
+                setState(() {
+                  _checkedEs = newValue;
+                  selectedLanguage.es = newValue;
+                });
+              },
             ),
-            onPressed: (){},
-            child: const Text('翻訳プラン選択')
-          ),
-        ),
-      
-        const Spacer(),
-      
-      ],
+
+          ],
+        )
       ),
-    ),
-
-
-    );
+      );
+    }
   }
-}
