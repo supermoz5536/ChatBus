@@ -20,20 +20,10 @@ import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 /// この時点で initialUser を MeUserNotifier に渡して初期化していますが、
 /// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます。
-final targetLanguageProvider = StateNotifierProvider<TartgetLanguageNotifier, User?>((ref) {
-  User? initialUser = User(
-    /// StateNotifierProvider の初期値の設定（初めて参照された時にのみ使用される）
-    uid: '',
-    userName: '',
-    userImageUrl: '',
-    statement: '', 
-    language: 'en',
-    country: 'US',
-  );
+final targetLanguageProvider = StateNotifierProvider<TartgetLanguageNotifier, String?>((ref) {
 
-    // 初期Userオブジェクト使って MeUserNotifier() を初期化してインスタンスを生成
     // 生成したインスタンスの保持する状態を consumer が読み取る。
-  return TartgetLanguageNotifier(initialUser);
+  return TartgetLanguageNotifier('en');
 });
 
 

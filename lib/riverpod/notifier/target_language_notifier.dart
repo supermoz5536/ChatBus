@@ -5,7 +5,7 @@ import 'package:udemy_copy/model/user.dart';
 /// UserNotifierクラスは
 /// StateNotifier<User?>を拡張しており、
 /// 状態を編集するのが目的のクラスです。
-class TartgetLanguageNotifier extends StateNotifier<User?> {
+class TartgetLanguageNotifier extends StateNotifier<String?> {
 
   /// ■　ここでの目的
   /// MeUserNotifier　クラスがインスタンス化されるときに、
@@ -27,20 +27,25 @@ class TartgetLanguageNotifier extends StateNotifier<User?> {
   /// StateNotifier<User?> のコンストラクタは、
   /// state プロパティの初期値として使用される値、つまり
   /// initialUserを受け取ります。
-  TartgetLanguageNotifier(User? initialUser) : super(initialUser);
+  TartgetLanguageNotifier(String? initialUser) : super(initialUser);
 
 
 /// User型の状態を管理するのが目的なので
 /// 管理する状態にUser型のuserを割り当てています。
-  void setUser(User? user) {
-    state = user;
+  void setUser(String? targetLanguage) {
+    state = targetLanguage;
   }
 
   void clearUser() {
     state = null;
   }
 
-
+  /// 翻訳先言語を更新するメソッドを定義をしています 
+  void updateTargetLanguage(String? targetLanguage) {
+    if (state != null) {
+      state = targetLanguage;
+    }
+  }
 
 }
 
