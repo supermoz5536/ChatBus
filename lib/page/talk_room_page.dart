@@ -13,6 +13,7 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
@@ -682,6 +683,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   // ■ フッター（チャット終了後）
   Row buildEndedFooter(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
+    String? currentGender = ref.watch(currentGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     
     return Row(
@@ -708,11 +710,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                   if (context.mounted) {
                     /// 画面遷移に必要なコンストラクタ
-                    List<String?>? selectedLanguageList = SelectedLanguage
-                                                            .getSelectedLanguageList(selectedLanguage);
-                    
+                    List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
                     matchingProgress = MatchingProgress(
                                           myUid: meUser!.uid,
+                                          currentGener: currentGender,
                                           selectedLanguage: selectedLanguageList, 
                                         ); 
                     Navigator.pushAndRemoveUntil(

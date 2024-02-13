@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_language.dart';
+import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 
 
@@ -11,11 +12,11 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
-  String? currentGender;
 
   @override
   Widget build(BuildContext context) {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    String? currentGender = ref.watch(currentGenderProvider);
     
     return Scaffold(
       body: Center(
@@ -66,7 +67,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               onChanged: (bool? newValue) {
                 setState(() {
                   // 最新値に状態変数のプロパティに代入して
-                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                  // Providerの状態を最新に更新
+                  ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
                 });
               },
             ),
@@ -79,7 +81,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               onChanged: (bool? newValue) {
                 setState(() {
                   // 最新値に状態変数のプロパティに代入して
-                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                  // Providerの状態を最新に更新
+                  ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
                 });
               },
             ),
@@ -92,7 +95,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               onChanged: (bool? newValue) {
                 setState(() {
                   // 最新値に状態変数のプロパティに代入して
-                  // ■■■■■■■■■■■■■ genderProviderの状態更新記述 ■■■■■■■■■■■■■
+                  // Providerの状態を最新に更新
+                  ref.read(currentGenderProvider.notifier).updateCurrentGender('both');
                 });
               },
             ),

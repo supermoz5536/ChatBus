@@ -7,6 +7,7 @@ import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
@@ -90,7 +91,9 @@ String? dropDownValue = 'one';
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
+    String? currentGender = ref.watch(currentGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+
     final serviceNotifier = ServiceNotifier(ref);
 
     return Scaffold(
@@ -603,12 +606,10 @@ String? dropDownValue = 'one';
 
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
-                                  List<String?>? selectedLanguageList = SelectedLanguage
-                                                                         .getSelectedLanguageList(selectedLanguage);
-                                  print('LoungePage $selectedLanguage');                                       
-                                  print('LoungePage $selectedLanguageList');
+                                  List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
                                   matchingProgress = MatchingProgress(
                                                        myUid: meUser.uid,
+                                                       currentGener: currentGender,
                                                        selectedLanguage: selectedLanguageList, 
                                                      );
                                   Navigator.pushAndRemoveUntil(
