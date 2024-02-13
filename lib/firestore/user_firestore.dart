@@ -218,6 +218,8 @@ class UserFirestore {
       'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
+      'native_language': 'en',    // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
+      'gender': 'male',           // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'queried_language': '',
       'queried_gender': 'both',
       'created_at': FieldValue.serverTimestamp(),
