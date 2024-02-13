@@ -146,16 +146,16 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
                           /// 自分の送信した未翻訳のmessageドキュメントの場合
                           /// 翻訳したtextを、をdbに書き込み
-                          if (message.isMe == false
-                           && message.translatedMessage == ''
-                           && message.isDivider == false) {
-                             UnitFunctions.translateAndUpdateDMRoom(
-                             message.message,                  /// 未翻訳text
-                             meUser!.language,                 /// target 言語
-                             widget.dMRoom.dMRoomId,           /// dmroomのID
-                             message.messageId,                /// 翻訳済textをwriteするメッセージのドキュメントID
-                             );              
-                          }
+                          // if (message.isMe == false
+                          //  && message.translatedMessage == ''
+                          //  && message.isDivider == false) {
+                          //    UnitFunctions.translateAndUpdateDMRoom(
+                          //    message.message,                  /// 未翻訳text
+                          //    meUser!.language,                 /// target 言語
+                          //    widget.dMRoom.dMRoomId,           /// dmroomのID
+                          //    message.messageId,                /// 翻訳済textをwriteするメッセージのドキュメントID
+                          //    );              
+                          // }
 
 
                             
