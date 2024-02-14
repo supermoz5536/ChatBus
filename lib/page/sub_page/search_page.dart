@@ -45,11 +45,85 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     endIndent: 30,
                   ),
             
-            const SizedBox(height: 100),
+            const SizedBox(height: 25),
 
             Padding(
               padding: const EdgeInsets.only(
                 top: 20,
+                left: 50,
+                right: 50,
+              ),
+              child: Card(
+                child: ExpansionTile(
+                  // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
+                  shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                  title: const Text(
+                    '母国語の選択',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Color.fromARGB(255, 75, 75, 75),
+                      fontWeight: FontWeight.bold)),
+                  subtitle: const Text('自分が流暢に話せる言語を選択しよう！'),
+                  collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
+                  backgroundColor: const Color.fromARGB(255, 247, 241, 254),
+                  children: [
+              
+                    SwitchListTile(
+                      title: const Text(
+                        '英語',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedLanguage!.en!,
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          // Providerの状態を最新に更新
+                          ref.read(selectedLanguageProvider.notifier).updateEn(newValue);
+                        });
+                      },
+                    ),
+              
+                    SwitchListTile(
+                      title: const Text(
+                        '日本語',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedLanguage.ja!,
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          // Providerの状態を最新に更新。
+                          ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
+                        });
+              
+                      },
+                    ),
+              
+                    SwitchListTile(
+                      title: const Text(
+                        'スペイン語',
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedLanguage.es!,
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          // 最新値に状態変数のプロパティに代入して
+                          // Providerの状態を最新に更新
+                          ref.read(selectedLanguageProvider.notifier).updateEs(newValue);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 50),
+
+            Padding(
+              padding: const EdgeInsets.only(
                 left: 50,
                 right: 50,
               ),
@@ -121,7 +195,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
 
 
-            const SizedBox(height: 100),
+            const SizedBox(height: 50),
 
 
             Padding(

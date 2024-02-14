@@ -271,10 +271,6 @@ class UserFirestore {
     List<String?>? selectedGender,
     ) async{   
     try {
-
-
-
-
       // FieldPath.documentIdを使うと、クエリ内でドキュメントIDを直接条件として扱える
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
                                                                                .where('progress_marker', isEqualTo: false)
