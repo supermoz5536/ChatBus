@@ -67,7 +67,9 @@ class UserFirestore {
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
                         'language': deviceLanguage,
-                        'country': deviceCountry,                        
+                        'country': deviceCountry, 
+                        'native_language': 'en',
+                        'gender': 'male',                       
                       };                      
          }
 
@@ -108,7 +110,9 @@ class UserFirestore {
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
                         'language': deviceLanguage,
-                        'country': deviceCountry,                               
+                        'country': deviceCountry,
+                        'native_language': 'en',
+                        'gender': 'male',                           
                        };
 
 
@@ -146,7 +150,9 @@ class UserFirestore {
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
                         'language': deviceLanguage,
-                        'country': deviceCountry,                        
+                        'country': deviceCountry,
+                        'native_language': 'en',
+                        'gender': 'male',
                         };      
                     }
 
@@ -187,7 +193,9 @@ class UserFirestore {
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
                         'language': deviceLanguage,
-                        'country': deviceCountry,                          
+                        'country': deviceCountry,
+                        'native_language': 'en',
+                        'gender': 'male',
                   };      
           }
          }
@@ -221,7 +229,7 @@ class UserFirestore {
       'native_language': 'en',    // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'gender': 'male',           // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'queried_language': '',
-      'queried_gender': 'both',
+      'queried_gender': '',
       'created_at': FieldValue.serverTimestamp(),
     };
   }  
@@ -255,36 +263,45 @@ class UserFirestore {
 
 
 
-  static Future<String?> getUnmatchedUser(String? myUid) async{   
-    // try {     
+  static Future<String?> getUnmatchedUser(
+    String? myUid,
+    String? meGender,
+    List<String?>? meNativeLanguage,
+    List<String?>? selectedLanguage,
+    List<String?>? selectedGender,
+    ) async{   
+    try {
+      // FieldPath.documentIdを使うと、クエリ内でドキュメントIDを直接条件として扱える
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
                                                                                .where('progress_marker', isEqualTo: false)
                                                                                .where(FieldPath.documentId, isNotEqualTo: myUid)
+                                                                               //「する側」の要望に合致するドキュメントだけにまず選別
+                                                                               .where('native_language', arrayContainsAny: selectedLanguage)
+                                                                               .where('gender', whereIn: selectedGender)
+                                                                               //「する側」も「される側」のクエリに含まれているような場合の「される側」のドキュメントをさらに選別
+                                                                               .where('queried_language', arrayContainsAny: meNativeLanguage)
+                                                                               .where('queried_gender', arrayContains: meGender)
                                                                                .limit(4) 
                                                                                .get();
-                                                                               //黄色五角形エラーが出るが問題ない（.getの取得doc数 == 0の時に表示される模様）
-        
-            //  print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
-
+      // print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
 
           if(querySnapshot.docs.isEmpty){
-            //  print('マッチング可能な相手がDB上に0人');
+             // print('マッチング可能な相手がDB上に0人');
              return null;
-            }
-
-
+          }
           if (querySnapshot.docs.isNotEmpty) {
-
              List<DocumentSnapshot> docs = querySnapshot.docs;
                                     docs.shuffle();
-
              DocumentSnapshot docSnapshotFirst = docs[0];
-             print("talkuserUid: Document[0] ID: ${docSnapshotFirst.id}");      //それ以外の場合→ First[0]のuidを返す                           
+             print("talkuserUid: Document[0] ID: ${docSnapshotFirst.id}");
              return docSnapshotFirst.id;
-             }    
-
+          }    
              return null;
-           }           
+    } catch (e) {
+      print('getUnmatchedUser: エラー == $e');
+      return null;
+    }
+  }           
 
 
               //  if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
@@ -295,13 +312,6 @@ class UserFirestore {
             //  DocumentSnapshot docSnapshotSecond = docs[1];
             //       print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
             //      return docSnapshotSecond.id;}    
-  
-
-                                                                        
-                                                       
-          
-
-
 
           // DocumentSnapshot docSnapshotFirst = querySnapshot.docs.first;
           // return docSnapshotFirst.id;
@@ -512,7 +522,7 @@ static checkMyProgressMarker(String? myUid,) async{
       return docMyUid['progress_marker'];
 }
 
-static Future<void> initForMatching (String? myUid, String? currentGender, List<String?>? selectedLanguageList) async{
+static Future<void> initForMatching (String? myUid, List<String?>? selectedGender, List<String?>? selectedLanguageList) async{
       await _userCollection.doc(myUid).update({
          'matched_status': false,
          'room_id': 'none',
@@ -520,7 +530,7 @@ static Future<void> initForMatching (String? myUid, String? currentGender, List<
          'chatting_status': true,
          'is_lounge': false,
          'queried_language': selectedLanguageList,
-         'queried_gender': currentGender
+         'queried_gender': selectedGender
         }); 
       return ;    
   

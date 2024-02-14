@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
+import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/talk_room_page.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -24,7 +27,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // ① talkUserUid ==nullで 本体のWidget builder()が走る
 // ②if(snapshot.hasData)がtrueになるまで、list[0][1]が描画される
 
-class MatchingProgressPage extends StatefulWidget {
+class MatchingProgressPage extends ConsumerStatefulWidget {
   final MatchingProgress matchingProgress;
   const MatchingProgressPage(this.matchingProgress,
       {super.key}); // this.talkRoomでtalkRoomのオブジェクト（入れ物）を用意してる。
@@ -32,20 +35,20 @@ class MatchingProgressPage extends StatefulWidget {
 // 画面に「起動/更新/遷移」があった際に、TalkRoomPageクラスが各々個別の情報によってインスタンス化する。
 
   @override
-  State<MatchingProgressPage> createState() =>
+  ConsumerState<MatchingProgressPage> createState() =>
       _MatchingProgressPageState(); //「stateクラス」として「_WaitRoomPageState()」を定義
   //「stateクラス」＝StatefulWifetを継承したWidfetの状態を管理するクラス
 }
 
-class _MatchingProgressPageState extends State<MatchingProgressPage> {
+class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
   //「stateクラス」を継承した新たな「 _WaitRoomPageState」クラスを宣言（機能追加）
   String? myUid;
   String? talkuserUid;
   String? myRoomId;
-  String? currentGender;
   // StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
   List<String?>? selectedLanguage;
+  List<String?>? selectedGender;
   bool? isInputEmpty;
   bool? isDisabled;
   bool? shouldBreak;
@@ -63,17 +66,20 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
     //「親クラス＝Stateクラス＝_WaitRoomPageState」をinitStateメソッドで状態初期化
     // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます
     // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-    // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
+    // initState()とは https://sl.bing.net/ivIFfFUd6Vo
     isInputEmpty = true;
     isDisabled = false;
     shouldBreak = false;
     isTransitioned = false;
     myUid = widget.matchingProgress.myUid;
     selectedLanguage = widget.matchingProgress.selectedLanguage;
-    currentGender = widget.matchingProgress.currentGener;
+    selectedGender = widget.matchingProgress.selectedGener;
 
     // 起動時に1度行うmyUidを確認する処理
-    UserFirestore.initForMatching(myUid, currentGender, selectedLanguage).then((_) async {
+    UserFirestore.initForMatching(myUid, selectedGender, selectedLanguage).then((_) async {
+      User? meUser = ref.watch(meUserProvider);
+      
+
       myRoomId = await RoomFirestore.createRoom(myUid, talkuserUid);
       TalkRoom talkRoom = TalkRoom(myUid: myUid, roomId: myRoomId);
 
@@ -83,7 +89,15 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
           isDisabled = true; // キャンセルボタンのロック
         });
 
-        await UserFirestore.getUnmatchedUser(myUid).then((getUid) async {
+        await UserFirestore.getUnmatchedUser(
+        // 待機列のユーザーをフィルタリングして talkuserUid を取得
+            myUid,
+            meUser!.gender,
+            meUser.nativeLanguage,
+            selectedLanguage,
+            selectedGender
+        ).then((getUid) async {
+
           talkuserUid = getUid;
 
           // 「自分がマッチングする場合」の処理
@@ -147,6 +161,7 @@ class _MatchingProgressPageState extends State<MatchingProgressPage> {
             } //　if(myProgressMaker == false)
           } //　if(talkuserUid != null)
         }); //　getUnmatchedUser
+
         if (talkuserUid == null) {
           //　talkuserUid == null で エラーの起こりうるif(){}部分をスルーしてしまった場合に、エラーを手動で返してretryさせる
           print('マッチング可能な相手が0人、retry関数再実行の待機中)');

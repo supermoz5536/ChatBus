@@ -8,12 +8,13 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
-import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
@@ -683,7 +684,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   // ■ フッター（チャット終了後）
   Row buildEndedFooter(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
-    String? currentGender = ref.watch(currentGenderProvider);
+    SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     
     return Row(
@@ -711,9 +712,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   if (context.mounted) {
                     /// 画面遷移に必要なコンストラクタ
                     List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
+                    List<String?>? selectedGenderList = SelectedGender.getSelectedGenderList(selectedGender);
+
                     matchingProgress = MatchingProgress(
                                           myUid: meUser!.uid,
-                                          currentGener: currentGender,
+                                          selectedGener: selectedGenderList,
                                           selectedLanguage: selectedLanguageList, 
                                         ); 
                     Navigator.pushAndRemoveUntil(

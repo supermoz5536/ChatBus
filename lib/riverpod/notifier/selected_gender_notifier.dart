@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/model/selected_gender.dart';
 
 /// UserNotifierクラスは
 /// StateNotifier<User?>を拡張しており、
 /// 状態を編集するのが目的のクラスです。
-class CurrentGenderNotifier extends StateNotifier<String?> {
+class SelectedGenderNotifier extends StateNotifier<SelectedGender?> {
 
   /// ■　ここでの目的
   /// MeUserNotifier　クラスがインスタンス化されるときに、
@@ -25,22 +26,41 @@ class CurrentGenderNotifier extends StateNotifier<String?> {
   /// StateNotifier<User?> のコンストラクタは、
   /// state プロパティの初期値として使用される値、つまり
   /// initialUserを受け取ります。
-  CurrentGenderNotifier(String? initialCurrentGender) : super(initialCurrentGender);
+  SelectedGenderNotifier(SelectedGender? initialSelectedGender) : super(initialSelectedGender);
 
   /// User型の状態を管理するのが目的なので
   /// 管理する状態にUser型のuserを割り当てています。
-  void setCurrentGender(String? currentGender) {
-    state = currentGender;
+  void setSelectedGender(SelectedGender? selectedGender) {
+    state = selectedGender;
   }
 
-  void clearGender() {
+  void clearSelectedGender() {
     state = null;
   }
 
-  /// 翻訳先言語を更新するメソッドを定義をしています 
-  void updateCurrentGender(String? currentGender) {
+  /// 選択されたジェンダーを更新するメソッドを定義をしています 
+  void updateSelectedGender(SelectedGender? selectedGender) {
     if (state != null) {
-      state = currentGender;
+      state = selectedGender;
+    }
+  }
+
+
+  void updateMale(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(male: newValue);
+    }
+  }
+
+  void updateFemale(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(female: newValue);
+    }
+  }
+
+  void updateBoth(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(both: newValue);
     }
   }
 

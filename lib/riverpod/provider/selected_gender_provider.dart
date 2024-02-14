@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:udemy_copy/riverpod/notifier/current_gender_notifier.dart';
+import 'package:udemy_copy/model/selected_gender.dart';
+import 'package:udemy_copy/riverpod/notifier/selected_gender_notifier.dart';
 import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 
 /// ■ StateNotifierProviderの基本的な説明
@@ -17,10 +18,15 @@ import 'package:udemy_copy/riverpod/notifier/target_language_notifier.dart';
 /// この時点で initialUser を MeUserNotifier に渡して初期化していますが、
 /// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
-final currentGenderProvider = StateNotifierProvider<CurrentGenderNotifier, String?>((ref) {
+final selectedGenderProvider = StateNotifierProvider<SelectedGenderNotifier, SelectedGender?>((ref) {
+SelectedGender initialSelectedGender = SelectedGender(
+  male: false,
+  female: false,
+  both: true,
+);
 
   // 生成したインスタンスの保持する状態を consumer が読み取る。
-  return CurrentGenderNotifier('both');
+  return SelectedGenderNotifier(initialSelectedGender);
 });
 
 

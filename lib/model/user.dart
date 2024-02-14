@@ -10,6 +10,8 @@ class User {
  final String? statement;
  final String? language;
  final String? country;
+ final List<String?>? nativeLanguage;
+ final String? gender;
 
 
   /// コンストラクタの設定
@@ -20,6 +22,8 @@ class User {
      this.statement, 
      this.language,
      this.country,
+     this.nativeLanguage,
+     this.gender,
   });
 
   /// USER型インスタンスの個別プロパティの更新用関数
@@ -30,6 +34,8 @@ class User {
     String? statement,
     String? language,
     String? country,
+    List<String?>? nativeLanguage,
+    String? gender,
   }) {
     /// 「a ?? b」 「a != null」なら a の値を代入
     /// 「a ?? b」 「a == null」なら b の値を代入
@@ -51,6 +57,8 @@ class User {
       statement: statement ?? this.statement,
       language: language ?? this.language,
       country: country ?? this.country,
+      nativeLanguage: nativeLanguage ?? this.nativeLanguage,
+      gender: gender ?? this.gender,
     );
   }
 

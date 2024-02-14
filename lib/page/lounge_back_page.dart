@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
+import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
-import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
@@ -60,7 +61,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
-    String? currentGender = ref.watch(currentGenderProvider);
+    SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     final serviceNotifier = ServiceNotifier(ref);
     
@@ -497,9 +498,10 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
                                   List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
+                                  List<String?>? selectedGenderList = SelectedGender.getSelectedGenderList(selectedGender);
                                   matchingProgress = MatchingProgress(
                                                        myUid: meUser!.uid,
-                                                       currentGener: currentGender,
+                                                       selectedGener: selectedGenderList,
                                                        selectedLanguage: selectedLanguageList, 
                                                      );                                        
                                   Navigator.pushAndRemoveUntil(
