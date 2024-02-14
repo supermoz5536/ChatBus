@@ -271,18 +271,47 @@ class UserFirestore {
     List<String?>? selectedGender,
     ) async{   
     try {
+
+
+
+
       // FieldPath.documentIdを使うと、クエリ内でドキュメントIDを直接条件として扱える
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
                                                                                .where('progress_marker', isEqualTo: false)
                                                                                .where(FieldPath.documentId, isNotEqualTo: myUid)
-                                                                               //「する側」の要望に合致するドキュメントだけにまず選別
-                                                                               .where('native_language', arrayContainsAny: selectedLanguage)
+                                                                               .where('native_language', isEqualTo: selectedLanguage)
+                                                                               .where('queried_language', isEqualTo: meNativeLanguage)
                                                                                .where('gender', whereIn: selectedGender)
-                                                                               //「する側」も「される側」のクエリに含まれているような場合の「される側」のドキュメントをさらに選別
-                                                                               .where('queried_language', arrayContainsAny: meNativeLanguage)
-                                                                               .where('queried_gender', arrayContains: meGender)
+                                                                               .where(Filter.and(
+                                                                                  Filter("queried_gender", isEqualTo: meGender),
+                                                                                  Filter("queried_gender", isEqualTo: 'both')))
                                                                                .limit(4) 
                                                                                .get();
+
+      // QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
+      //                                                                          .where('progress_marker', isEqualTo: false)
+      //                                                                          .where(FieldPath.documentId, isNotEqualTo: myUid)
+      //                                                                          .where('native_language', isEqualTo: selectedLanguage)
+      //                                                                          .where('queried_language', isEqualTo: meNativeLanguage)
+      //                                                                          .where('gender', whereIn: selectedGender)
+      //                                                                          .where('queried_gender', arrayContains: meGender)
+      //                                                                          .limit(4) 
+      //                                                                          .get();
+
+                                                                               // sekectedGender == both の場合、このwhereフィルタリングは必要がない
+                                                                               // sekectedGender == male の場合、Filed値もmale ならOK
+                                                                               // sekectedGender == female の場合、Filed値もfemale ならOK
+                                                                               // つまり
+                                                                               // if (sekectedGender == both) このメソッドを除いたクエリを実行
+                                                                               // if (sekectedGender != both) isEqualTo: meGener
+
+                                                                                // 「相手のクエリ＝自分の性別」か「相手のクエリ＝ both」ならOK
+                                                                                //  isEqualTo: meGener, isEqualTo: both でいけそう 
+                                                                                //  「相手のクエリ＝ both」の場合、そのフィルタリングは必要なのか？
+                                                                                //  queried_gender が both の場合は「どちらか気にしない」ということだから
+                                                                                //  「どちらか気にしない」という確認が必要。
+                                                                                // 2つのクエリに分解して、各々取得したドキュメントをマージするのは現実的
+
       // print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
 
           if(querySnapshot.docs.isEmpty){
