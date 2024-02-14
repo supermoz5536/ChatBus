@@ -162,10 +162,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         : false,
                       onChanged: (bool? newValue) {
                         setState(() {
-                          // チェックボックス切り替え用の状態変数を更新
-                          // Providerの状態を最新に更新
+                          if (newValue == true){
+                          // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
                           ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
-                          ref.read(selectedGenderProvider.notifier).updateMale(newValue);
+                          // 状態値の全3つのプロパティを更新
+                          ref.read(selectedGenderProvider.notifier).updateMale(true);
+                          ref.read(selectedGenderProvider.notifier).updateFemale(false);
+                          ref.read(selectedGenderProvider.notifier).updateBoth(false);
+                          } else if (newValue == false ){ }
                         });
                       },
                     ),
@@ -181,10 +185,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         : false,
                       onChanged: (bool? newValue) {
                         setState(() {
-                          // チェックボックス切り替え用の状態変数を更新
-                          // Providerの状態を最新に更新
+                          if (newValue == true){
+                          // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
                           ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
-                          ref.read(selectedGenderProvider.notifier).updateFemale(newValue);
+                          // 状態値の全3つのプロパティを更新
+                          ref.read(selectedGenderProvider.notifier).updateMale(false);
+                          ref.read(selectedGenderProvider.notifier).updateFemale(true);
+                          ref.read(selectedGenderProvider.notifier).updateBoth(false);
+                          } else if (newValue == false ){ }
                         });
                       },
                     ),
@@ -200,10 +208,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         : false,
                       onChanged: (bool? newValue) {
                         setState(() {
-                          // チェックボックス切り替え用の状態変数を更新
-                          // Providerの状態を最新に更新
+                          if (newValue == true){
+                          // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
                           ref.read(currentGenderProvider.notifier).updateCurrentGender('both');
-                          ref.read(selectedGenderProvider.notifier).updateBoth(newValue);
+                          // 状態値の全3つのプロパティを更新
+                          ref.read(selectedGenderProvider.notifier).updateMale(false);
+                          ref.read(selectedGenderProvider.notifier).updateFemale(false);
+                          ref.read(selectedGenderProvider.notifier).updateBoth(true);
+                          } else if (newValue == false ){ }
                         });
                       },
                     ),

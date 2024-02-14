@@ -193,8 +193,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
               }); // キャンセルボタンのロック
               shouldBreak = true; // retry終了
               // isTransitioned = true;
-              await UserFirestore.updateProgressMarker(
-                  myUid, true); //「される場合」の処理開始。「する場合」の競合防止マーカー更新
+              await UserFirestore.updateProgressMarker(myUid, true); //「される場合」の処理開始。「する場合」の競合防止マーカー更新
               await RoomFirestore.deleteRoom(myRoomId);
 
               Map<String, dynamic>? doc = snapshot.data();
