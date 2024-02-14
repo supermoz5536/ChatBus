@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
+import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 
@@ -13,12 +14,13 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
-  String? currentGender;
 
   @override
   Widget build(BuildContext context) {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
+    String? currentGender = ref.watch(currentGenderProvider);
+
     
     return Scaffold(
       body: Center(
@@ -162,7 +164,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         setState(() {
                           // チェックボックス切り替え用の状態変数を更新
                           // Providerの状態を最新に更新
-                          currentGender = 'male';
+                          ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
                           ref.read(selectedGenderProvider.notifier).updateMale(newValue);
                         });
                       },
@@ -181,7 +183,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         setState(() {
                           // チェックボックス切り替え用の状態変数を更新
                           // Providerの状態を最新に更新
-                          currentGender = 'female';
+                          ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
                           ref.read(selectedGenderProvider.notifier).updateFemale(newValue);
                         });
                       },
@@ -200,7 +202,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         setState(() {
                           // チェックボックス切り替え用の状態変数を更新
                           // Providerの状態を最新に更新
-                          currentGender = 'both';
+                          ref.read(currentGenderProvider.notifier).updateCurrentGender('both');
                           ref.read(selectedGenderProvider.notifier).updateBoth(newValue);
                         });
                       },
