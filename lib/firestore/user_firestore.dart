@@ -266,15 +266,14 @@ class UserFirestore {
   static Future<String?> getUnmatchedUser(
     String? myUid,
     String? meGender,
-    List<String?>? selectedLanguage,
+    String? selectedLanguage,
     List<String?>? meNativeLanguage,
     String? selectedGender,
     ) async{   
     try {
       // print('selectedGender == $selectedGender');
       // print('meGender == $meGender');
-      // print('selectedLanguage[0] == ${selectedLanguage![0]}');
-      // print('selectedLanguage[1] == ${selectedLanguage}');
+      // print('selectedLanguage[0] == $selectedLanguage');
       // print('meNativeLanguage[0] == ${meNativeLanguage![0]}'); 
       // print('meNativeLanguage[1] == ${meNativeLanguage[1]}');      
 
@@ -283,7 +282,7 @@ class UserFirestore {
                   .where('matched_status', isEqualTo: false)
                   .where('progress_marker', isEqualTo: false)
                   .where(FieldPath.documentId, isNotEqualTo: myUid)
-                  .where("native_language", arrayContains: selectedLanguage![0]);
+                  .where("native_language", arrayContains: selectedLanguage);
 
       // meNativeLanguage の要素数に基づくクエリの条件分岐
         // 母国語の選択数に応じて条件切り替え
@@ -547,11 +546,12 @@ static checkMyProgressMarker(String? myUid,) async{
 
 static Future<void> initForMatching (
   String? myUid,
-  List<String?>? selectedLanguageList,
+  String? selectedLanguage,
   List<String?>? selectedNativeLanguageList,
   String? selectedGender,
+
+
   ) async{
-      String? selectedLanguage = selectedLanguageList![0];
 
       await _userCollection.doc(myUid).update({
          'matched_status': false,

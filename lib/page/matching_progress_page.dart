@@ -79,7 +79,8 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
 
     // 起動時に1度行うmyUidを確認する処理
     UserFirestore.initForMatching(
-      myUid, selectedLanguage,
+      myUid,
+      selectedLanguage![0],
       selectedNativeLanguage,
       selectedGender
       ).then((_) async {
@@ -94,12 +95,12 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
         setState(() {
           isDisabled = true; // キャンセルボタンのロック
         });
-
+        print('test: selectedLanguage![0] == ${selectedLanguage![0]}');
         await UserFirestore.getUnmatchedUser(
         // 待機列のユーザーをフィルタリングして talkuserUid を取得
             myUid,
             meUser!.gender,
-            selectedLanguage,
+            selectedLanguage![0],
             selectedNativeLanguage,
             selectedGender,
         ).then((getUid) async {

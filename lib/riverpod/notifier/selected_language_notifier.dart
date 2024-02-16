@@ -60,5 +60,28 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
     }
   }
 
+
+  void switchSelectedLanguage (String currentSelectedLanguage) {
+    var newState = state!.copyWith(
+      en: false,
+      ja: false,
+      es: false,
+    );
+
+    switch(currentSelectedLanguage) {
+      case 'en': 
+        newState = newState.copyWith(en: true);
+        break;
+      case 'ja': 
+        newState = newState.copyWith(ja: true);
+        break;
+      case 'es': 
+        newState = newState.copyWith(es: true);
+        break;       
+    } 
+    state = newState;
+    }
+
+
 }
 

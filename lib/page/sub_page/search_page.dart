@@ -21,7 +21,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
-    String? currentGender = ref.watch(currentGenderProvider);
+    // String? currentGender = ref.watch(currentGenderProvider);
 
     
     return Scaffold(
@@ -145,49 +145,48 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
               
-                    CheckboxListTile(
+                    SwitchListTile(
                       title: const Text(
                         '英語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
-                      onChanged: (bool? newValue) {
+                      onChanged: (bool newValue) {
                         setState(() {
                           // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).updateEn(newValue);
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
                         });
                       },
                     ),
               
-                    CheckboxListTile(
+                    SwitchListTile(
                       title: const Text(
                         '日本語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
-                      onChanged: (bool? newValue) {
+                      onChanged: (bool newValue) {
                         setState(() {
                           // Providerの状態を最新に更新。
-                          ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
                         });
-              
                       },
                     ),
               
-                    CheckboxListTile(
+                    SwitchListTile(
                       title: const Text(
                         'スペイン語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.es!,
-                      onChanged: (bool? newValue) {
+                      onChanged: (bool newValue) {
                         setState(() {
                           // 最新値に状態変数のプロパティに代入して
                           // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).updateEs(newValue);
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
                         });
                       },
                     ),
@@ -233,18 +232,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender!.male == true && currentGender == 'male'
-                        ? true
-                        : false,
+                      value: selectedGender!.male
+                      // == true && currentGender == 'male'
+                      //   ? true
+                      //   : false
+                        ,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
                           // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
-                          ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
+                          // ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
                           // 状態値の全3つのプロパティを更新
-                          ref.read(selectedGenderProvider.notifier).updateMale(true);
-                          ref.read(selectedGenderProvider.notifier).updateFemale(false);
-                          ref.read(selectedGenderProvider.notifier).updateBoth(false);
+                          ref.read(selectedGenderProvider.notifier).switchSelectedGender('male');
                           } else if (newValue == false ){ }
                         });
                       },
@@ -256,18 +255,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.female == true && currentGender == 'female'
-                        ? true
-                        : false,
+                      value: selectedGender.female
+                      //  == true && currentGender == 'female'
+                      //   ? true
+                      //   : false
+                        ,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
                           // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
-                          ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
+                          // ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
                           // 状態値の全3つのプロパティを更新
-                          ref.read(selectedGenderProvider.notifier).updateMale(false);
-                          ref.read(selectedGenderProvider.notifier).updateFemale(true);
-                          ref.read(selectedGenderProvider.notifier).updateBoth(false);
+                          ref.read(selectedGenderProvider.notifier).switchSelectedGender('female');
                           } else if (newValue == false ){ }
                         });
                       },
@@ -279,18 +278,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.both == true && currentGender == 'both'
-                        ? true
-                        : false,
+                      value: selectedGender.both
+                      //  == true && currentGender == 'both'
+                      //   ? true
+                      //   : false
+                        ,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
                           // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
-                          ref.read(currentGenderProvider.notifier).updateCurrentGender('both');
+                          // ref.read(currentGenderProvider.notifier).updateCurrentGender('both');
                           // 状態値の全3つのプロパティを更新
-                          ref.read(selectedGenderProvider.notifier).updateMale(false);
-                          ref.read(selectedGenderProvider.notifier).updateFemale(false);
-                          ref.read(selectedGenderProvider.notifier).updateBoth(true);
+                          ref.read(selectedGenderProvider.notifier).switchSelectedGender('both');
                           } else if (newValue == false ){ }
                         });
                       },

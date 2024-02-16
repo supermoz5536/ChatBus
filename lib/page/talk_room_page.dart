@@ -712,8 +712,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                   if (context.mounted) {
                     /// 画面遷移に必要なコンストラクタ
-                    List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
-                    List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageList(selectedNativeLanguage);
+                    List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
+                    List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedNativeLanguage);
                     String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                     matchingProgress = MatchingProgress(

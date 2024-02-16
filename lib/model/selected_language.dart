@@ -15,17 +15,17 @@ class SelectedLanguage{
 
   /// MatchingProgressPageへの画面遷移時に
   /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedLanguageList(SelectedLanguage? selectedLanguage){
-    List<String?>? selectedLanguageList = [];
+  static List<String?>? getSelectedLanguageTrueItem(SelectedLanguage? selectedLanguage){
+    List<String?>? selectedLanguageTrueItem = [];
 
     // インスタンス化したselectedLanguageオブジェクトは
     // 言語フィルターUIの真偽出力結果が格納されている
     // MatchingProgressPageへのコンストラクタ用に
     // そのうち、TrueのものだけListの配列に加えて出力する
-    if (selectedLanguage!.en == true) selectedLanguageList.add('en'); 
-    if (selectedLanguage.ja == true) selectedLanguageList.add('ja'); 
-    if (selectedLanguage.es == true) selectedLanguageList.add('es'); 
-    return selectedLanguageList;
+    if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en'); 
+    if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
+    if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
+    return selectedLanguageTrueItem;
   } 
 
 

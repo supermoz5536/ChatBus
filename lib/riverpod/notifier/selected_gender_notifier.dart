@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 
@@ -63,6 +64,30 @@ class SelectedGenderNotifier extends StateNotifier<SelectedGender?> {
       state = state!.copyWith(both: newValue);
     }
   }
+
+
+  void switchSelectedGender (String currentSelectedGender) {
+    var newState = state!.copyWith(
+      male: false,
+      female: false,
+      both: false,
+    );
+
+    switch(currentSelectedGender) {
+      case 'male': 
+        newState = newState.copyWith(male: true);
+        break;
+      case 'female': 
+        newState = newState.copyWith(female: true);
+        break;
+      case 'both': 
+        newState = newState.copyWith(both: true);
+        break;       
+    } 
+    state = newState;
+    }
+  
+
 
 }
 
