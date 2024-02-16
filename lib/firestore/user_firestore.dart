@@ -282,28 +282,14 @@ class UserFirestore {
                   .where('matched_status', isEqualTo: false)
                   .where('progress_marker', isEqualTo: false)
                   .where(FieldPath.documentId, isNotEqualTo: myUid)
-                  .where("native_language", arrayContains: selectedLanguage);
-
-      // meNativeLanguage の要素数に基づくクエリの条件分岐
-        // 母国語の選択数に応じて条件切り替え
-        if (meNativeLanguage!.length == 1) {
-            // print('meNativeLanguage!.length == ${meNativeLanguage.length}');
-            query = query.where("queried_language", whereIn: [meNativeLanguage[0]]);
-        }
-        if (meNativeLanguage.length == 2) {
-            // print('meNativeLanguage!.length == ${meNativeLanguage.length}');
-            query = query.where("queried_language", whereIn: [meNativeLanguage[0], meNativeLanguage[1]]);
-
-        }
+                  .where("native_language", arrayContains: selectedLanguage)
+                  .where("queried_language", whereIn: meNativeLanguage);
 
       // selectedGender の要素数に基づくクエリの条件分岐
-        // ジェンター指定がある場合、指定に合致するドキュメントのみ参照
+        // ジェンター指定がある場合: 指定に合致するドキュメントのみ参照 (male, female)
+        // ジェンター指定がない場合: 何もしない (both)
         if (selectedGender == 'male' || selectedGender == 'female') {
             query = query.where('gender', isEqualTo: selectedGender);
-        }
-        // ジェンター指定がない場合(both)、何もしない
-        if (selectedGender == 'both') {
-            query = query;
         }
 
           // クエリの実行
@@ -331,9 +317,9 @@ class UserFirestore {
                 } else {
                     return null;
                 }
-                
           }    
-                    return null;
+        return null;
+        
       } catch (e) {
         print('getUnmatchedUser: ERROR == $e');
         return null;

@@ -15,13 +15,14 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
+  bool? withinRange;
 
   @override
   Widget build(BuildContext context) {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
-    // String? currentGender = ref.watch(currentGenderProvider);
+    
 
     
     return Scaffold(
@@ -80,8 +81,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage!.en!,
                       onChanged: (bool newValue) {
                         setState(() {
-                          // Providerの状態を最新に更新
-                          ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
+                          // 選択言語数がレンジ内か? の確認
+                          // レンジ内の場合: 状態変数を変更
+                          // レンジ外の場合: 何もしない
+                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
                         });
                       },
                     ),
@@ -95,8 +99,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.ja!,
                       onChanged: (bool newValue) {
                         setState(() {
-                          // Providerの状態を最新に更新。
-                          ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
+                          // 選択言語数がレンジ内か? の確認
+                          // レンジ内の場合: 状態変数を変更
+                          // レンジ外の場合: 何もしない
+                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
                         });
               
                       },
@@ -111,9 +118,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.es!,
                       onChanged: (bool newValue) {
                         setState(() {
-                          // 最新値に状態変数のプロパティに代入して
-                          // Providerの状態を最新に更新
-                          ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
+                          // 選択言語数がレンジ内か? の確認
+                          // レンジ内の場合: 状態変数を変更
+                          // レンジ外の場合: 何もしない
+                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
                         });
                       },
                     ),

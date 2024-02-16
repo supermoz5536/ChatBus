@@ -7,7 +7,7 @@ class ServiceNotifier {
 
   ServiceNotifier(this.ref);
 
-
+  /// アプリ内設定言語の切り替え時に
   /// 状態更新とdbへの書き込みを連携して行うメソッド
   Future<void> changeLanguage(String? newLanguageCode) async {
     // ユーザーIDの取得

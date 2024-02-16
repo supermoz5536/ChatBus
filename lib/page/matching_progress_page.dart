@@ -95,7 +95,6 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
         setState(() {
           isDisabled = true; // キャンセルボタンのロック
         });
-        print('test: selectedLanguage![0] == ${selectedLanguage![0]}');
         await UserFirestore.getUnmatchedUser(
         // 待機列のユーザーをフィルタリングして talkuserUid を取得
             myUid,

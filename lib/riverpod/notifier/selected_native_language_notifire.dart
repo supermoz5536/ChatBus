@@ -39,7 +39,6 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
   }
 
 
-
   /// 以下はSelectedLanguage型の状態変数の
   /// 各言語のパラメーターを更新するメソッド
   void updateEn(bool? newValue) {
@@ -59,6 +58,35 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
       state = state!.copyWith(es: newValue);
     }
   }
+
+
+  bool isValidSelectionCount(bool newValue){
+
+    // 現在選択(True)してる言語の数を取得する
+    int currentValidSelectionCount = [
+      if (state?.en ?? false) 1,
+      if (state?.ja ?? false) 1,
+      if (state?.es ?? false) 1,
+    ].length;
+
+    // タップした際の処理を反映して
+    // タップ後の状況に更新
+    // True の場合は言語数を +1
+    // false の場合は言語数を -1
+    int  newValidSelectionCount = newValue
+                                  ? currentValidSelectionCount + 1
+                                  : currentValidSelectionCount - 1;
+
+    // タップした際のOn Offによって、
+    // on(true) の場合: タップ後の計算値の値が3以下なら、処理の許可(true)を返す
+    // off(false) の場合: 　　　　　　　　　 1以上なら
+    bool withinRange = newValue
+                      ? newValidSelectionCount <= 3
+                      : newValidSelectionCount >= 1;
+    return withinRange;
+
+  }
+
 
 }
 
