@@ -68,7 +68,7 @@ class UserFirestore {
                         'statement': 'statement',
                         'language': deviceLanguage,
                         'country': deviceCountry, 
-                        'native_language': 'en',
+                        'native_language': '',
                         'gender': 'male',                       
                       };                      
          }
@@ -91,8 +91,11 @@ class UserFirestore {
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
 
                      /// Field情報をリフレッシュして、既存の端末Uidをそのまま使用
+                     /// ① プロフimageのURLは、匿名認証IDの保存画像を引き継ぐ　「匿名認証が実装できるまでは、とりあえずランダム取得」
+                     /// ② 言語は、新規作成時はデバイス設定言語 →「手動変換 & db保存」→ 継続利用でfield値を継続　「やるだけ」
+                     /// ③ Field値の継続 「やるだけ」
 
-                    String? userImageUrl = await UserFirebaseStorage.getProfImage();
+                    String? userImageUrl = await UserFirebaseStorage.getProfImage(); // ■■■■①■■■■ 匿名認証が設定できたら修正
                     String? deviceLanguage = ui.window.locale.languageCode;
                     String? deviceCountry = Shared_Prefes.fetchCountry();
 
@@ -106,13 +109,13 @@ class UserFirestore {
                      }); 
                        return {
                         'myUid': sharedPrefesMyUid,
-                        'userName': 'user_name',
+                        'userName': 'user_name',        // ■■■■③■■■■ Field値を継続
                         'userImageUrl': userImageUrl,
-                        'statement': 'statement',
-                        'language': deviceLanguage,
+                        'statement': 'statement',       // ■■■■③■■■■ Field値を継続 
+                        'language': deviceLanguage,     // ■■■■②■■■■ snapshotの['language' の値を使用]
                         'country': deviceCountry,
-                        'native_language': 'en',
-                        'gender': 'male',                           
+                        'native_language': '',          // ■■■■③■■■■ Field値を継続
+                        'gender': 'male',               // ■■■■③■■■■ Field値を継続
                        };
 
 
@@ -151,7 +154,7 @@ class UserFirestore {
                         'statement': 'statement',
                         'language': deviceLanguage,
                         'country': deviceCountry,
-                        'native_language': 'en',
+                        'native_language': '',
                         'gender': 'male',
                         };      
                     }
@@ -194,7 +197,7 @@ class UserFirestore {
                         'statement': 'statement',
                         'language': deviceLanguage,
                         'country': deviceCountry,
-                        'native_language': 'en',
+                        'native_language': '',
                         'gender': 'male',
                   };      
           }

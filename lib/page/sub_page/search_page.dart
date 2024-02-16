@@ -67,7 +67,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: const Text('自分が流暢に話せる言語を選択しよう！'),
+                  subtitle: const Text('自分がネイティブに話せる言語を3つ選択できます！'),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
@@ -149,7 +149,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: const Text('マッチングしたい人の話す言語を選択できます！'),
+                  subtitle: const Text('マッチング相手の話す言語を1つ選択できます！'),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
