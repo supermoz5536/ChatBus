@@ -145,14 +145,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
               
-                    SwitchListTile(
+                    CheckboxListTile(
                       title: const Text(
                         '英語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
-                      onChanged: (bool newValue) {
+                      onChanged: (bool? newValue) {
                         setState(() {
                           // Providerの状態を最新に更新
                           ref.read(selectedLanguageProvider.notifier).updateEn(newValue);
@@ -160,14 +160,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       },
                     ),
               
-                    SwitchListTile(
+                    CheckboxListTile(
                       title: const Text(
                         '日本語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
-                      onChanged: (bool newValue) {
+                      onChanged: (bool? newValue) {
                         setState(() {
                           // Providerの状態を最新に更新。
                           ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
@@ -176,14 +176,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       },
                     ),
               
-                    SwitchListTile(
+                    CheckboxListTile(
                       title: const Text(
                         'スペイン語',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.es!,
-                      onChanged: (bool newValue) {
+                      onChanged: (bool? newValue) {
                         setState(() {
                           // 最新値に状態変数のプロパティに代入して
                           // Providerの状態を最新に更新
