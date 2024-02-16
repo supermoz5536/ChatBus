@@ -5,6 +5,7 @@ import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/riverpod/provider/current_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 
 //
 class SearchPage extends ConsumerStatefulWidget {
@@ -18,6 +19,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     String? currentGender = ref.watch(currentGenderProvider);
 
@@ -75,11 +77,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedLanguage!.en!,
+                      value: selectedNativeLanguage!.en!,
                       onChanged: (bool newValue) {
                         setState(() {
                           // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).updateEn(newValue);
+                          ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
                         });
                       },
                     ),
@@ -90,11 +92,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedLanguage.ja!,
+                      value: selectedNativeLanguage.ja!,
                       onChanged: (bool newValue) {
                         setState(() {
                           // Providerの状態を最新に更新。
-                          ref.read(selectedLanguageProvider.notifier).updateJa(newValue);
+                          ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
                         });
               
                       },
@@ -106,12 +108,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedLanguage.es!,
+                      value: selectedNativeLanguage.es!,
                       onChanged: (bool newValue) {
                         setState(() {
                           // 最新値に状態変数のプロパティに代入して
                           // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).updateEs(newValue);
+                          ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
                         });
                       },
                     ),

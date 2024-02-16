@@ -48,7 +48,8 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
   // StreamSubscription? unmatchedUserSubscription;
   StreamSubscription? myDocSubscription;
   List<String?>? selectedLanguage;
-  List<String?>? selectedGender;
+  List<String?>? selectedNativeLanguage;
+  String? selectedGender;
   bool? isInputEmpty;
   bool? isDisabled;
   bool? shouldBreak;
@@ -73,10 +74,15 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
     isTransitioned = false;
     myUid = widget.matchingProgress.myUid;
     selectedLanguage = widget.matchingProgress.selectedLanguage;
+    selectedNativeLanguage = widget.matchingProgress.selectedNativeLanguage;
     selectedGender = widget.matchingProgress.selectedGener;
 
     // 起動時に1度行うmyUidを確認する処理
-    UserFirestore.initForMatching(myUid, selectedGender, selectedLanguage).then((_) async {
+    UserFirestore.initForMatching(
+      myUid, selectedLanguage,
+      selectedNativeLanguage,
+      selectedGender
+      ).then((_) async {
       User? meUser = ref.watch(meUserProvider);
       
 
@@ -93,9 +99,9 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
         // 待機列のユーザーをフィルタリングして talkuserUid を取得
             myUid,
             meUser!.gender,
-            meUser.nativeLanguage,
             selectedLanguage,
-            selectedGender
+            selectedNativeLanguage,
+            selectedGender,
         ).then((getUid) async {
 
           talkuserUid = getUid;
@@ -164,7 +170,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
 
         if (talkuserUid == null) {
           //　talkuserUid == null で エラーの起こりうるif(){}部分をスルーしてしまった場合に、エラーを手動で返してretryさせる
-          print('マッチング可能な相手が0人、retry関数再実行の待機中)');
+          print('マッチング可能な相手が0人、retry関数再実行の待機中)'); 
           setState(() {
             isDisabled = false; // キャンセルボタンのロック解除
           });

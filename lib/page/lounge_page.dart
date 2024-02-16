@@ -10,6 +10,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -96,6 +97,7 @@ String? dropDownValue = 'one';
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
 
     final serviceNotifier = ServiceNotifier(ref);
 
@@ -610,12 +612,14 @@ String? dropDownValue = 'one';
                                 if (context.mounted) {
                                   /// 画面遷移に必要なコンストラクタ
                                   List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
-                                  List<String?>? selectedGenderList = SelectedGender.getSelectedGenderList(selectedGender);
+                                  List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageList(selectedNativeLanguage);
+                                  String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                                   matchingProgress = MatchingProgress(
                                                        myUid: meUser.uid,
-                                                       selectedGener: selectedGenderList,
-                                                       selectedLanguage: selectedLanguageList, 
+                                                       selectedGener: selectedGenderTrueItem,
+                                                       selectedLanguage: selectedLanguageList,
+                                                       selectedNativeLanguage: selectedNativeLanguageList, 
                                                      );
                                   Navigator.pushAndRemoveUntil(
                                       context,

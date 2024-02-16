@@ -15,21 +15,19 @@ class SelectedGender{
 
   /// MatchingProgressPageへの画面遷移時に
   /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedGenderList(SelectedGender? selectedGender){
-    List<String?>? selectedGenderList = [];
+  static String? getSelectedGenderTrueItem(SelectedGender? selectedGender){
+    String? selectedGenderTrueItem;
 
     // インスタンス化したselectedLanguageオブジェクトは
     // 言語フィルターUIの真偽出力結果が格納されている
     // MatchingProgressPageへのコンストラクタ用に
     // そのうち、TrueのものだけListの配列に加えて出力する
-    if (selectedGender!.male == true) selectedGenderList.add('male'); 
-    if (selectedGender.female == true) selectedGenderList.add('female'); 
-    if (selectedGender.both == true) {
-      selectedGenderList.add('male');
-      selectedGenderList.add('female');
-        } 
-    print('getSelectedGenderList関数内: selectedGenderList == $selectedGenderList');
-    return selectedGenderList;
+    if (selectedGender!.male == true) selectedGenderTrueItem = 'male'; 
+    if (selectedGender.female == true) selectedGenderTrueItem = 'female'; 
+    if (selectedGender.both == true) selectedGenderTrueItem = 'both';
+      
+    print('getSelectedGenderTrueItem関数内: selectedGenderTrueItem == $selectedGenderTrueItem');
+    return selectedGenderTrueItem;
   } 
 
 

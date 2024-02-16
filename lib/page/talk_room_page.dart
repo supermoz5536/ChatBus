@@ -17,6 +17,7 @@ import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
+import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/service_notifier.dart';
@@ -686,7 +687,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     User? meUser = ref.watch(meUserProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
-    
+    SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     return Row(
       children: [
         // ■ 「次の相手を探す」ボタン
@@ -712,12 +713,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   if (context.mounted) {
                     /// 画面遷移に必要なコンストラクタ
                     List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageList(selectedLanguage);
-                    List<String?>? selectedGenderList = SelectedGender.getSelectedGenderList(selectedGender);
+                    List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageList(selectedNativeLanguage);
+                    String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                     matchingProgress = MatchingProgress(
                                           myUid: meUser!.uid,
-                                          selectedGener: selectedGenderList,
+                                          selectedGener: selectedGenderTrueItem,
                                           selectedLanguage: selectedLanguageList, 
+                                          selectedNativeLanguage: selectedNativeLanguageList, 
                                         ); 
                     Navigator.pushAndRemoveUntil(
                         context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し

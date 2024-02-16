@@ -226,7 +226,7 @@ class UserFirestore {
       'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
-      'native_language': 'en',    // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
+      'native_language': '',    // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'gender': 'male',           // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'queried_language': '',
       'queried_gender': '',
@@ -266,85 +266,83 @@ class UserFirestore {
   static Future<String?> getUnmatchedUser(
     String? myUid,
     String? meGender,
-    List<String?>? meNativeLanguage,
     List<String?>? selectedLanguage,
-    List<String?>? selectedGender,
+    List<String?>? meNativeLanguage,
+    String? selectedGender,
     ) async{   
     try {
-      // FieldPath.documentIdを使うと、クエリ内でドキュメントIDを直接条件として扱える
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
-                                                                               .where('progress_marker', isEqualTo: false)
-                                                                               .where(FieldPath.documentId, isNotEqualTo: myUid)
-                                                                               .where('native_language', isEqualTo: selectedLanguage)
-                                                                               .where('queried_language', isEqualTo: meNativeLanguage)
-                                                                               .where('gender', whereIn: selectedGender)
-                                                                               .where(Filter.and(
-                                                                                  Filter("queried_gender", isEqualTo: meGender),
-                                                                                  Filter("queried_gender", isEqualTo: 'both')))
-                                                                               .limit(4) 
-                                                                               .get();
+      // print('selectedGender == $selectedGender');
+      // print('meGender == $meGender');
+      // print('selectedLanguage[0] == ${selectedLanguage![0]}');
+      // print('selectedLanguage[1] == ${selectedLanguage}');
+      // print('meNativeLanguage[0] == ${meNativeLanguage![0]}'); 
+      // print('meNativeLanguage[1] == ${meNativeLanguage[1]}');      
 
-      // QuerySnapshot<Map<String, dynamic>> querySnapshot = await _userCollection.where('matched_status', isEqualTo: false)
-      //                                                                          .where('progress_marker', isEqualTo: false)
-      //                                                                          .where(FieldPath.documentId, isNotEqualTo: myUid)
-      //                                                                          .where('native_language', isEqualTo: selectedLanguage)
-      //                                                                          .where('queried_language', isEqualTo: meNativeLanguage)
-      //                                                                          .where('gender', whereIn: selectedGender)
-      //                                                                          .where('queried_gender', arrayContains: meGender)
-      //                                                                          .limit(4) 
-      //                                                                          .get();
+      // 基本クエリの構築
+      var query = _userCollection
+                  .where('matched_status', isEqualTo: false)
+                  .where('progress_marker', isEqualTo: false)
+                  .where(FieldPath.documentId, isNotEqualTo: myUid)
+                  .where("native_language", arrayContains: selectedLanguage![0]);
 
-                                                                               // sekectedGender == both の場合、このwhereフィルタリングは必要がない
-                                                                               // sekectedGender == male の場合、Filed値もmale ならOK
-                                                                               // sekectedGender == female の場合、Filed値もfemale ならOK
-                                                                               // つまり
-                                                                               // if (sekectedGender == both) このメソッドを除いたクエリを実行
-                                                                               // if (sekectedGender != both) isEqualTo: meGener
+      // meNativeLanguage の要素数に基づくクエリの条件分岐
+        // 母国語の選択数に応じて条件切り替え
+        if (meNativeLanguage!.length == 1) {
+            // print('meNativeLanguage!.length == ${meNativeLanguage.length}');
+            query = query.where("queried_language", whereIn: [meNativeLanguage[0]]);
+        }
+        if (meNativeLanguage.length == 2) {
+            // print('meNativeLanguage!.length == ${meNativeLanguage.length}');
+            query = query.where("queried_language", whereIn: [meNativeLanguage[0], meNativeLanguage[1]]);
 
-                                                                                // 「相手のクエリ＝自分の性別」か「相手のクエリ＝ both」ならOK
-                                                                                //  isEqualTo: meGener, isEqualTo: both でいけそう 
-                                                                                //  「相手のクエリ＝ both」の場合、そのフィルタリングは必要なのか？
-                                                                                //  queried_gender が both の場合は「どちらか気にしない」ということだから
-                                                                                //  「どちらか気にしない」という確認が必要。
-                                                                                // 2つのクエリに分解して、各々取得したドキュメントをマージするのは現実的
+        }
 
-      // print('matched_statusがfalseのdocId取得数 ${querySnapshot.docs.length}');   
+      // selectedGender の要素数に基づくクエリの条件分岐
+        // ジェンター指定がある場合、指定に合致するドキュメントのみ参照
+        if (selectedGender == 'male' || selectedGender == 'female') {
+            query = query.where('gender', isEqualTo: selectedGender);
+        }
+        // ジェンター指定がない場合(both)、何もしない
+        if (selectedGender == 'both') {
+            query = query;
+        }
 
-          if(querySnapshot.docs.isEmpty){
-             // print('マッチング可能な相手がDB上に0人');
-             return null;
-          }
+          // クエリの実行
+          QuerySnapshot<Map<String, dynamic>> querySnapshot = await query.limit(4).get();
+          print('querySnapshot.docs.length == ${querySnapshot.docs.length}');   
+
+          if (querySnapshot.docs.isEmpty) return null;
           if (querySnapshot.docs.isNotEmpty) {
-             List<DocumentSnapshot> docs = querySnapshot.docs;
-                                    docs.shuffle();
-             DocumentSnapshot docSnapshotFirst = docs[0];
-             print("talkuserUid: Document[0] ID: ${docSnapshotFirst.id}");
-             return docSnapshotFirst.id;
+          // Genderフィルターで特定の性別を指定してる人が
+          // Genderフィルターにbothを指定してるユーザーからのマッチングを避ける処理
+          // 「課金(性別指定)してる、かつ、同性とのマッチングを希望してる」、つまり
+          // (limit)4人で埋まってなければOK → 確率的に考慮しなくて良いのでOK
+              List<DocumentSnapshot> docs = querySnapshot.docs;
+              List<DocumentSnapshot> filteredDocs = docs.where((doc) {
+                String? filteredDoc = doc['queried_gender'];
+                return filteredDoc == 'both' || filteredDoc == meGender;
+                // 2つの条件のいずれかが真である場合にtrueを返し、
+                // そうでない場合はfalseを返す記述です
+              }).toList();
+                if (filteredDocs.isNotEmpty){
+                  filteredDocs.shuffle();
+                  DocumentSnapshot filteredDocsFirst = filteredDocs[0];
+                  print("talkuserUid: Document[0] ID: ${filteredDocsFirst.id}");
+                    return filteredDocsFirst.id;
+                } else {
+                    return null;
+                }
+                
           }    
-             return null;
-    } catch (e) {
-      print('getUnmatchedUser: エラー == $e');
-      return null;
-    }
+                    return null;
+      } catch (e) {
+        print('getUnmatchedUser: ERROR == $e');
+        return null;
+      }
   }           
 
 
-              //  if(querySnapshot.docs.length == 1 && docSnapshotFirst.id == myUid ){   //if(取得データ数１でそれが自分の場合) → nullを返す
-              //     print('No matched_status false was found');
-              //    return null;}
 
-            //    if(querySnapshot.docs.length >= 2 && docSnapshotFirst.id == myUid){    //取得データ数2以上だが、First[0]が自分の場合→ Second[1]のuidを返す
-            //  DocumentSnapshot docSnapshotSecond = docs[1];
-            //       print("Document[1] ID: ${docSnapshotSecond.id}");                                                      
-            //      return docSnapshotSecond.id;}    
-
-          // DocumentSnapshot docSnapshotFirst = querySnapshot.docs.first;
-          // return docSnapshotFirst.id;
-
-    // } catch(e) {
-    //   print('matched_statusがfalseのユーザー情報の取得失敗 ===== $e');
-    //   return null;
-    // }
 
 
 
@@ -547,14 +545,22 @@ static checkMyProgressMarker(String? myUid,) async{
       return docMyUid['progress_marker'];
 }
 
-static Future<void> initForMatching (String? myUid, List<String?>? selectedGender, List<String?>? selectedLanguageList) async{
+static Future<void> initForMatching (
+  String? myUid,
+  List<String?>? selectedLanguageList,
+  List<String?>? selectedNativeLanguageList,
+  String? selectedGender,
+  ) async{
+      String? selectedLanguage = selectedLanguageList![0];
+
       await _userCollection.doc(myUid).update({
          'matched_status': false,
          'room_id': 'none',
          'progress_marker': false,
          'chatting_status': true,
          'is_lounge': false,
-         'queried_language': selectedLanguageList,
+         'native_language': selectedNativeLanguageList,
+         'queried_language': selectedLanguage,
          'queried_gender': selectedGender
         }); 
       return ;    
