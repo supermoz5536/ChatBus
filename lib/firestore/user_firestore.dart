@@ -25,8 +25,8 @@ class UserFirestore {
   static Future<Map<String, dynamic>?> getAccount() async{
   try {
         /// 端末保存uidが存在しているかを確認
-        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        // String? sharedPrefesMyUid = "MGnyDLjf4Qm0P6EpjKKr";
+        // String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        String? sharedPrefesMyUid = "ugGuhgUeJUC16P74SHko";
         print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 
@@ -96,9 +96,9 @@ class UserFirestore {
                      /// ③ Field値の継続 「やるだけ」
 
                     String? userImageUrl = await UserFirebaseStorage.getProfImage(); // ■■■■①■■■■ 匿名認証が設定できたら修正
-                    String? deviceLanguage = ui.window.locale.languageCode;
                     String? deviceCountry = Shared_Prefes.fetchCountry();
-
+                    Map<String, dynamic> docData = docIdSnapshot.data() as Map<String, dynamic>;
+                    
                      await _userCollection.doc(sharedPrefesMyUid).update({ 
                         'matched_status': true,                         
                         'room_id': 'none',
@@ -109,13 +109,13 @@ class UserFirestore {
                      }); 
                        return {
                         'myUid': sharedPrefesMyUid,
-                        'userName': 'user_name',        // ■■■■③■■■■ Field値を継続
+                        'userName': docData['user_name'],
                         'userImageUrl': userImageUrl,
-                        'statement': 'statement',       // ■■■■③■■■■ Field値を継続 
-                        'language': deviceLanguage,     // ■■■■②■■■■ snapshotの['language' の値を使用]
+                        'statement': docData['statement'],
+                        'language': docData['language'],
                         'country': deviceCountry,
-                        'native_language': '',          // ■■■■③■■■■ Field値を継続
-                        'gender': 'male',               // ■■■■③■■■■ Field値を継続
+                        'native_language': '',
+                        'gender': docData['gender'],
                        };
 
 
@@ -229,8 +229,8 @@ class UserFirestore {
       'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
-      'native_language': '',    // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
-      'gender': 'male',           // 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
+      'native_language': '',
+      'gender': 'male',           // ■■■■■■■ 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
       'queried_language': '',
       'queried_gender': '',
       'created_at': FieldValue.serverTimestamp(),
