@@ -25,8 +25,8 @@ class UserFirestore {
   static Future<Map<String, dynamic>?> getAccount() async{
   try {
         /// 端末保存uidが存在しているかを確認
-        // String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        String? sharedPrefesMyUid = "ugGuhgUeJUC16P74SHko";
+        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        // String? sharedPrefesMyUid = "切り替えたいドキュメントID";
         print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 
