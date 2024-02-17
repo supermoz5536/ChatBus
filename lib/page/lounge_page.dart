@@ -82,7 +82,7 @@ String? dropDownValue = 'one';
                         gender: result['gender']
                      );
 
-        /// MeUserProvider の状態変数を更新
+        /// MeUserProvider の状態変数を更新。
         ref.read(meUserProvider.notifier).setUser(user);
         /// TargetLanguageProvider の状態変数を更新
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
