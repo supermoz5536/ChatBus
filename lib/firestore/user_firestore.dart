@@ -233,7 +233,7 @@ class UserFirestore {
       'language': deviceLanguage,
       'country': deviceCountry,
       'native_language': '',
-      'gender': 'male',           // ■■■■■■■ 本来はポップアップでユーザーに選択させるが、現状は初期値を事前入力
+      'gender': '',
       'queried_language': '',
       'queried_gender': '',
       'created_at': FieldValue.serverTimestamp(),

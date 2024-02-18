@@ -19,6 +19,7 @@ import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:udemy_copy/utils/service_notifier.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
+import 'dart:ui' as ui;
 
 
 
@@ -33,11 +34,13 @@ class LoungePage extends ConsumerStatefulWidget {
 class _LoungePageState extends ConsumerState<LoungePage> {
 
   String? myUid;
-  String? currentLanguageCode;
+  String? currentLanguageCode = ui.window.locale.languageCode;
   String? currentSelectedLanguageCode;
   String? currentTargetLanguageCode;
   bool? isDisabled;
   bool isMydataFutureDone = false;
+  bool isGenderSelected = false;
+  bool isSelectedLanguage = false;
   User? user;
   User? meUser;
   bool isInputEmpty = true;
@@ -51,7 +54,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
-// TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
+  // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 
 String? dropDownValue = 'one';
 
@@ -119,81 +122,115 @@ String? dropDownValue = 'one';
             // 利用するための引数として使用します。
             builder: (context, setState) {
               return AlertDialog(
-                title: Center(child: const Text('始める前の設定')),
-                content: SingleChildScrollView(
-                  child: ListBody(                    
+                title: const Center(child: Text('始める前に')),
+                // content: SingleChildScrollView(
+                  content: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,                  
                     children: [
-
-                      Row(
-                        children:[
-                          const Spacer(flex: 8),
-                          const Text('性別'),
-                          const SizedBox(width: 40),
-                          IconButton(
-                            icon: Icon(
-                              Icons.man_2_outlined,
-                              size: 50,
-                              color: showDialogGender == 'male' ? Colors.lightBlue
-                                                                : Colors.grey),
-                            onPressed: () {
-                              setState(() {
-                                showDialogGender = 'male';
-                              });
-                            },
+                      const Text(
+                        'チャット開始に必要な以下の設定してください。',
+                        style: TextStyle(
+                          fontSize: 15,
+                        ),
+                        ),
+                      Row(                    
+                        children: [
+                          // ■ 左縦列
+                          const Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children:[
+                              SizedBox(height: 30),
+                              Text(
+                                '性別',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                                ),),
+                              SizedBox(height: 40),
+                              Text(
+                                'アプリ表示言語',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                                ),),
+                              SizedBox(height: 20),
+                              Text(
+                                '学習してる言語',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                                ),),
+                            ]),
+                                      
+                          // ■ 右縦列
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // const SizedBox(height: 50),  
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.man_2_outlined,
+                                      size: 50,
+                                      color: showDialogGender == 'male' ? Colors.lightBlue
+                                                                        : Colors.grey),
+                                    onPressed: () {
+                                      setState(() {
+                                        showDialogGender = 'male';
+                                        isGenderSelected = true;
+                                      });
+                                    },
+                                  ),
+                      
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.woman_2_outlined,
+                                      size: 50,
+                                      color: showDialogGender == 'female' ? Colors.lightBlue
+                                                                        : Colors.grey),
+                                    onPressed: () {
+                                      setState(() {
+                                        showDialogGender = 'female';
+                                        isGenderSelected = true;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),  
+                              appLanguageDropDownButton(),
+                              const SizedBox(height: 20),  
+                              selectedLanguageDropDownButton(),  
+                            ],
                           ),
-
-                          IconButton(
-                            icon: Icon(
-                              Icons.woman_2_outlined,
-                              size: 50,
-                              color: showDialogGender == 'female' ? Colors.lightBlue
-                                                                : Colors.grey),
-                            onPressed: () {
-                              setState(() {
-                                showDialogGender = 'female';
-                              });
-                            },
-                          ),
+                      
                       ]),
-                
-                      Row(
-                        children: [
-                          const Text(
-                            '表示言語',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.bold
-                            ),),
-                          const Spacer(flex: 1),
-                          appLanguageDropDownButton(),
-                          const Spacer(flex: 1),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          const Spacer(flex: 1),
-                          Text('学習中の言語'),
-                          const Spacer(flex: 2),
-                          selectedLanguageDropDownButton(),
-                          const Spacer(flex: 1),
-                        ],
-                      ),
-                
-                  ]),
-                ),
+                      const SizedBox(height: 25),
+                      const Text(
+                        '既にIDかメールアドレスを持ってる場合はコチラからログインできます。',
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                        )
+                    ],
+                  ),
+                // ),
               
                 actions: [
                   TextButton(
                     // Future の解決までロック
-                    onPressed: isMydataFutureDone 
-                      ? () async{
-                        await UserFirestore.updateGender(meUser!.uid, showDialogGender);
-                          if (mounted){
-                            Navigator.pop(context);
-                          }
-                        }
-                      : null,
+                    onPressed: () async{
+                                  if (isMydataFutureDone == true
+                                   && isGenderSelected == true
+                                   && isSelectedLanguage == true) {
+                                    await UserFirestore.updateGender(meUser!.uid, showDialogGender);
+                                    if (mounted) Navigator.pop(context);
+                                  }  
+                               },
                     child: const Text('OK'),
                   ),
                 ],
@@ -205,58 +242,68 @@ String? dropDownValue = 'one';
   }
 
   Widget appLanguageDropDownButton() {
-    return DropdownButton(
-      isDense: true,
-      underline: Container(
-        height: 1,
-        color: const Color.fromARGB(255, 198, 198, 198),),
-      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-      value: currentLanguageCode = meUser!.language,
-      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,   //引数の言語コードをシステム識別用に設定
-            child: Text(
-              languageNames[value]!,
-              style: const TextStyle(color: Colors.black)));
-          }).toList(),
-      onChanged: (String? newLanguageCode) {
-          setState(() {
-            currentLanguageCode = newLanguageCode!;
-          });
-            // 状態変数の更新（'language'だけはdbも更新）
-            serviceNotifier!.changeLanguage(newLanguageCode);
-            ref.read(selectedNativeLanguageProvider.notifier)
-              .switchSelectedNativeLanguage(currentLanguageCode);
-
-            
-      },
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return DropdownButton(
+          isDense: true,
+          underline: Container(
+            height: 1,
+            color: const Color.fromARGB(255, 198, 198, 198),),
+          icon: const Icon(Icons.keyboard_arrow_down_outlined),
+          iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+          value: currentLanguageCode,
+          items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,   //引数の言語コードをシステム識別用に設定
+                child: Text(
+                  languageNames[value]!,
+                  style: const TextStyle(color: Colors.black)));
+              }).toList(),
+          onChanged: (String? newLanguageCode) {
+              setState(() {
+                // 初期値はデバイスの設定言語
+                currentLanguageCode = newLanguageCode!;
+              });
+                // meUserの状態変数の更新（'language'だけはdbも更新）
+                serviceNotifier!.changeLanguage(currentLanguageCode);
+                // selectedNativeLanguageの状態変数更新
+                ref.read(selectedNativeLanguageProvider.notifier)
+                   .switchSelectedNativeLanguage(currentLanguageCode);
+          },
+        );
+      }
     );
   }
 
     Widget selectedLanguageDropDownButton() {
-    return DropdownButton(
-      isDense: true,
-      underline: Container(
-        height: 1,
-        color: const Color.fromARGB(255, 198, 198, 198),),
-      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-      value: currentSelectedLanguageCode = meUser!.language,
-      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,   //引数の言語コードをシステム識別用に設定
-            child: Text(
-              languageNames[value]!,
-              style: const TextStyle(color: Colors.black)));
-          }).toList(),
-      onChanged: (String? newSelectedLanguageCode) {
-          setState(() {
-            currentSelectedLanguageCode = newSelectedLanguageCode!;
-          });
-            ref.read(selectedLanguageProvider.notifier)
-              .switchSelectedLanguage(currentSelectedLanguageCode);
-      },
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return DropdownButton(
+          isDense: true,
+          underline: Container(
+            height: 1,
+            color: const Color.fromARGB(255, 198, 198, 198),),
+          icon: const Icon(Icons.keyboard_arrow_down_outlined),
+          iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+          value: currentSelectedLanguageCode,
+          items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,   //引数の言語コードをシステム識別用に設定
+                child: Text(
+                  languageNames[value]!,
+                  style: const TextStyle(color: Colors.black)));
+              }).toList(),
+          onChanged: (String? newSelectedLanguageCode) {
+              setState(() {
+                currentSelectedLanguageCode = newSelectedLanguageCode!;
+                isSelectedLanguage = true;
+              });
+                // selectedNativeLanguageの状態変数更新
+                ref.read(selectedLanguageProvider.notifier)
+                   .switchSelectedLanguage(currentSelectedLanguageCode);
+          },
+        );
+      }
     );
   }
 
@@ -332,12 +379,6 @@ String? dropDownValue = 'one';
               height: 0,
             )),
         actions: <Widget>[
-
-          const Spacer(flex: 9),
-
-          appLanguageDropDownButton(),
-
-          const Spacer(flex: 1),
 
           // ■ リクエスト通知ボタン
           OverlayPortal(
