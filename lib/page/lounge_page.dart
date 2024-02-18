@@ -37,7 +37,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   String? currentLanguageCode = ui.window.locale.languageCode;
   String? currentSelectedLanguageCode;
   String? currentTargetLanguageCode;
-  bool? isDisabled;
+  String? showDialogGender;
+  bool isDisabled = false;
   bool isMydataFutureDone = false;
   bool isGenderSelected = false;
   bool isSelectedLanguage = false;
@@ -48,15 +49,13 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
   ServiceNotifier? serviceNotifier;
-  int? currentIndex;
+  int? currentIndex = 0;
   int? selectedBottomIconIndex;
   int? selectedHistoryIndex;
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
-
-String? dropDownValue = 'one';
 
   @override
   void initState() {
@@ -69,8 +68,6 @@ String? dropDownValue = 'one';
     // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
     // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
-    isDisabled = false;
-    currentIndex = 0;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
     /// MatchedHistoryPage用のコンストラクタなので
     /// myUidはnullでも問題が起きてない
@@ -111,7 +108,6 @@ String? dropDownValue = 'one';
   }
 
   void showDialogWhenReady() {
-    String? showDialogGender;
       WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
         barrierDismissible: false,
@@ -123,7 +119,6 @@ String? dropDownValue = 'one';
             builder: (context, setState) {
               return AlertDialog(
                 title: const Center(child: Text('始める前に')),
-                // content: SingleChildScrollView(
                   content: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,                  
@@ -191,7 +186,7 @@ String? dropDownValue = 'one';
                                       Icons.woman_2_outlined,
                                       size: 50,
                                       color: showDialogGender == 'female' ? Colors.lightBlue
-                                                                        : Colors.grey),
+                                                                          : Colors.grey),
                                     onPressed: () {
                                       setState(() {
                                         showDialogGender = 'female';
@@ -201,10 +196,64 @@ String? dropDownValue = 'one';
                                   ),
                                 ],
                               ),
+                              
                               const SizedBox(height: 20),  
-                              appLanguageDropDownButton(),
+                              
+                              DropdownButton(
+                                  isDense: true,
+                                  underline: Container(
+                                    height: 1,
+                                    color: const Color.fromARGB(255, 198, 198, 198),),
+                                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                                  value: currentLanguageCode,
+                                  items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,   //引数の言語コードをシステム識別用に設定
+                                        child: Text(
+                                          languageNames[value]!,
+                                          style: const TextStyle(color: Colors.black)));
+                                      }).toList(),
+                                  onChanged: (String? newLanguageCode) {
+                                      setState(() {
+                                        // 初期値はデバイスの設定言語
+                                        currentLanguageCode = newLanguageCode!;
+                                      });
+                                        // meUserの状態変数の更新（'language'だけはdbも更新）
+                                        serviceNotifier!.changeLanguage(currentLanguageCode);
+                                        // selectedNativeLanguageの状態変数更新
+                                        ref.read(selectedNativeLanguageProvider.notifier)
+                                          .switchSelectedNativeLanguage(currentLanguageCode);
+                                  },
+                                ),
+
                               const SizedBox(height: 20),  
-                              selectedLanguageDropDownButton(),  
+                              
+                              DropdownButton(
+                                  isDense: true,
+                                  underline: Container(
+                                    height: 1,
+                                    color: const Color.fromARGB(255, 198, 198, 198),),
+                                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                                  value: currentSelectedLanguageCode,
+                                  items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,   //引数の言語コードをシステム識別用に設定
+                                        child: Text(
+                                          languageNames[value]!,
+                                          style: const TextStyle(color: Colors.black)));
+                                      }).toList(),
+                                  onChanged: (String? newSelectedLanguageCode) {
+                                      setState(() {
+                                        currentSelectedLanguageCode = newSelectedLanguageCode!;
+                                        isSelectedLanguage = true;
+                                      });
+                                        // selectedNativeLanguageの状態変数更新
+                                        ref.read(selectedLanguageProvider.notifier)
+                                          .switchSelectedLanguage(currentSelectedLanguageCode);
+                                  },
+                                ),
                             ],
                           ),
                       
@@ -218,11 +267,10 @@ String? dropDownValue = 'one';
                         )
                     ],
                   ),
-                // ),
               
                 actions: [
                   TextButton(
-                    // Future の解決までロック
+                    // Futureの解決までロック.
                     onPressed: () async{
                                   if (isMydataFutureDone == true
                                    && isGenderSelected == true
@@ -231,7 +279,15 @@ String? dropDownValue = 'one';
                                     if (mounted) Navigator.pop(context);
                                   }  
                                },
-                    child: const Text('OK'),
+                    child: Text('OK',
+                      style: TextStyle(
+                        color: isMydataFutureDone == true
+                            && isGenderSelected == true
+                            && isSelectedLanguage == true
+                                 ? Colors.blueAccent
+                                 : Colors.grey
+                      ),
+                    ),
                   ),
                 ],
               );
@@ -239,72 +295,6 @@ String? dropDownValue = 'one';
           );
         });
     });
-  }
-
-  Widget appLanguageDropDownButton() {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return DropdownButton(
-          isDense: true,
-          underline: Container(
-            height: 1,
-            color: const Color.fromARGB(255, 198, 198, 198),),
-          icon: const Icon(Icons.keyboard_arrow_down_outlined),
-          iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-          value: currentLanguageCode,
-          items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,   //引数の言語コードをシステム識別用に設定
-                child: Text(
-                  languageNames[value]!,
-                  style: const TextStyle(color: Colors.black)));
-              }).toList(),
-          onChanged: (String? newLanguageCode) {
-              setState(() {
-                // 初期値はデバイスの設定言語
-                currentLanguageCode = newLanguageCode!;
-              });
-                // meUserの状態変数の更新（'language'だけはdbも更新）
-                serviceNotifier!.changeLanguage(currentLanguageCode);
-                // selectedNativeLanguageの状態変数更新
-                ref.read(selectedNativeLanguageProvider.notifier)
-                   .switchSelectedNativeLanguage(currentLanguageCode);
-          },
-        );
-      }
-    );
-  }
-
-    Widget selectedLanguageDropDownButton() {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return DropdownButton(
-          isDense: true,
-          underline: Container(
-            height: 1,
-            color: const Color.fromARGB(255, 198, 198, 198),),
-          icon: const Icon(Icons.keyboard_arrow_down_outlined),
-          iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-          value: currentSelectedLanguageCode,
-          items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,   //引数の言語コードをシステム識別用に設定
-                child: Text(
-                  languageNames[value]!,
-                  style: const TextStyle(color: Colors.black)));
-              }).toList(),
-          onChanged: (String? newSelectedLanguageCode) {
-              setState(() {
-                currentSelectedLanguageCode = newSelectedLanguageCode!;
-                isSelectedLanguage = true;
-              });
-                // selectedNativeLanguageの状態変数更新
-                ref.read(selectedLanguageProvider.notifier)
-                   .switchSelectedLanguage(currentSelectedLanguageCode);
-          },
-        );
-      }
-    );
   }
 
 
@@ -779,51 +769,45 @@ String? dropDownValue = 'one';
                     Padding(
                       padding: const EdgeInsets.only(left: 20),
                       child: SizedBox(
-                          // height: 40,
-                          // width: 130,
                           child: ElevatedButton(
-                        onPressed: isDisabled!
-                            ? null
-                            : () async {
-                                setState(() {
-                                  isDisabled = true;
-                                  // 二重タップ防止
-                                  // trueにして、タップをブロック
-                                });
+                            onPressed: isDisabled == false && isMydataFutureDone == true
+                                ? () async {
+                                    setState(() {
+                                      isDisabled = true;
+                                      // 二重タップ防止
+                                      // trueにして、タップをブロック
+                                    });
 
-                                await Future.delayed(
-                                  const Duration(milliseconds: 50), //無効にする時間
-                                );
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 50), // 無効にする時間
+                                    );
 
-                                if (context.mounted) {
-                                  /// 画面遷移に必要なコンストラクタ
-                                  List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
-                                  List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedNativeLanguage);
-                                  String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
+                                    if (context.mounted) {
+                                      /// 画面遷移に必要なコンストラクタ
+                                      List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
+                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedNativeLanguage);
+                                      String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
-                                  matchingProgress = MatchingProgress(
-                                                       myUid: meUser!.uid,
-                                                       selectedGener: selectedGenderTrueItem,
-                                                       selectedLanguage: selectedLanguageList,
-                                                       selectedNativeLanguage: selectedNativeLanguageList, 
-                                                     );
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              MatchingProgressPage(
-                                                  matchingProgress!)),
-                                      (_) => false);
-                                }
-                                //   setState(() {
-                                //     isDisabled = false;
-                                //     //入力のタップを解除
-                                // });
-                              },
-                        style: ElevatedButton.styleFrom(elevation: 4),
-                        child: Text(
-                          AppLocalizations.of(context)!.start,
-                          // style: TextStyle(fontSize: 12)
+                                      matchingProgress = MatchingProgress(
+                                                          myUid: meUser!.uid,
+                                                          selectedGener: selectedGenderTrueItem,
+                                                          selectedLanguage: selectedLanguageList,
+                                                          selectedNativeLanguage: selectedNativeLanguageList, 
+                                                        );
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MatchingProgressPage(
+                                                      matchingProgress!)),
+                                          (_) => false);
+                                    }
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(elevation: 4),
+                            child: Text(
+                              AppLocalizations.of(context)!.start,
+                              // style: TextStyle(fontSize: 12)
                         ),
                       )),
                     ),
