@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:udemy_copy/utils/service_notifier.dart';
+import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
 
@@ -32,12 +34,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
   String? myUid;
   String? currentLanguageCode;
+  String? currentSelectedLanguageCode;
   String? currentTargetLanguageCode;
   bool? isDisabled;
+  bool isMydataFutureDone = false;
+  User? user;
+  User? meUser;
   bool isInputEmpty = true;
   TalkRoom? talkRoom;
   Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
+  ServiceNotifier? serviceNotifier;
   int? currentIndex;
   int? selectedBottomIconIndex;
   int? selectedHistoryIndex;
@@ -64,6 +71,9 @@ String? dropDownValue = 'one';
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
     /// MatchedHistoryPage用のコンストラクタなので
     /// myUidはnullでも問題が起きてない
+    
+    String? sharedPrefesInitMyUid = Shared_Prefes.fetchUid();
+    if (sharedPrefesInitMyUid == null) showDialogWhenReady();
 
     myDataFuture = UserFirestore.getAccount(); 
     /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
@@ -71,35 +81,194 @@ String? dropDownValue = 'one';
 
     myDataFuture!.then((result) { 
       if (result != null && mounted) {
-        User? user = User(
-                        uid: result['myUid'],
-                        userName: result['userName'], 
-                        userImageUrl: result['userImageUrl'],
-                        statement: result['statement'],
-                        language: result['language'],
-                        country: result['country'],
-                        nativeLanguage: [result['native_language']],
-                        gender: result['gender']
-                     );
+          isMydataFutureDone = true;
+          user = User(
+                    uid: result['myUid'],
+                    userName: result['userName'], 
+                    userImageUrl: result['userImageUrl'],
+                    statement: result['statement'],
+                    language: result['language'],
+                    country: result['country'],
+                    nativeLanguage: [result['native_language']],
+                    gender: result['gender']
+                  );
 
         /// MeUserProvider の状態変数を更新。
         ref.read(meUserProvider.notifier).setUser(user);
         /// TargetLanguageProvider の状態変数を更新
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
+
+        // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが、
+        // dbに該当するドキュメントがなかった場合なので、
+        // 新規IDするから、Showdialogを表示する
+        // しかし、db側でドキュメントIDを削除した場合のみ発生するケース
+        if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
       }
     });
   }
-  
+
+  void showDialogWhenReady() {
+    String? showDialogGender;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(
+            // 第二引数は「StatefulBuilderが提供するsetState関数」を
+            // 利用するための引数として使用します。
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Center(child: const Text('始める前の設定')),
+                content: SingleChildScrollView(
+                  child: ListBody(                    
+                    children: [
+
+                      Row(
+                        children:[
+                          const Spacer(flex: 8),
+                          const Text('性別'),
+                          const SizedBox(width: 40),
+                          IconButton(
+                            icon: Icon(
+                              Icons.man_2_outlined,
+                              size: 50,
+                              color: showDialogGender == 'male' ? Colors.lightBlue
+                                                                : Colors.grey),
+                            onPressed: () {
+                              setState(() {
+                                showDialogGender = 'male';
+                              });
+                            },
+                          ),
+
+                          IconButton(
+                            icon: Icon(
+                              Icons.woman_2_outlined,
+                              size: 50,
+                              color: showDialogGender == 'female' ? Colors.lightBlue
+                                                                : Colors.grey),
+                            onPressed: () {
+                              setState(() {
+                                showDialogGender = 'female';
+                              });
+                            },
+                          ),
+                      ]),
+                
+                      Row(
+                        children: [
+                          const Text(
+                            '表示言語',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold
+                            ),),
+                          const Spacer(flex: 1),
+                          appLanguageDropDownButton(),
+                          const Spacer(flex: 1),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          const Spacer(flex: 1),
+                          Text('学習中の言語'),
+                          const Spacer(flex: 2),
+                          selectedLanguageDropDownButton(),
+                          const Spacer(flex: 1),
+                        ],
+                      ),
+                
+                  ]),
+                ),
+              
+                actions: [
+                  TextButton(
+                    // Future の解決までロック
+                    onPressed: isMydataFutureDone 
+                      ? () async{
+                        await UserFirestore.updateGender(meUser!.uid, showDialogGender);
+                          if (mounted){
+                            Navigator.pop(context);
+                          }
+                        }
+                      : null,
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            }
+          );
+        });
+    });
+  }
+
+  Widget appLanguageDropDownButton() {
+    return DropdownButton(
+      isDense: true,
+      underline: Container(
+        height: 1,
+        color: const Color.fromARGB(255, 198, 198, 198),),
+      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+      value: currentLanguageCode = meUser!.language,
+      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,   //引数の言語コードをシステム識別用に設定
+            child: Text(
+              languageNames[value]!,
+              style: const TextStyle(color: Colors.black)));
+          }).toList(),
+      onChanged: (String? newLanguageCode) {
+          setState(() {
+            currentLanguageCode = newLanguageCode!;
+          });
+            // 状態変数の更新（'language'だけはdbも更新）
+            serviceNotifier!.changeLanguage(newLanguageCode);
+            ref.read(selectedNativeLanguageProvider.notifier)
+              .switchSelectedNativeLanguage(currentLanguageCode);
+
+            
+      },
+    );
+  }
+
+    Widget selectedLanguageDropDownButton() {
+    return DropdownButton(
+      isDense: true,
+      underline: Container(
+        height: 1,
+        color: const Color.fromARGB(255, 198, 198, 198),),
+      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+      value: currentSelectedLanguageCode = meUser!.language,
+      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,   //引数の言語コードをシステム識別用に設定
+            child: Text(
+              languageNames[value]!,
+              style: const TextStyle(color: Colors.black)));
+          }).toList(),
+      onChanged: (String? newSelectedLanguageCode) {
+          setState(() {
+            currentSelectedLanguageCode = newSelectedLanguageCode!;
+          });
+            ref.read(selectedLanguageProvider.notifier)
+              .switchSelectedLanguage(currentSelectedLanguageCode);
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
-    User? meUser = ref.watch(meUserProvider);
+    meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
-
-    final serviceNotifier = ServiceNotifier(ref);
+     serviceNotifier = ServiceNotifier(ref);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -166,31 +335,7 @@ String? dropDownValue = 'one';
 
           const Spacer(flex: 9),
 
-
-          DropdownButton(
-            isDense: true,
-            underline: Container(
-              height: 1,
-              color: const Color.fromARGB(255, 198, 198, 198),),
-            icon: const Icon(Icons.keyboard_arrow_down_outlined),
-            iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-            value: currentLanguageCode = meUser!.language,
-            items: <String>['en', 'ja', 'es']
-              .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,   //引数の言語コードをシステム識別用に設定
-                  child: Text(
-                    languageNames[value]!,
-                    style: const TextStyle(color: Colors.black)));
-               }).toList(),
-            onChanged: (String? newLanguageCode) {
-                setState(() {
-                  currentLanguageCode = newLanguageCode!;
-                });
-                  // UIの再描画の後に、「状態変数のlanguage」と「dbのlanguage」を更新
-                  serviceNotifier.changeLanguage(newLanguageCode);
-            },
-          ),
+          appLanguageDropDownButton(),
 
           const Spacer(flex: 1),
 
@@ -616,7 +761,7 @@ String? dropDownValue = 'one';
                                   String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                                   matchingProgress = MatchingProgress(
-                                                       myUid: meUser.uid,
+                                                       myUid: meUser!.uid,
                                                        selectedGener: selectedGenderTrueItem,
                                                        selectedLanguage: selectedLanguageList,
                                                        selectedNativeLanguage: selectedNativeLanguageList, 

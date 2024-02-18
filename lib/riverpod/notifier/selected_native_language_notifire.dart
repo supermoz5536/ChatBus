@@ -60,6 +60,29 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
   }
 
 
+  void switchSelectedNativeLanguage (String? currentSelectedNativeLanguage) {
+    var newState = state!.copyWith(
+      en: false,
+      ja: false,
+      es: false,
+    );
+
+    switch(currentSelectedNativeLanguage) {
+      case 'en': 
+        newState = newState.copyWith(en: true);
+        break;
+      case 'ja': 
+        newState = newState.copyWith(ja: true);
+        break;
+      case 'es': 
+        newState = newState.copyWith(es: true);
+        break;       
+    } 
+    state = newState;
+    }
+
+
+
   bool isValidSelectionCount(bool newValue){
 
     // 現在選択(True)してる言語の数を取得する

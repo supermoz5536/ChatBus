@@ -25,9 +25,9 @@ class UserFirestore {
   static Future<Map<String, dynamic>?> getAccount() async{
   try {
         /// 端末保存uidが存在しているかを確認
-        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        // String? sharedPrefesMyUid = "切り替えたいドキュメントID";
-        print('sharedPrefesMyUid == $sharedPrefesMyUid');
+        // String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        String? sharedPrefesMyUid = "dsffdaegaga";
+        // print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 
 
@@ -69,7 +69,8 @@ class UserFirestore {
                         'language': deviceLanguage,
                         'country': deviceCountry, 
                         'native_language': '',
-                        'gender': 'male',                       
+                        'gender': 'male',
+                        'isNewUser': 'isNewUser'                   
                       };                      
          }
 
@@ -156,6 +157,7 @@ class UserFirestore {
                         'country': deviceCountry,
                         'native_language': '',
                         'gender': 'male',
+                        'isNewUser': 'isNewUser'
                         };      
                     }
 
@@ -199,7 +201,8 @@ class UserFirestore {
                         'country': deviceCountry,
                         'native_language': '',
                         'gender': 'male',
-                  };      
+                        'isNewUser': 'isNewUser'
+                  };
           }
          }
          return null;
@@ -527,6 +530,9 @@ static Future<void> updateLanguage(String? uid, String? language) async{
       return await _userCollection.doc(uid).update({'language': language});     
 }
 
+static Future<void> updateGender(String? uid, String? gender) async{
+      return await _userCollection.doc(uid).update({'gender': gender});     
+}
 
 static checkMyProgressMarker(String? myUid,) async{
  DocumentSnapshot docMyUid = await _userCollection.doc(myUid).get();     

@@ -61,7 +61,7 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
   }
 
 
-  void switchSelectedLanguage (String currentSelectedLanguage) {
+  void switchSelectedLanguage (String? currentSelectedLanguage) {
     var newState = state!.copyWith(
       en: false,
       ja: false,
