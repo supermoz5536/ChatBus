@@ -196,64 +196,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   ),
                                 ],
                               ),
-                              
-                              const SizedBox(height: 20),  
-                              
-                              DropdownButton(
-                                  isDense: true,
-                                  underline: Container(
-                                    height: 1,
-                                    color: const Color.fromARGB(255, 198, 198, 198),),
-                                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                                  value: currentLanguageCode,
-                                  items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,   //引数の言語コードをシステム識別用に設定
-                                        child: Text(
-                                          languageNames[value]!,
-                                          style: const TextStyle(color: Colors.black)));
-                                      }).toList(),
-                                  onChanged: (String? newLanguageCode) {
-                                      setState(() {
-                                        // 初期値はデバイスの設定言語
-                                        currentLanguageCode = newLanguageCode!;
-                                      });
-                                        // meUserの状態変数の更新（'language'だけはdbも更新）
-                                        serviceNotifier!.changeLanguage(currentLanguageCode);
-                                        // selectedNativeLanguageの状態変数更新
-                                        ref.read(selectedNativeLanguageProvider.notifier)
-                                          .switchSelectedNativeLanguage(currentLanguageCode);
-                                  },
-                                ),
 
                               const SizedBox(height: 20),  
-                              
-                              DropdownButton(
-                                  isDense: true,
-                                  underline: Container(
-                                    height: 1,
-                                    color: const Color.fromARGB(255, 198, 198, 198),),
-                                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                                  value: currentSelectedLanguageCode,
-                                  items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,   //引数の言語コードをシステム識別用に設定
-                                        child: Text(
-                                          languageNames[value]!,
-                                          style: const TextStyle(color: Colors.black)));
-                                      }).toList(),
-                                  onChanged: (String? newSelectedLanguageCode) {
-                                      setState(() {
-                                        currentSelectedLanguageCode = newSelectedLanguageCode!;
-                                        isSelectedLanguage = true;
-                                      });
-                                        // selectedNativeLanguageの状態変数更新
-                                        ref.read(selectedLanguageProvider.notifier)
-                                          .switchSelectedLanguage(currentSelectedLanguageCode);
-                                  },
-                                ),
+                              DropdownButtonAppLanguage(setState),
+                              const SizedBox(height: 20),  
+                              DropdownButtonSelectedLanguage(setState),
                             ],
                           ),
                       
@@ -270,7 +217,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               
                 actions: [
                   TextButton(
-                    // Futureの解決までロック.
+                    // Futureの解決までロック
                     onPressed: () async{
                                   if (isMydataFutureDone == true
                                    && isGenderSelected == true
@@ -295,6 +242,64 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           );
         });
     });
+  }
+
+  DropdownButton<String> DropdownButtonSelectedLanguage(StateSetter setState) {
+    return DropdownButton(
+                                isDense: true,
+                                underline: Container(
+                                  height: 1,
+                                  color: const Color.fromARGB(255, 198, 198, 198),),
+                                icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                                iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                                value: currentSelectedLanguageCode,
+                                items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,   //引数の言語コードをシステム識別用に設定
+                                      child: Text(
+                                        languageNames[value]!,
+                                        style: const TextStyle(color: Colors.black)));
+                                    }).toList(),
+                                onChanged: (String? newSelectedLanguageCode) {
+                                    setState(() {
+                                      currentSelectedLanguageCode = newSelectedLanguageCode!;
+                                      isSelectedLanguage = true;
+                                    });
+                                      // selectedNativeLanguageの状態変数更新
+                                      ref.read(selectedLanguageProvider.notifier)
+                                        .switchSelectedLanguage(currentSelectedLanguageCode);
+                                },
+                              );
+  }
+
+  DropdownButton<String> DropdownButtonAppLanguage(StateSetter setState) {
+    return DropdownButton(
+                                isDense: true,
+                                underline: Container(
+                                  height: 1,
+                                  color: const Color.fromARGB(255, 198, 198, 198),),
+                                icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                                iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                                value: currentLanguageCode,
+                                items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,   //引数の言語コードをシステム識別用に設定
+                                      child: Text(
+                                        languageNames[value]!,
+                                        style: const TextStyle(color: Colors.black)));
+                                    }).toList(),
+                                onChanged: (String? newLanguageCode) {
+                                    setState(() {
+                                      // 初期値はデバイスの設定言語
+                                      currentLanguageCode = newLanguageCode!;
+                                    });
+                                      // meUserの状態変数の更新（'language'だけはdbも更新）
+                                      serviceNotifier!.changeLanguage(currentLanguageCode);
+                                      // selectedNativeLanguageの状態変数更新
+                                      ref.read(selectedNativeLanguageProvider.notifier)
+                                        .switchSelectedNativeLanguage(currentLanguageCode);
+                                },
+                              );
   }
 
 
