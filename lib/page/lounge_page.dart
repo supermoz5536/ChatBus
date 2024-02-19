@@ -198,9 +198,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               ),
 
                               const SizedBox(height: 20),  
-                              DropdownButtonAppLanguage(setState),
+                              dropdownButtonAppLanguage(setState),
                               const SizedBox(height: 20),  
-                              DropdownButtonSelectedLanguage(setState),
+                              dropdownButtonSelectedLanguage(setState),
                             ],
                           ),
                       
@@ -217,7 +217,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               
                 actions: [
                   TextButton(
-                    // Futureの解決までロック
+                    // Futureの解決までロック.
                     onPressed: () async{
                                   if (isMydataFutureDone == true
                                    && isGenderSelected == true
@@ -244,7 +244,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     });
   }
 
-  DropdownButton<String> DropdownButtonSelectedLanguage(StateSetter setState) {
+  DropdownButton<String> dropdownButtonSelectedLanguage(StateSetter setState) {
     return DropdownButton(
                                 isDense: true,
                                 underline: Container(
@@ -272,7 +272,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               );
   }
 
-  DropdownButton<String> DropdownButtonAppLanguage(StateSetter setState) {
+  DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
     return DropdownButton(
                                 isDense: true,
                                 underline: Container(

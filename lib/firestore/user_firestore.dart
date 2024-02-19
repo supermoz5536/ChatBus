@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:udemy_copy/authentication/auth_service.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/model/user.dart';
@@ -25,9 +26,9 @@ class UserFirestore {
   static Future<Map<String, dynamic>?> getAccount() async{
   try {
         /// 端末保存uidが存在しているかを確認
-        // String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        String? sharedPrefesMyUid = "dsffdaegaga";
-        // print('sharedPrefesMyUid == $sharedPrefesMyUid');
+        String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
+        // String? sharedPrefesMyUid = "dsffdaegaga";
+        print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 
 
@@ -35,12 +36,16 @@ class UserFirestore {
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){
             print('既存の端末uid = 未登録');
 
+            /// 匿名認証とUidの取得
+            String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
+            print('アカウント作成1: authUid == $authUid');
+
             /// 画像 言語コード 国コード(IPから) の取得
             String? userImageUrl = await UserFirebaseStorage.getProfImage();
             String? deviceLanguage = ui.window.locale.languageCode;
             String? ip = await Http.getPublicIPAddress();
             String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
-            print('getAccount()内のdeviceLanguage == $deviceLanguage');
+            
             
               /// 新規アカウントを追加
               /// supportInitFields()で、全Fieldは初期値に設定
