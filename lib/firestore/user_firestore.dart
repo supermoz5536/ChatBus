@@ -38,7 +38,6 @@ class UserFirestore {
 
             /// 匿名認証とUidの取得
             String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
-            print('アカウント作成1: authUid == $authUid');
 
             /// 画像 言語コード 国コード(IPから) の取得
             String? userImageUrl = await UserFirebaseStorage.getProfImage();
@@ -49,25 +48,26 @@ class UserFirestore {
             
               /// 新規アカウントを追加
               /// supportInitFields()で、全Fieldは初期値に設定
-              final newDoc = await _userCollection.add(    
-                UserFirestore.supportInitFields(
-                  userImageUrl: userImageUrl,
-                  deviceLanguage: deviceLanguage,
-                  deviceCountry: deviceCountry,
+              await _userCollection
+                .doc(authUid)
+                .set(UserFirestore.supportInitFields(
+                    userImageUrl: userImageUrl,
+                    deviceLanguage: deviceLanguage,
+                    deviceCountry: deviceCountry,
                 )
               );
                     /// 端末のuid更新              
                     await Shared_Prefes.setData({
-                        'myUid': newDoc.id,
+                        'myUid': authUid!,
                         'language': deviceLanguage,
                         'country': deviceCountry,              
                       });
                       print('アカウント作成完了1');
                       print('端末のuid更新完了');
-                      print('最新の端末保存uid ${newDoc.id}');  
+                      print('最新の端末保存uid $authUid');  
                                                   
                       return {
-                        'myUid': newDoc.id,
+                        'myUid': authUid,
                         'userName': 'user_name',
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
@@ -129,6 +129,9 @@ class UserFirestore {
                  } else {
                  /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ない」場合
 
+                     /// 匿名認証とUidの取得
+                     String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
+
                      /// 画像 言語コード 国コード(IPから) の取得
                      String? userImageUrl = await UserFirebaseStorage.getProfImage();
                      String? deviceLanguage = ui.window.locale.languageCode;
@@ -137,24 +140,25 @@ class UserFirestore {
 
                         /// 新規アカウントを作成
                         /// supportInitFields()で、全Fieldは初期値に設定
-                        final newDoc = await _userCollection.add(                    
-                            UserFirestore.supportInitFields(
+                        await _userCollection
+                          .doc(authUid)
+                          .set(UserFirestore.supportInitFields(
                               userImageUrl: userImageUrl,
                               deviceLanguage: deviceLanguage,
                               deviceCountry: deviceCountry,
-                            )
+                           )
                         );        
                         await Shared_Prefes.setData({
-                          'myUid': newDoc.id,
+                          'myUid': authUid!,
                           'language': deviceLanguage,
                           'country': deviceCountry,                             
                         });                            
                            print('アカウント作成完了2');
                            print('端末のuid更新完了');
-                           print('最新の端末保存uid ${newDoc.id}');    
+                           print('最新の端末保存uid $authUid');    
 
                         return {
-                        'myUid': newDoc.id,
+                        'myUid': authUid,
                         'userName': 'user_name',
                         'userImageUrl': userImageUrl,
                         'statement': 'statement',
@@ -168,46 +172,50 @@ class UserFirestore {
 
 
                   
-             } else {
-             /// ■ .getでデータに取得に「失敗」した場合
-             /// つまり、既存の端末Uidはあるが、db上にUidが既に削除されてる場合
-             /// 新規アカウント作成 ＆ 端末Uid更新
+            //  } else { // ■■■■■■■■■■■■■■■ この条件分岐は catch error で処理されるので必要ない可能性が高い ■■■■■■■■■■■■■■■
+            //  /// ■ .getでデータに取得に「失敗」した場合
+            //  /// つまり、既存の端末Uidはあるが、db上にUidが既に削除されてる場合
+            //  /// 新規アカウント作成 ＆ 端末Uid更新
 
-                /// 画像 言語コード 国コード(IPから) の取得
-                String? userImageUrl = await UserFirebaseStorage.getProfImage();
-                String? deviceLanguage = ui.window.locale.languageCode;
-                String? ip = await Http.getPublicIPAddress();
-                String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+            //     /// 匿名認証とUidの取得
+            //     String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
 
-                  /// 新規アカウントを追加
-                  /// supportInitFields()で、全Fieldは初期値に設定
-                  final newDoc = await _userCollection.add(                     
-                      UserFirestore.supportInitFields(
-                        userImageUrl: userImageUrl,
-                        deviceLanguage: deviceLanguage,
-                        deviceCountry: deviceCountry,
-                      )
-                  );        
-                  await Shared_Prefes.setData({
-                    'myUid': newDoc.id,
-                    'language': deviceLanguage,
-                    'country': deviceCountry,                           
-                  });
-                      print('アカウント作成完了3');
-                      print('端末のuid更新完了');
-                      print('最新の端末保存uid ${newDoc.id}');          
+            //     /// 画像 言語コード 国コード(IPから) の取得
+            //     String? userImageUrl = await UserFirebaseStorage.getProfImage();
+            //     String? deviceLanguage = ui.window.locale.languageCode;
+            //     String? ip = await Http.getPublicIPAddress();
+            //     String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+
+            //       /// 新規アカウントを追加
+            //       /// supportInitFields()で、全Fieldは初期値に設定
+            //       await _userCollection
+            //       .doc(authUid)
+            //       .set(UserFirestore.supportInitFields(
+            //           userImageUrl: userImageUrl,
+            //           deviceLanguage: deviceLanguage,
+            //           deviceCountry: deviceCountry,
+            //        )
+            //       );        
+            //       await Shared_Prefes.setData({
+            //         'myUid': authUid!,
+            //         'language': deviceLanguage,
+            //         'country': deviceCountry,                           
+            //       });
+            //           print('アカウント作成完了3');
+            //           print('端末のuid更新完了');
+            //           print('最新の端末保存uid $authUid');          
                       
-                  return {
-                        'myUid': newDoc.id,
-                        'userName': 'user_name',
-                        'userImageUrl': userImageUrl,
-                        'statement': 'statement',
-                        'language': deviceLanguage,
-                        'country': deviceCountry,
-                        'native_language': '',
-                        'gender': 'male',
-                        'isNewUser': 'isNewUser'
-                  };
+            //       return {
+            //             'myUid': authUid,
+            //             'userName': 'user_name',
+            //             'userImageUrl': userImageUrl,
+            //             'statement': 'statement',
+            //             'language': deviceLanguage,
+            //             'country': deviceCountry,
+            //             'native_language': '',
+            //             'gender': 'male',
+            //             'isNewUser': 'isNewUser'
+            //       };
           }
          }
          return null;
