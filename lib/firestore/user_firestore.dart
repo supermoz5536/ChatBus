@@ -445,7 +445,7 @@ try {
     }
   }
 
-/// 任意のuserUidで、そのプロフィール用のField情報を取得する関数,
+/// 任意のuserUidで、そのプロフィール用のField情報を取得する関数
 static Future<User?> fetchProfile(String? uid) async{
   try{
       final snapshot = await _userCollection.doc(uid).get(); 

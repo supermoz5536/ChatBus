@@ -5,6 +5,7 @@
 /// 実行は、userがログインした直後がよい
 
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -31,13 +32,19 @@ class DMNotifierService {
             // デバウンス中(isActive == true)の場合: キャンセルして新しくバウンス開始
             // デバウンス中(isActive == null)の場合: キャンセルして再度でバウンス開始
             if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
-              _debounceTimer = Timer(const Duration(milliseconds: 500), () async{
+              _debounceTimer = Timer(const Duration(milliseconds: 250), () async{
                 if (snapshot.docs.isNotEmpty) {
                   // Field情報の変更が確認されたdoc集合群に対して
                   // 変更項目にis_unread を含むdocだけ処理を実行する
                   // (意図しない変更で取得してしまったdataへの処理を回避)
+                  // arrayUnionでFieldがトリガーされてるので
+                  // フラグのトリガーは削除以外の変更である必要がある
+                  // フラグが削除されたデータが通ると当然論理エラーが起きてしまう
+                  // (docChanges は変更の種類別でデータが格納されてる)
                   for (var docChange in snapshot.docChanges) {
-                    if (docChange.doc.data()!.containsKey('is_unread')){
+                    if (docChange.doc.data()!.containsKey('is_unread')
+                     && docChange.type == DocumentChangeType.added
+                     || docChange.type == DocumentChangeType.modified) {
                       print('snapshot == $snapshot');
                       // lisner が stream から変更を取得するたびに
                       // DMRoomId を List<String?>?型の

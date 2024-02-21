@@ -817,7 +817,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 ? () async {
                                     setState(() {
                                       isDisabled = true;
-                                      // 二重タップ防止
+                                      // 二重タップ防止.
                                       // trueにして、タップをブロック
                                     });
 

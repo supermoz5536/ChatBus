@@ -24,7 +24,7 @@ class DMNotificationsNotifier extends StateNotifier<List<DMNotification?>?> {
   }
 
 
-  /// 既読となった通知オブジェクトを
+  /// 既読となった通知オブジェクトを.
   /// List型の状態管理変数のプロパティから削除するメソッド
   /// removeWhereメソッド: リスト内の各要素に対して指定された条件を評価し、
   /// その条件がtrueを返す要素をリストから削除します。
