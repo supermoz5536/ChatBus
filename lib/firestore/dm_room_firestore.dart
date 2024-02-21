@@ -167,7 +167,10 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
     }) async {
     try {
       // messageサブコレクション内に、messageドキュメントを新規作成する
-      final messageCollection = _dMRoomCollection.doc(dMRoomId).collection('message'); 
+      final messageCollection = _dMRoomCollection
+                                .doc(dMRoomId)
+                                .collection('message'); 
+
       await messageCollection.add({
         'message': message,
         'translated_message': '',
@@ -175,6 +178,7 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
         'send_time': Timestamp.now(),
         'is_divider': false,
       });
+      
       /// messageドキュメントを作成後
       /// ①そのmessage内容で、last_messageフィールドを更新
       /// ②相手に未読フラグをstreamさせるために
@@ -187,6 +191,8 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
       print('メッセージ送信失敗 ===== $e');
     }
   }
+
+
 
   /// 自分の未読フラグを解除するために
   /// 'is_read'Filed の配列から

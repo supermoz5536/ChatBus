@@ -41,11 +41,14 @@ class DMNotifierService {
                   // フラグのトリガーは削除以外の変更である必要がある
                   // フラグが削除されたデータが通ると当然論理エラーが起きてしまう
                   // (docChanges は変更の種類別でデータが格納されてる)
+                  // print('1 DocumentChangeTypeのフィルター前のsnapshot == $snapshot');
                   for (var docChange in snapshot.docChanges) {
-                    if (docChange.doc.data()!.containsKey('is_unread')
-                     && docChange.type == DocumentChangeType.added
-                     || docChange.type == DocumentChangeType.modified) {
-                      print('snapshot == $snapshot');
+                    if (
+                      docChange.doc.data()!.containsKey('is_unread') &&
+                        docChange.type == DocumentChangeType.added
+                     || docChange.type == DocumentChangeType.modified
+                    ) {
+                      print('2 DocumentChangeTypeのフィルター後のsnapshot == $snapshot');
                       // lisner が stream から変更を取得するたびに
                       // DMRoomId を List<String?>?型の
                       // notification オブジェクトの要素に追加する.
