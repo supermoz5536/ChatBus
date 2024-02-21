@@ -2,10 +2,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 
-class ServiceNotifier {
+class NotifierService {
   final WidgetRef ref;
 
-  ServiceNotifier(this.ref);
+  NotifierService(this.ref);
 
   /// アプリ内設定言語の切り替え時に
   /// 状態更新とdbへの書き込みを連携して行うメソッド

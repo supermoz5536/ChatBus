@@ -445,10 +445,12 @@ try {
     }
   }
 
-/// 任意のuserUidで、そのプロフィール用のField情報を取得する関数
+/// 任意のuserUidで、そのプロフィール用のField情報を取得する関数,
 static Future<User?> fetchProfile(String? uid) async{
   try{
       final snapshot = await _userCollection.doc(uid).get(); 
+      print('fetchProfile snapshot: $snapshot');
+
       User user = User(
         uid: uid,
         userName: snapshot.data()!['user_name'],
@@ -458,7 +460,7 @@ static Future<User?> fetchProfile(String? uid) async{
         country: snapshot.data()!['country'],
       );
 
-return user;                                                //DBから取得した自分のデータを代入した、プロフィール情報を出力する
+return user;   //DBから取得した自分のデータを代入した、プロフィール情報を出力する
 
   }catch(e) {
     print('ユーザー情報取得失敗 ----- $e');

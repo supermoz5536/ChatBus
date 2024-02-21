@@ -2,13 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/constant/language_name.dart';
+import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/dm_notification.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -17,7 +20,8 @@ import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:udemy_copy/utils/service_notifier.dart';
+import 'package:udemy_copy/utils/service/dm_notifier_service.dart';
+import 'package:udemy_copy/utils/service/notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'dart:ui' as ui;
 
@@ -48,10 +52,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   TalkRoom? talkRoom;
   Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
-  ServiceNotifier? serviceNotifier;
+  NotifierService? notifierService;
+  DMNotifierService? dMNotifierservice;
   int? currentIndex = 0;
   int? selectedBottomIconIndex;
   int? selectedHistoryIndex;
+  int? selectedUnreadIndex;
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
@@ -98,11 +104,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         /// TargetLanguageProvider の状態変数を更新
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
 
-        // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが、
-        // dbに該当するドキュメントがなかった場合なので、
+        // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが
+        // dbに該当するドキュメントがなかった場合なので
         // 新規IDするから、Showdialogを表示する
         // しかし、db側でドキュメントIDを削除した場合のみ発生するケース
         if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
+
+        // DMの通知のリスナー起動
+        dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
       }
     });
   }
@@ -244,62 +253,63 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     });
   }
 
+    DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
+    return DropdownButton(
+      isDense: true,
+      underline: Container(
+        height: 1,
+        color: const Color.fromARGB(255, 198, 198, 198),),
+      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+      value: currentLanguageCode,
+      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,   //引数の言語コードをシステム識別用に設定
+            child: Text(
+              languageNames[value]!,
+              style: const TextStyle(color: Colors.black)));
+          }).toList(),
+      onChanged: (String? newLanguageCode) {
+          setState(() {
+            // 初期値はデバイスの設定言語
+            currentLanguageCode = newLanguageCode!;
+          });
+            // meUserの状態変数の更新（'language'だけはdbも更新）
+            notifierService!.changeLanguage(currentLanguageCode);
+            // selectedNativeLanguageの状態変数更新
+            ref.read(selectedNativeLanguageProvider.notifier)
+              .switchSelectedNativeLanguage(currentLanguageCode);
+      },
+    );
+  }
+  
+
   DropdownButton<String> dropdownButtonSelectedLanguage(StateSetter setState) {
     return DropdownButton(
-                                isDense: true,
-                                underline: Container(
-                                  height: 1,
-                                  color: const Color.fromARGB(255, 198, 198, 198),),
-                                icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                                iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                                value: currentSelectedLanguageCode,
-                                items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,   //引数の言語コードをシステム識別用に設定
-                                      child: Text(
-                                        languageNames[value]!,
-                                        style: const TextStyle(color: Colors.black)));
-                                    }).toList(),
-                                onChanged: (String? newSelectedLanguageCode) {
-                                    setState(() {
-                                      currentSelectedLanguageCode = newSelectedLanguageCode!;
-                                      isSelectedLanguage = true;
-                                    });
-                                      // selectedNativeLanguageの状態変数更新
-                                      ref.read(selectedLanguageProvider.notifier)
-                                        .switchSelectedLanguage(currentSelectedLanguageCode);
-                                },
-                              );
-  }
-
-  DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
-    return DropdownButton(
-                                isDense: true,
-                                underline: Container(
-                                  height: 1,
-                                  color: const Color.fromARGB(255, 198, 198, 198),),
-                                icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                                iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                                value: currentLanguageCode,
-                                items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,   //引数の言語コードをシステム識別用に設定
-                                      child: Text(
-                                        languageNames[value]!,
-                                        style: const TextStyle(color: Colors.black)));
-                                    }).toList(),
-                                onChanged: (String? newLanguageCode) {
-                                    setState(() {
-                                      // 初期値はデバイスの設定言語
-                                      currentLanguageCode = newLanguageCode!;
-                                    });
-                                      // meUserの状態変数の更新（'language'だけはdbも更新）
-                                      serviceNotifier!.changeLanguage(currentLanguageCode);
-                                      // selectedNativeLanguageの状態変数更新
-                                      ref.read(selectedNativeLanguageProvider.notifier)
-                                        .switchSelectedNativeLanguage(currentLanguageCode);
-                                },
-                              );
+      isDense: true,
+      underline: Container(
+        height: 1,
+        color: const Color.fromARGB(255, 198, 198, 198),),
+      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+      value: currentSelectedLanguageCode,
+      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,   //引数の言語コードをシステム識別用に設定
+            child: Text(
+              languageNames[value]!,
+              style: const TextStyle(color: Colors.black)));
+          }).toList(),
+      onChanged: (String? newSelectedLanguageCode) {
+          setState(() {
+            currentSelectedLanguageCode = newSelectedLanguageCode!;
+            isSelectedLanguage = true;
+          });
+            // selectedNativeLanguageの状態変数更新
+            ref.read(selectedLanguageProvider.notifier)
+              .switchSelectedLanguage(currentSelectedLanguageCode);
+      },
+    );
   }
 
 
@@ -310,7 +320,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
-     serviceNotifier = ServiceNotifier(ref);
+    notifierService = NotifierService(ref);
+    dMNotifierservice = DMNotifierService(ref);
+    List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -432,6 +444,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             
             /// 画面サイズ情報を取得
             final Size screenSize = MediaQuery.of(context).size;
+            
 
               return Stack(
                 children: [
@@ -445,26 +458,51 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     child: Container(color: Colors.transparent),
                   ),
 
-                  /// ポップアップの表示位置, 表示内容
+                  /// ポップアップの表示位置, 表示内容.
                   Positioned(
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
                     width: screenSize.width * 0.9, // 画面幅の90%の幅
-                    child: const Card(
+                    child: Card(
                       elevation: 20,
                       color: Color.fromARGB(255, 140, 182, 255),
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text('DM通知の表示'),
-                          ],
-                        ),
+                      child: dMNotifications == null
+                        ? Center(child: const Text('未読のDMはありません'))
+                        : Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: dMNotifications.length == 0
+                              ? const Center(child: Text('未読のDMはありません'))
+                              : ListView.builder(
+                                  itemCount: dMNotifications.length,
+                                  itemBuilder: (cnntext, index) {
+                                    return ListTile(
+                                      title: Text(dMNotifications[index]!.talkuserName!),
+                                      subtitle: Text('${dMNotifications[index]!.lastMessage!}&${dMNotifications[index]!.dMRoomId}'),
+                                      onTap: () async{
+                                        
+                                        // db上のmyUidの未読フラグを削除
+                                        await DMRoomFirestore.removeIsReadElement(
+                                          dMNotifications[index]!.dMRoomId,
+                                          meUser!.uid
+                                          );
+
+                                        // 状態管理してるListオブジェクトから
+                                        // index番目（タップした）の通知要素を削除
+                                        ref.read(dMNotificationsProvider.notifier)
+                                          .removeDMNotification(dMNotifications[index]!.dMRoomId,);
+
+                                        // 状態管理してるListオブジェクト自体を更新します
+                                        // 理由は、要素の更新だけしても
+                                        // データのメモリアドレスが変更されないため
+                                        // riverpodが更新をキャッチできず
+                                        // ウィジェットの再描画が発生しないから
+                                        ref.read(dMNotificationsProvider.notifier)
+                                          .setDMNotifications(dMNotifications);
+                                      },
+                                    );
+                                  }                         
+                                ),
                       ),
                     ),
                   ),

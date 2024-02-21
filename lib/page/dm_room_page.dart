@@ -305,6 +305,12 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
         
               // await talkuserDocSubscription!.cancel();
               // matching_progress_pageに戻る時の一連の処理
+
+              // 退出時にdb上の未読フラグを削除
+              await DMRoomFirestore.removeIsReadElement(
+                widget.dMRoom.dMRoomId,
+                meUser!.uid
+                );
         
               if (context.mounted) {
                 LoungeBack loungeBack = LoungeBack(currentIndex: 1);
@@ -351,7 +357,9 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
             onPressed: () async {
               await DMRoomFirestore.sendDM(
                 dMRoomId: widget.dMRoom.dMRoomId,
-                message: controller.text);
+                message: controller.text,
+                talkuserUid: widget.dMRoom.talkuserUid,
+                );
               controller.clear();
             },
             icon: Icon(

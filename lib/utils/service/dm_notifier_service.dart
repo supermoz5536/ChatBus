@@ -1,0 +1,101 @@
+/// ■ dmroomドキュメントから取得した変更の snapshot を、 
+/// 状態管理してるList<map>型の通知オブジェクトに加えるサービスファイルを作成（
+/// streamメソッドとproviderの更新）
+/// 通知をリスナーする関数なので
+/// 実行は、userがログインした直後がよい
+
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/firestore/dm_room_firestore.dart';
+import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/dm_notification.dart';
+import 'package:udemy_copy/model/user.dart';
+import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
+
+
+class DMNotifierService {
+  final WidgetRef ref;
+  DMNotifierService(this.ref);  
+
+  Timer? _debounceTimer; // デバウンス用のタイマー
+
+
+  void setupUnreadDMNotification(String? myUid) {
+    print('setupUnreadDMNotification: 実行開始');
+    try{
+      var dMStream = DMRoomFirestore.streamDMNotification(myUid);      
+          dMStream.listen((snapshot) async{
+            // リスナー起動後、一定時間内に同じリスナー処理がない場合に限り
+            // 最初のリスナーを実行する処理です。
+            // 確認された場合は、確認した処理を元に再度やり直します。
+            // デバウンス中(isActive == true)の場合: キャンセルして新しくバウンス開始
+            // デバウンス中(isActive == null)の場合: キャンセルして再度でバウンス開始
+            if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+              _debounceTimer = Timer(const Duration(milliseconds: 500), () async{
+                if (snapshot.docs.isNotEmpty) {
+                  // Field情報の変更が確認されたdoc集合群に対して
+                  // 変更項目にis_unread を含むdocだけ処理を実行する
+                  // (意図しない変更で取得してしまったdataへの処理を回避)
+                  for (var docChange in snapshot.docChanges) {
+                    if (docChange.doc.data()!.containsKey('is_unread')){
+                      print('snapshot == $snapshot');
+                      // lisner が stream から変更を取得するたびに
+                      // DMRoomId を List<String?>?型の
+                      // notification オブジェクトの要素に追加する.
+                      for (var doc in snapshot.docs) {
+                        // 既読処理用のdmRoomId と
+                        // UI表示用の相手の名前の取得
+                        String? talkuserUid;
+                        String? talkuserName;
+                        Map<String, dynamic>? docMap = doc.data();
+                        List<dynamic>? jointedUserIdsDynamic = docMap['jointed_user'] as List<dynamic>?;
+                        List<String>? jointedUserIds = jointedUserIdsDynamic?.whereType<String>().toList();
+                        print('jointedUserIds ==$jointedUserIds');
+
+                        for (var userId in jointedUserIds!) {
+                          if (userId == myUid) continue;
+                              talkuserUid = userId;
+                        }
+                        
+                        print('talkuserUid ==$talkuserUid');
+
+                        // talkuserUid の 'user_name'フィールドの値を取得
+                        User? talkuserProf = await UserFirestore.fetchProfile(talkuserUid);
+                        talkuserName = talkuserProf!.userName;
+
+                        print('talkuserName ==$talkuserName');
+
+                        // fetchProfileで論理エラーが発生してるようだが、
+                        // なぜ一回めではエラーが出ないのだ？
+                        
+                        // 状態変数に.addする要素のインスタンスを作成
+                        DMNotification? notification = DMNotification(
+                          talkuserName: talkuserName,
+                          dMRoomId: doc.id,
+                          lastMessage: doc['last_message'],
+                        );
+
+                        // print (talkuserName);
+                        print (doc.id);
+                        print (doc['last_message']);
+
+                        // 作成したインスタンスで状態更新
+                        ref.read(dMNotificationsProvider.notifier).addDMNotification(notification);
+                        }
+                    }
+                  }
+              }
+          });
+        }, 
+        );        
+    }catch (e){
+      print('setupUnreadDMNotification( ): DMRoomIdのstream取得失敗');
+    }
+  }
+
+
+
+
+
+}
+

@@ -137,13 +137,34 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
 
 
 
+  /// 'is_unread'Fieldの配列に、
+  /// myUidを含むDMRoomIdを参照するメソッド
+  static Stream<QuerySnapshot<Map<String, dynamic>>> streamDMNotification(String? myUid) {
+    try {
+      var stream = _dMRoomCollection.where('is_unread', arrayContains: myUid)
+                                    .snapshots();
+
+      print('Stream Query: $stream');
+
+      return stream;
+    } catch(e) {
+      print('streamDMNotification関数の取得失敗 == $e');
+      return const Stream<QuerySnapshot<Map<String, dynamic>>>.empty();
+    }
+  }
+
+
 
 
 
 // 入力フィールドのメッセージ情報を
 // dmroomコレクション > 任意のdmroom > messageサブコレクション
 // に write する関数
-  static Future<void> sendDM({required String? dMRoomId, required String? message}) async {
+  static Future<void> sendDM({
+    required String? dMRoomId,
+    required String? message,
+    required String? talkuserUid,
+    }) async {
     try {
       // messageサブコレクション内に、messageドキュメントを新規作成する
       final messageCollection = _dMRoomCollection.doc(dMRoomId).collection('message'); 
@@ -154,18 +175,28 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
         'send_time': Timestamp.now(),
         'is_divider': false,
       });
-
       /// messageドキュメントを作成後
-      /// そのmessage内容で、last_messageフィールドを更新する
+      /// ①そのmessage内容で、last_messageフィールドを更新
+      /// ②相手に未読フラグをstreamさせるために
+      /// 'is_read'Filed の配列に talkuserUid を加える
       await _dMRoomCollection.doc(dMRoomId).update({
         'last_message': message,
+        'is_unread': FieldValue.arrayUnion([talkuserUid]),
       });
-
     } catch (e) {
       print('メッセージ送信失敗 ===== $e');
     }
   }
 
+  /// 自分の未読フラグを解除するために
+  /// 'is_read'Filed の配列から
+  /// myUidを削除します。
+  static Future<void> removeIsReadElement(String? dMroomId, String? myUid) async{
+      await _dMRoomCollection.doc(dMroomId).update({
+        'is_unread': FieldValue.arrayRemove([myUid]),
+      });
+    
+  }
 
 
 

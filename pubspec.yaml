@@ -49,6 +49,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   firebase_auth: ^4.17.4
+  collection: ^1.18.0
   
 
 

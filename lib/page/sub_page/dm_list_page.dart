@@ -78,15 +78,22 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                               /// Container() = Material()
                                               Ink(
                                                 child: InkWell(
-                                                  onTap: (){
+                                                  onTap: () async{
                                                     /// 画面遷移に必要なコンストラクタ用を用意して
+                                                    DMRoom dMRoom = DMRoom(
+                                                      myUid: meUser.uid,
+                                                      talkuserUid: dMRooms[index].talkuserUid,
+                                                      dMRoomId: dMRooms[index].dMRoomId
+                                                    );
+
+                                                    // db上のmyUidの未読フラグを削除して
+                                                    await DMRoomFirestore.removeIsReadElement(
+                                                      dMRoom.dMRoomId,
+                                                      meUser.uid
+                                                    );
+
                                                     /// DMRoomPageへの画面遷移
                                                     if (context.mounted) {
-                                                        DMRoom dMRoom = DMRoom(
-                                                          myUid: meUser.uid,
-                                                          talkuserUid: dMRooms[index].talkuserUid,
-                                                          dMRoomId: dMRooms[index].dMRoomId);
-
                                                         Navigator.pushAndRemoveUntil(
                                                             context,
                                                             MaterialPageRoute(
