@@ -98,10 +98,12 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
       DocumentReference docRef = await _dMRoomCollection.add({
         'jointed_user': [myUid, talkUserUid],
         'created_time': Timestamp.now(),
+        'last_message': '',
+        'is_unread': [],
       });
       return docRef.id;
     } catch (e) {
-      print('ルーム作成失敗 ===== &e');
+      print('ルーム作成失敗 ===== $e');
       return null;
     }
   }
@@ -191,6 +193,61 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
       print('メッセージ送信失敗 ===== $e');
     }
   }
+  
+
+// ■■■■■■■■■■ sendDM の batch 処理施行版 ■■■■■■■■■■
+// // 入力フィールドのメッセージ情報を
+// // dmroomコレクション > 任意のdmroom > messageサブコレクション
+// // に write する関数
+//   static Future<void> sendDM({
+//     required String? dMRoomId,
+//     required String? message,
+//     required String? talkuserUid,
+//     }) async {
+//     try {
+//       // batchメソッドの宣言
+//       final batch = FirebaseFirestore.instance.batch();
+
+//       // messageサブコレクション内に、messageドキュメントを新規作成する
+//       DocumentReference newMessageRef = _dMRoomCollection
+//                                             .doc(dMRoomId)
+//                                             .collection('message')
+//                                             .doc();
+//       // 新しいメッセージドキュメントをバッチに追加
+//       // batchメソッドを設定
+//       // 参照先： newMessageRef
+//       // 書き込み内容： 各Field値
+//       batch.set(newMessageRef, {
+//         'message': message,
+//         'translated_message': '',
+//         'sender_id': Shared_Prefes.fetchUid(),
+//         'send_time': Timestamp.now(),
+//         'is_divider': false,
+//       });
+
+//       /// DMRoomドキュメントの更新（last_messageとis_unreadフィールド）
+//       // messageサブコレクション内に、messageドキュメントを新規作成する
+//       DocumentReference dMRoomRef = _dMRoomCollection
+//                                     .doc(dMRoomId);
+//       // 親であるdMRoomドキュメントをバッチに追加
+//       // batchメソッドを設定
+//       // 参照先：dMRoomRef
+//       // 書き込み内容：各Filed値
+//       batch.update(dMRoomRef, {
+//         'last_message': message,
+//         'is_unread': FieldValue.arrayUnion([talkuserUid]),
+//       });
+
+//       // セットした batch をコミット。
+//       await batch.commit();
+
+//     } catch (e) {
+//       print('メッセージ送信失敗 ===== $e');
+//     }
+//   }
+
+
+
 
 
 

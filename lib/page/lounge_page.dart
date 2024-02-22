@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -61,6 +63,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
+  StreamSubscription? dMSubscription;
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 
   @override
@@ -111,7 +114,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
 
         // DMの通知のリスナー起動
-        dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
+        if (dMNotifierservice != null) {
+        dMSubscription = dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
+        }
       }
     });
   }
@@ -253,6 +258,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     });
   }
 
+
     DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
     return DropdownButton(
       isDense: true,
@@ -310,6 +316,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               .switchSelectedLanguage(currentSelectedLanguageCode);
       },
     );
+  }
+
+
+  // disposeメソッドをオーバーライド
+  @override
+  void dispose() {
+    // DM通知のリスナーを閉じる
+    if (dMSubscription != null) dMSubscription!.cancel();
+    // 最後に super.dispose() でリソースの慣習的な解放処理を行う
+    super.dispose();
+    print('LoungePage: dispose( )の実行完了');
   }
 
 
@@ -458,7 +475,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     child: Container(color: Colors.transparent),
                   ),
 
-                  /// ポップアップの表示位置, 表示内容.
+                  /// ポップアップの表示位置, 表示内容
                   Positioned(
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始

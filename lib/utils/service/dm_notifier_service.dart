@@ -19,13 +19,13 @@ class DMNotifierService {
   DMNotifierService(this.ref);  
 
   Timer? _debounceTimer; // デバウンス用のタイマー
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _dMSubscription;
 
-
-  void setupUnreadDMNotification(String? myUid) {
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? setupUnreadDMNotification(String? myUid) {
     print('setupUnreadDMNotification: 実行開始');
     try{
-      var dMStream = DMRoomFirestore.streamDMNotification(myUid);      
-          dMStream.listen((snapshot) async{
+      var dMStream = DMRoomFirestore.streamDMNotification(myUid);    
+      _dMSubscription = dMStream.listen((snapshot) async{
             // リスナー起動後、一定時間内に同じリスナー処理がない場合に限り
             // 最初のリスナーを実行する処理です。
             // 確認された場合は、確認した処理を元に再度やり直します。
@@ -38,7 +38,7 @@ class DMNotifierService {
                   // 変更項目にis_unread を含むdocだけ処理を実行する
                   // (意図しない変更で取得してしまったdataへの処理を回避)
                   // arrayUnionでFieldがトリガーされてるので
-                  // フラグのトリガーは削除以外の変更である必要がある
+                  // フラグのトリガーは削除以外の変更である必要がある.
                   // フラグが削除されたデータが通ると当然論理エラーが起きてしまう
                   // (docChanges は変更の種類別でデータが格納されてる)
                   // print('1 DocumentChangeTypeのフィルター前のsnapshot == $snapshot');
@@ -74,9 +74,6 @@ class DMNotifierService {
                         talkuserName = talkuserProf!.userName;
 
                         print('talkuserName ==$talkuserName');
-
-                        // fetchProfileで論理エラーが発生してるようだが、
-                        // なぜ一回めではエラーが出ないのだ？
                         
                         // 状態変数に.addする要素のインスタンスを作成
                         DMNotification? notification = DMNotification(
@@ -96,10 +93,11 @@ class DMNotifierService {
                   }
               }
           });
-        }, 
-        );        
+        });     
+      return _dMSubscription;   
     }catch (e){
       print('setupUnreadDMNotification( ): DMRoomIdのstream取得失敗');
+      return null;
     }
   }
 

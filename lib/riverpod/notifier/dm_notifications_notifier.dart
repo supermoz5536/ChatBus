@@ -41,6 +41,7 @@ class DMNotificationsNotifier extends StateNotifier<List<DMNotification?>?> {
 
   /// 取得したdmroomの通知を追加するメソッド
   void addDMNotification(DMNotification? newNotification) {
+    print('Before newNotification == 実行開始');
     print('Before newNotification == $newNotification');
 
     // リスト内の要素に同じDMRoomIdの未読通知がないか確認

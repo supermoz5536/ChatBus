@@ -87,10 +87,10 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                     );
 
                                                     // db上のmyUidの未読フラグを削除して
-                                                    await DMRoomFirestore.removeIsReadElement(
-                                                      dMRoom.dMRoomId,
-                                                      meUser.uid
-                                                    );
+                                                    // await DMRoomFirestore.removeIsReadElement(
+                                                    //   dMRoom.dMRoomId,
+                                                    //   meUser.uid
+                                                    // );
 
                                                     /// DMRoomPageへの画面遷移
                                                     if (context.mounted) {

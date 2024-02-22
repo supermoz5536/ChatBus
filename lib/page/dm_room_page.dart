@@ -307,10 +307,10 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
               // matching_progress_pageに戻る時の一連の処理
 
               // 退出時にdb上の未読フラグを削除
-              await DMRoomFirestore.removeIsReadElement(
-                widget.dMRoom.dMRoomId,
-                meUser!.uid
-                );
+              // await DMRoomFirestore.removeIsReadElement(
+              //   widget.dMRoom.dMRoomId,
+              //   meUser!.uid
+              //   );
         
               if (context.mounted) {
                 LoungeBack loungeBack = LoungeBack(currentIndex: 1);
