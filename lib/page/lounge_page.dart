@@ -480,47 +480,42 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.9, // 画面幅の90%の幅
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅.
                     child: Card(
                       elevation: 20,
-                      color: Color.fromARGB(255, 140, 182, 255),
-                      child: dMNotifications == null
-                        ? Center(child: const Text('未読のDMはありません'))
-                        : Padding(
-                            padding: EdgeInsets.all(10.0),
-                            child: dMNotifications.length == 0
-                              ? const Center(child: Text('未読のDMはありません'))
-                              : ListView.builder(
-                                  itemCount: dMNotifications.length,
-                                  itemBuilder: (cnntext, index) {
-                                    return ListTile(
-                                      title: Text(dMNotifications[index]!.talkuserName!),
-                                      subtitle: Text('${dMNotifications[index]!.lastMessage!}&${dMNotifications[index]!.dMRoomId}'),
-                                      onTap: () async{
-                                        
-                                        // db上のmyUidの未読フラグを削除
-                                        await DMRoomFirestore.removeIsReadElement(
-                                          dMNotifications[index]!.dMRoomId,
-                                          meUser!.uid
-                                          );
-
-                                        // 状態管理してるListオブジェクトから
-                                        // index番目（タップした）の通知要素を削除
-                                        ref.read(dMNotificationsProvider.notifier)
-                                          .removeDMNotification(dMNotifications[index]!.dMRoomId,);
-
-                                        // 状態管理してるListオブジェクト自体を更新します
-                                        // 理由は、要素の更新だけしても
-                                        // データのメモリアドレスが変更されないため
-                                        // riverpodが更新をキャッチできず
-                                        // ウィジェットの再描画が発生しないから
-                                        ref.read(dMNotificationsProvider.notifier)
-                                          .setDMNotifications(dMNotifications);
-                                      },
+                      color: const Color.fromARGB(255, 140, 182, 255),
+                      child: dMNotifications == null || dMNotifications.isEmpty
+                        ? const Center(child: Text('未読のDMはありません'))
+                        : ListView.builder(
+                            itemCount: dMNotifications.length,
+                            itemBuilder: (cnntext, index) {
+                              return ListTile(
+                                title: Text(dMNotifications[index]!.talkuserName!),
+                                subtitle: Text('${dMNotifications[index]!.lastMessage!}'),
+                                onTap: () async{
+                                  
+                                  // db上のmyUidの未読フラグを削除
+                                  await DMRoomFirestore.removeIsReadElement(
+                                    dMNotifications[index]!.dMRoomId,
+                                    meUser!.uid
                                     );
-                                  }                         
-                                ),
-                      ),
+                      
+                                  // 状態管理してるListオブジェクトから
+                                  // index番目（タップした）の通知要素を削除
+                                  ref.read(dMNotificationsProvider.notifier)
+                                    .removeDMNotification(dMNotifications[index]!.dMRoomId,);
+                      
+                                  // 状態管理してるListオブジェクト自体を更新します
+                                  // 理由は、要素の更新だけしても
+                                  // データのメモリアドレスが変更されないため
+                                  // riverpodが更新をキャッチできず
+                                  // ウィジェットの再描画が発生しないから
+                                  ref.read(dMNotificationsProvider.notifier)
+                                    .setDMNotifications(dMNotifications);
+                                },
+                              );
+                            }                         
+                          ),
                     ),
                   ),
                 ],
