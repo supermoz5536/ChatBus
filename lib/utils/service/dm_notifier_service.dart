@@ -75,7 +75,7 @@ class DMNotifierService {
 
                         print('talkuserName ==$talkuserName');
                         
-                        // 状態変数に.addする要素のインスタンスを作成
+                        // 状態変数に.addする要素のインスタンスを作成.
                         DMNotification? notification = DMNotification(
                           talkuserName: talkuserName,
                           dMRoomId: doc.id,

@@ -41,27 +41,32 @@ class DMNotificationsNotifier extends StateNotifier<List<DMNotification?>?> {
 
   /// 取得したdmroomの通知を追加するメソッド
   void addDMNotification(DMNotification? newNotification) {
-    print('Before newNotification == 実行開始');
-    print('Before newNotification == $newNotification');
-
-    // リスト内の要素に同じDMRoomIdの未読通知がないか確認
-    // 返り値は、「一致する要素」or「null」
     if (state != null && newNotification != null) {
-      DMNotification? existingSameUserNotifcaion = state!.firstWhereOrNull((existingNotification) {
+
+      // 不変性の原理に従って、編集用のコピーインスタンスを用意.
+      List<DMNotification?> copiedState = state!.whereType<DMNotification?>().toList();
+
+      // リスト内の要素に同じDMRoomIdの未読通知がないか確認
+      // 返り値は、「一致する要素」or「null」
+      DMNotification? existingSameUserNotifcaion = copiedState.firstWhereOrNull((existingNotification) {
         return newNotification.dMRoomId == existingNotification?.dMRoomId;
       });
 
-    print('Middle addDMNotification == 実行確認できました');
-
       // あれば、その要素のオブジェクトを上書き
       if (existingSameUserNotifcaion != null) {
-        state!.remove(existingSameUserNotifcaion);
-        state!.add(newNotification);
+        copiedState.remove(existingSameUserNotifcaion);
+        copiedState.add(newNotification);
 
       // なければ、新しい要素を追加  
       } else {
-        state!.add(newNotification);
+        copiedState.add(newNotification);
       }
+
+      // 状態のインスタンスを更新
+      // riverpodが不変性の原理に従っているので
+      // プロパティの更新だとcopyファイルの編集とみなされ
+      // UIの際描画が行われない
+      state = copiedState;
     }
   }
 

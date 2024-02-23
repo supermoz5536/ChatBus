@@ -340,6 +340,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     notifierService = NotifierService(ref);
     dMNotifierservice = DMNotifierService(ref);
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
+    print('■dMNotifications.length == ${dMNotifications!.length}');
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -480,55 +481,135 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.9, // 画面幅の90%の幅.
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅
                     child: Card(
                       elevation: 20,
-                      color: const Color.fromARGB(255, 140, 182, 255),
-                      child: dMNotifications == null || dMNotifications.isEmpty
-                        ? const Center(child: Text('未読のDMはありません'))
-                        : ListView.builder(
-                            itemCount: dMNotifications.length,
-                            itemBuilder: (cnntext, index) {
-                              return ListTile(
-                                title: Text(dMNotifications[index]!.talkuserName!),
-                                subtitle: Text('${dMNotifications[index]!.lastMessage!}'),
-                                onTap: () async{
-                                  
-                                  // db上のmyUidの未読フラグを削除
-                                  await DMRoomFirestore.removeIsReadElement(
-                                    dMNotifications[index]!.dMRoomId,
-                                    meUser!.uid
-                                    );
-                      
-                                  // 状態管理してるListオブジェクトから
-                                  // index番目（タップした）の通知要素を削除
-                                  ref.read(dMNotificationsProvider.notifier)
-                                    .removeDMNotification(dMNotifications[index]!.dMRoomId,);
-                      
-                                  // 状態管理してるListオブジェクト自体を更新します
-                                  // 理由は、要素の更新だけしても
-                                  // データのメモリアドレスが変更されないため
-                                  // riverpodが更新をキャッチできず
-                                  // ウィジェットの再描画が発生しないから
-                                  ref.read(dMNotificationsProvider.notifier)
-                                    .setDMNotifications(dMNotifications);
-                                },
-                              );
-                            }                         
-                          ),
-                    ),
-                  ),
-                ],
-              );
+                      color: Colors.white,
+                      child: dMNotifications.isEmpty
+                        ? Column(
+                          children: [
+                            Container(
+                                  height: 30,
+                                  width: double.infinity,
+                                  color: const Color.fromARGB(255, 94, 94, 94),
+                                  child: const Center(
+                                    child: Text(
+                                      'メール通知',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                            const Padding(
+                              padding: EdgeInsets.all(50),
+                              child: Center(child: 
+                                Text('未読のメールはありません',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 91, 91, 91),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                )),
+                            ),
+                          ],
+                        )
 
+
+                        : SingleChildScrollView(
+                            child: Column(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    color: const Color.fromARGB(255, 192, 192, 192),
+                                    child: const Center(
+                                      child: Text(
+                                        'メール通知',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ),
+                                    )
+                                  ),
+                                  // Columnが無限の高さを持っているので
+                                  // ListView.builderが高さを把握できるように
+                                  // Expandedで利用可能な最大範囲を確定させる
+                                  ListView.builder(
+                                      // shrinkWrap: アイテムの合計サイズに基づいて自身の高さを調整します
+                                      shrinkWrap: true,
+                                      // SingleChildScrollView がスクロール機能を担当するので
+                                      // ListView.builderのその機能をOFFにする
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: dMNotifications.length,
+                                      itemBuilder: (cnntext, index) {
+                                        print('■■■■■dMNotifications.length == ${dMNotifications.length}');
+                                        return Column(
+                                          children: [
+                                            ListTile(
+                                              title: Text(dMNotifications[index]!.talkuserName!),
+                                              subtitle: Text('${dMNotifications[index]!.lastMessage!}',
+                                                style: const TextStyle(
+                                                  color: Color.fromARGB(255, 133, 133, 133))),
+                                              onTap: () async{
+                                                // db上のmyUidの未読フラグを削除
+                                                await DMRoomFirestore.removeIsReadElement(
+                                                  dMNotifications[index]!.dMRoomId,
+                                                  meUser!.uid
+                                                  );
+                                                            
+                                                // 状態管理してるListオブジェクトから
+                                                // index番目（タップした）の通知要素を削除
+                                                ref.read(dMNotificationsProvider.notifier)
+                                                  .removeDMNotification(dMNotifications[index]!.dMRoomId,);
+                                                            
+                                                // 状態管理してるListオブジェクト自体を更新します
+                                                // 理由は、要素の更新だけしても
+                                                // データのメモリアドレスが変更されないため
+                                                // riverpodが更新をキャッチできず
+                                                // ウィジェットの再描画が発生しないから
+                                                ref.read(dMNotificationsProvider.notifier)
+                                                  .setDMNotifications(dMNotifications);
+                                              },
+                                            ),
+                                              
+                                              const Divider(
+                                                height: 0,
+                                                // thickness: ,
+                                                color: Color.fromARGB(255, 199, 199, 199),
+                                                indent: 10,
+                                                endIndent: 10,
+                                              ),   
+                                          ],
+                                        );
+                                      }                         
+                                    ),
+                                 ],
+                              ),
+                          ),
+                      ),
+                    ),
+                  ],
+                );
               },
-              child: IconButton(
-                onPressed: _overlayController2nd.toggle,
-                icon: const Icon(Icons.notifications_none_outlined,
-                    color: Color.fromARGB(255, 176, 176, 176)),
-                iconSize: 35,
-                tooltip: '受信メールの通知',
-              )),
+            child: Badge(
+                  backgroundColor: Colors.red,
+                  isLabelVisible: dMNotifications.isNotEmpty,
+                  largeSize: 20,
+                  label: Text('${dMNotifications.length}'),                  
+                  child: IconButton(
+                      onPressed: () {_overlayController2nd.toggle();},
+                      icon: const Icon(Icons.notifications_none_outlined,
+                          color: Color.fromARGB(255, 176, 176, 176)),
+                      iconSize: 35,
+                      tooltip: '受信メールの通知',
+                    ),
+                )
+          ),
 
 
           // ■ マッチングヒストリーの表示ボタン
