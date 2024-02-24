@@ -30,12 +30,16 @@ class DMNotificationsNotifier extends StateNotifier<List<DMNotification?>?> {
   /// その条件がtrueを返す要素をリストから削除します。
   void removeDMNotification(String? tapedUnreadDMRoomId) {
     if (state != null) {
-      state!.removeWhere((notification) {
+      List<DMNotification?> copiedState = state!.whereType<DMNotification?>().toList();
+
+      // このメソッドは true を返した要素をリストから削除します。
+      copiedState.removeWhere((notification) {
         if (notification!.dMRoomId == tapedUnreadDMRoomId) {
           return true;
         } 
           return false;
       });
+      state = copiedState;
     }
   }
 

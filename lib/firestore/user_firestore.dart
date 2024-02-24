@@ -351,7 +351,7 @@ class UserFirestore {
 
 
    
-   static Stream<QuerySnapshot<Object>> streamUnmatchedUser(String myUid){   //ここからが取得する処理の記述
+  static Stream<QuerySnapshot<Object>> streamUnmatchedUser(String myUid){   //ここからが取得する処理の記述
     try {                                                         
         return _userCollection.where(FieldPath.documentId, isNotEqualTo: myUid)
                               .where('matched_status', isEqualTo: false)
@@ -366,7 +366,9 @@ class UserFirestore {
     }
   }
 
-   static Stream<QuerySnapshot<Object>> streamHistoryCollection(String? myUid){   //ここからが取得する処理の記述
+
+
+  static Stream<QuerySnapshot<Object>> streamHistoryCollection(String? myUid) {   //ここからが取得する処理の記述
     try {                                                         
         return _userCollection.doc(myUid)
                               .collection('history')
@@ -381,41 +383,55 @@ class UserFirestore {
   }
 
 
-   static Stream<DocumentSnapshot<Map<String, dynamic>>> streamProfImage(String? myUid){   //ここからが取得する処理の記述
-    try {                                                         
-        return _userCollection.doc(myUid).snapshots();                           
 
-    } catch(e) {
-        print('streamによる、Historyの参照失敗 ===== $e');
-        return const Stream<DocumentSnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す
-        
-    }
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> streamProfImage(String? myUid) {   //ここからが取得する処理の記述
+  try {                                                         
+      return _userCollection.doc(myUid).snapshots();                           
+
+  } catch(e) {
+      print('streamによる、Historyの参照失敗 ===== $e');
+      return const Stream<DocumentSnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す
+      
+  }
+}
+
+
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> streamFriendRequestNotification(String? myUid) {
+  try {
+      return _userCollection.doc(myUid).collection('friend_request').snapshots();                           
+
+
+  } catch(e){
+      print('streamFriendRequest: 参照失敗 ===== $e');
+      return const Stream<QuerySnapshot<Map<String, dynamic>>>.empty();  // 空のストリームを返す
+  }
   }
 
 
 
 
-   static aimUserFields(String? uid) {   //ここからが取得する処理の記述
-     return _userCollection.doc(uid);
-     
-     }
+  static aimUserFields(String? uid) {   //ここからが取得する処理の記述
+    return _userCollection.doc(uid);
     
+    }
+  
   
 
 
 
 
-  static tUpdateField(String? talkuserUid, String? roomId, bool matchedStatus){
-    if(talkuserUid != null){
-      return  _userCollection.doc(talkuserUid).update({
-        'matched_status': matchedStatus,
-        'room_id': roomId,
-      });
-    }
+static tUpdateField(String? talkuserUid, String? roomId, bool matchedStatus){
+  if(talkuserUid != null){
+    return  _userCollection.doc(talkuserUid).update({
+      'matched_status': matchedStatus,
+      'room_id': roomId,
+    });
   }
-  //ユーザーコレクションから相手のドキュメントを取得
-  //取得したドキュメントをマップに変換
-  //該当の項目を更新
+}
+//ユーザーコレクションから相手のドキュメントを取得
+//取得したドキュメントをマップに変換
+//該当の項目を更新
 
 
 
@@ -607,19 +623,29 @@ static Future<void> updateHistory (String? myUid, String? talkuserUid, String? r
 
 
 
-static Future<void> setFriendUid(String? targetUid, String? setUid, User userData) async {
+static Future<void> setFriendUidToMe(String? myUid, String? talkuserUid) async {
     try {
-      await _userCollection.doc(targetUid)
+      await _userCollection.doc(myUid)
                            .collection('friend')
-                           .doc(setUid)
-                           .set({
-                            'user_name': userData.userName,
-                            'user_image_url': userData.userImageUrl,
-                            'statement': userData.statement,
-                           });
+                           .doc(talkuserUid)
+                           .set({});
       return;
     } catch (e) {
-      print('friendUidの削除失敗 ===== $e');
+      print('setFriendUidToMe: フレンドドキュメント作成 ===== $e');
+      return;
+    }
+  }
+
+
+static Future<void> setFriendUidToTalkuser(String? myUid, String? talkuserUid) async {
+    try {
+      await _userCollection.doc(talkuserUid)
+                           .collection('friend')
+                           .doc(myUid)
+                           .set({});
+      return;
+    } catch (e) {
+      print('setFriendUidToMe: フレンドドキュメント作成 ===== $e');
       return;
     }
   }
@@ -707,7 +733,54 @@ static Future<void> setFriendRequestToFriend(String? talkuserUid, String? myUid)
       return;
     }
   }
+
+
+  static Future<void> deleteFriendRequest(String? myUid, String? talkuserUid) async{
+    try {
+      await _userCollection.doc(myUid)
+                           .collection('friend_request')
+                           .doc(talkuserUid)
+                           .delete();
+      return;
+    } catch (e) {
+      print('deleteFriendRequest: requestドキュメント削除失敗 ===== $e');
+      return;
+    }
+  }
+
   
+
+  static Future<void> updateFriendRequestAccepted(String? myUid, String? talkuserUid) async{
+    try {
+      await _userCollection.doc(talkuserUid)
+                           .collection('friend_request')
+                           .doc(myUid)
+                           .update({
+                            'request_status': 'accepted',
+                           });
+      return;
+    } catch (e) {
+      print('updateFriendRequestAccepted: requestドキュメント更新失敗 ===== $e');
+      return;
+    }
+  }
+
+
+  static Future<void> updateFriendRequestDenied(String? myUid, String? talkuserUid) async{
+    try {
+      await _userCollection.doc(talkuserUid)
+                           .collection('friend_request')
+                           .doc(myUid)
+                           .update({
+                            'request_status': 'denied',
+                           });
+      return;
+    } catch (e) {
+      print('updateFriendRequestAccepted: requestドキュメント更新失敗 ===== $e');
+      return;
+    }
+  }
+
 
 }
 

@@ -16,7 +16,7 @@ import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:udemy_copy/utils/service/notifier_service.dart';
+import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 
 
 
@@ -65,7 +65,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
-    final serviceNotifier = NotifierService(ref);
+    final serviceNotifier = LanguageNotifierService(ref);
     
     return Scaffold(
       backgroundColor: Colors.white,

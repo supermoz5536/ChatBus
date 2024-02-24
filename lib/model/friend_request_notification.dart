@@ -1,11 +1,14 @@
 
 
-class FriendNotification {
+class FriendRequestNotification {
   String? friendName;
   String? frienduserUid;
   String? requestStatus;
 
-  FriendNotification({
+
+  
+
+  FriendRequestNotification({
     this.friendName,
     this.frienduserUid,
     this.requestStatus,

@@ -7,7 +7,7 @@ import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm_notification.dart';
-import 'package:udemy_copy/model/friend_notification.dart';
+import 'package:udemy_copy/model/friend_request_notification.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
@@ -15,7 +15,7 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
-import 'package:udemy_copy/riverpod/provider/friend_notifications_provider.dart';
+import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -25,7 +25,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:udemy_copy/utils/service/dm_notifier_service.dart';
-import 'package:udemy_copy/utils/service/notifier_service.dart';
+import 'package:udemy_copy/utils/service/friend_request_notifier_service.dart';
+import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'dart:ui' as ui;
 
@@ -56,8 +57,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   TalkRoom? talkRoom;
   Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
-  NotifierService? notifierService;
+  LanguageNotifierService? languageNotifierService;
   DMNotifierService? dMNotifierservice;
+  FriendRequestNotifierService? friendRequestNotifierservice;
   int? currentIndex = 0;
   int? selectedBottomIconIndex;
   int? selectedHistoryIndex;
@@ -66,6 +68,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
   StreamSubscription? dMSubscription;
+  StreamSubscription? friendRequestSubscription;
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
 
   @override
@@ -110,14 +113,18 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
 
         // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが
-        // dbに該当するドキュメントがなかった場合なので
+        // dbに該当するドキュメントがなかった場合なので.
         // 新規IDするから、Showdialogを表示する
         // しかし、db側でドキュメントIDを削除した場合のみ発生するケース
         if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
 
-        // DMの通知のリスナー起動
+        // DMの通知リスナー起動
         if (dMNotifierservice != null) {
         dMSubscription = dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
+        }
+        // フレンドリクエストの通知リスナー起動
+        if (friendRequestNotifierservice != null) {
+        friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(result['myUid']);
         }
       }
     });
@@ -283,7 +290,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             currentLanguageCode = newLanguageCode!;
           });
             // meUserの状態変数の更新（'language'だけはdbも更新）
-            notifierService!.changeLanguage(currentLanguageCode);
+            languageNotifierService!.changeLanguage(currentLanguageCode);
             // selectedNativeLanguageの状態変数更新
             ref.read(selectedNativeLanguageProvider.notifier)
               .switchSelectedNativeLanguage(currentLanguageCode);
@@ -324,8 +331,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   // disposeメソッドをオーバーライド
   @override
   void dispose() {
-    // DM通知のリスナーを閉じる
+    // DM通知, フレンドリクエスト通知のリスナーを閉じる
     if (dMSubscription != null) dMSubscription!.cancel();
+    if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
     // 最後に super.dispose() でリソースの慣習的な解放処理を行う
     super.dispose();
     print('LoungePage: dispose( )の実行完了');
@@ -339,10 +347,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
-    notifierService = NotifierService(ref);
+    languageNotifierService = LanguageNotifierService(ref);
     dMNotifierservice = DMNotifierService(ref);
+    friendRequestNotifierservice = FriendRequestNotifierService(ref);
+
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
-    List<FriendNotification?>? friendNotifications = ref.watch(friendNotificationsProvider);
+    List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
     
 
     return Scaffold(
@@ -462,10 +472,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             const Padding(
                               padding: EdgeInsets.all(50),
                               child: Center(child: 
-                                Text('リクエストはありません',
+                                Text('リクエストの通知はありません',
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold
                                 ),
                                 )),
@@ -479,7 +489,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   Container(
                                     height: 30,
                                     width: double.infinity,
-                                    color: const Color.fromARGB(255, 192, 192, 192),
+                                    color: const Color.fromARGB(255, 94, 94, 94),
                                     child: const Center(
                                       child: Text(
                                         '友達リクエスト',
@@ -497,43 +507,133 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   ListView.builder(
                                       // shrinkWrap: アイテムの合計サイズに基づいて自身の高さを調整します
                                       shrinkWrap: true,
-                                      // SingleChildScrollView がスクロール機能を担当するので
+                                      // SingleChildScrollView がスクロール機能を担当するので.
                                       // ListView.builderのその機能をOFFにする
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemCount: friendNotifications.length,
                                       itemBuilder: (cnntext, index) {
-                                        return Column(
-                                          children: [
-                                            ListTile(
-                                              title: Text(friendNotifications[index]!.friendName!),
-                                              subtitle: Text(friendNotifications[index]!.requestStatus!,
+                                        Widget? tile;
+                                        if (friendNotifications[index]!.requestStatus == 'pending') {
+                                          tile = Row(children: <Widget>[
+
+                                            Expanded(
+                                              flex: 4,
+                                              child: ListTile(
+                                                title: Text(friendNotifications[index]!.friendName!,
                                                 style: const TextStyle(
-                                                  color: Color.fromARGB(255, 133, 133, 133))),
-                                              onTap: () async{
-                                                // db上のmyUidの未読フラグを削除 ■■■■■■■ friend_requestコレクションの該当ドキュメントを削除 ■■■■■■■
-                                                // await DMRoomFirestore.removeIsReadElement(
-                                                //   dMNotifications[index]!.dMRoomId,
-                                                //   meUser!.uid
-                                                //   );
-                                                            
-                                                // 状態管理してるListオブジェクトから■■■■■■■ 状態削除 ■■■■■■■
-                                                // index番目（タップした）の通知要素を削除
-                                                // ref.read(dMNotificationsProvider.notifier)
-                                                //   .removeDMNotification(dMNotifications[index]!.dMRoomId,);
-                                                            
-                                                // 状態管理してるListオブジェクト自体を更新します■■■■■■■ 状態削除 ■■■■■■■
-                                                // 理由は、要素の更新だけしても
-                                                // データのメモリアドレスが変更されないため
-                                                // riverpodが更新をキャッチできず
-                                                // ウィジェットの再描画が発生しないから
-                                                // ref.read(dMNotificationsProvider.notifier)
-                                                //   .setDMNotifications(dMNotifications);
+                                                  fontSize: 14
+                                                ),),
+                                              ),
+                                            ),
+
+                                            ElevatedButton(
+                                              style: ButtonStyle(
+                                                // ボタンの最小サイズを設定
+                                                minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                              child: const Text('承認する',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color.fromARGB(255, 82, 82, 82))),
+                                              onPressed: () async{
+                                              // 承認する場合の処理
+
+                                              // 自分のフレンドリクエストドキュメントを削除
+                                              await UserFirestore.deleteFriendRequest(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
+                                              // 状態関数から、該当要素を削除してUI再描画
+                                              ref.read(friendRequestNotificationsProvider.notifier)
+                                                 .removeFriendRequestNotification(
+                                                    friendNotifications[index]!.frienduserUid);
+
+                                              // 相手のフレンドリクエストドキュメントをacceptedに更新
+                                              await UserFirestore.updateFriendRequestAccepted(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
+                                              
+                                              /// 自分のfirendサブコレクションに相手のuidを追加
+                                              /// FriendListPageで、User情報は取得するので
+                                              /// フィールド情報は必要ない
+                                              await UserFirestore.setFriendUidToMe(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                              );
+
+                                              /// 相手のfirendサブコレクションに自分のuidを追加
+                                              /// FriendListPageで、User情報は取得するので.
+                                              /// フィールド情報は必要ない
+                                              await UserFirestore.setFriendUidToTalkuser(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
                                               },
                                             ),
-                                              
-                                              const Divider(
+
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 10, right: 10),
+                                              child: ElevatedButton(
+                                                style: ButtonStyle(
+                                                  // ボタンの最小サイズを設定
+                                                  minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                                child: const Text('却下する',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color.fromARGB(255, 82, 82, 82))),
+                                                onPressed: () async{
+                                                  // 却下する場合の処理
+                                                  // 相手のフレンドリクエストドキュメントをdeniedに更新
+                                                  await UserFirestore.updateFriendRequestDenied(
+                                                    meUser!.uid,
+                                                    friendNotifications[index]!.frienduserUid
+                                                    );
+
+                                                  // 自分のフレンドリクエストドキュメントを削除
+                                                  await UserFirestore.deleteFriendRequest(
+                                                    meUser!.uid,
+                                                    friendNotifications[index]!.frienduserUid
+                                                    );
+
+                                                  // 状態関数から、該当要素を削除してUI再描画
+                                                  ref.read(friendRequestNotificationsProvider.notifier)
+                                                    .removeFriendRequestNotification(
+                                                        friendNotifications[index]!.frienduserUid);
+                                                },
+                                              ),
+                                            ),
+                                            // const Expanded(flex: 1,child: SizedBox()),
+                                          ]);
+                                        } else {
+                                          tile = ListTile(
+                                                   title: Text(friendNotifications[index]!.friendName!),
+                                                   subtitle: friendNotifications[index]!.requestStatus! == 'waiting'
+                                                     ? const Text('リクエストの承認を待っています。')
+                                                     : friendNotifications[index]!.requestStatus! == 'accepted'
+                                                       ? const Text('リクエストが承認されました。')
+                                                       : const Text('リクエストが却下されました。'),
+                                                   onTap: () async{
+                                                    // 自分のフレンドリクエストドキュメントを削除
+                                                    await UserFirestore.deleteFriendRequest(
+                                                      meUser!.uid,
+                                                      friendNotifications[index]!.frienduserUid
+                                                      );
+
+                                                    // 状態関数から、該当要素を削除してUI再描画
+                                                    ref.read(friendRequestNotificationsProvider.notifier)
+                                                      .removeFriendRequestNotification(
+                                                          friendNotifications[index]!.frienduserUid);
+                                                   },
+                                                 );
+                                        }
+                                        return Column(
+                                          children: [
+                                             tile,
+                                             const Divider(
                                                 height: 0,
-                                                // thickness: ,
                                                 color: Color.fromARGB(255, 199, 199, 199),
                                                 indent: 10,
                                                 endIndent: 10,
@@ -557,7 +657,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   label: Text('${friendNotifications.length}'),                  
                   child: IconButton(
                       onPressed: () {_overlayController1st.toggle();},
-                      icon: const Icon(Icons.fireplace_rounded,
+                      icon: const Icon(Icons.person_add_outlined,
                           color: Color.fromARGB(255, 176, 176, 176)),
                       iconSize: 35,
                       tooltip: '友達リクエスト',
@@ -595,7 +695,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.9, // 画面幅の90%の幅
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅.
                     child: Card(
                       elevation: 20,
                       color: Colors.white,
@@ -623,7 +723,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 Text('未読のメールはありません',
                                 style: TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
-                                  fontSize: 20,
+                                  fontSize: 15,
                                   fontWeight: FontWeight.bold
                                 ),
                                 )),
@@ -679,19 +779,18 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ref.read(dMNotificationsProvider.notifier)
                                                   .removeDMNotification(dMNotifications[index]!.dMRoomId,);
                                                             
-                                                // 状態管理してるListオブジェクト自体を更新します
-                                                // 理由は、要素の更新だけしても
-                                                // データのメモリアドレスが変更されないため
-                                                // riverpodが更新をキャッチできず
-                                                // ウィジェットの再描画が発生しないから
-                                                ref.read(dMNotificationsProvider.notifier)
-                                                  .setDMNotifications(dMNotifications);
+                                                // // 状態管理してるListオブジェクト自体を更新します
+                                                // // 理由は、要素の更新だけしても
+                                                // // データのメモリアドレスが変更されないため
+                                                // // riverpodが更新をキャッチできず
+                                                // // ウィジェットの再描画が発生しないから
+                                                // ref.read(dMNotificationsProvider.notifier)
+                                                //   .setDMNotifications(dMNotifications);
                                               },
                                             ),
                                               
                                               const Divider(
                                                 height: 0,
-                                                // thickness: ,
                                                 color: Color.fromARGB(255, 199, 199, 199),
                                                 indent: 10,
                                                 endIndent: 10,

@@ -43,12 +43,10 @@ class DMNotifierService {
                   // (docChanges は変更の種類別でデータが格納されてる)
                   // print('1 DocumentChangeTypeのフィルター前のsnapshot == $snapshot');
                   for (var docChange in snapshot.docChanges) {
-                    if (
-                      docChange.doc.data()!.containsKey('is_unread') &&
-                        docChange.type == DocumentChangeType.added
+                    if (docChange.doc.data()!.containsKey('is_unread') 
+                     && docChange.type == DocumentChangeType.added
                      || docChange.type == DocumentChangeType.modified
                     ) {
-                      print('2 DocumentChangeTypeのフィルター後のsnapshot == $snapshot');
                       // lisner が stream から変更を取得するたびに
                       // DMRoomId を List<String?>?型の
                       // notification オブジェクトの要素に追加する.
@@ -60,20 +58,15 @@ class DMNotifierService {
                         Map<String, dynamic>? docMap = doc.data();
                         List<dynamic>? jointedUserIdsDynamic = docMap['jointed_user'] as List<dynamic>?;
                         List<String>? jointedUserIds = jointedUserIdsDynamic?.whereType<String>().toList();
-                        print('jointedUserIds ==$jointedUserIds');
 
                         for (var userId in jointedUserIds!) {
                           if (userId == myUid) continue;
                               talkuserUid = userId;
                         }
                         
-                        print('talkuserUid ==$talkuserUid');
-
                         // talkuserUid の 'user_name'フィールドの値を取得
                         User? talkuserProf = await UserFirestore.fetchProfile(talkuserUid);
                         talkuserName = talkuserProf!.userName;
-
-                        print('talkuserName ==$talkuserName');
                         
                         // 状態変数に.addする要素のインスタンスを作成.
                         DMNotification? notification = DMNotification(
@@ -81,10 +74,6 @@ class DMNotifierService {
                           dMRoomId: doc.id,
                           lastMessage: doc['last_message'],
                         );
-
-                        // print (talkuserName);
-                        print (doc.id);
-                        print (doc['last_message']);
 
                         // 作成したインスタンスで状態更新
                         ref.read(dMNotificationsProvider.notifier).addDMNotification(notification);

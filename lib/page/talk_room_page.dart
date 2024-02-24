@@ -20,7 +20,7 @@ import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
-import 'package:udemy_copy/utils/service/notifier_service.dart';
+import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -105,7 +105,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
-    final serviceNotifier = NotifierService(ref);
+    final serviceNotifier = LanguageNotifierService(ref);
 
     return Scaffold(
       backgroundColor: Colors.white,
