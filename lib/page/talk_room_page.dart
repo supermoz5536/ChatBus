@@ -38,9 +38,12 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Future<User?>? futureTalkuserProfile;
   User? talkuserProfile;
-  bool? isDisabled;
-  bool? isChatting;
+  bool? isDisabled = false;
+  bool? isDisabledRequest = false;
+  bool? isChatting = true;
   bool isInputEmpty = true;
+  bool isFriendRequestExist = false;
+  bool isFriendUidExist = false;
   String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
@@ -54,8 +57,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // 追加機能の記述部分であることの明示
     // 関数の呼び出し（initStateはFlutter標準メソッド）
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
-    isDisabled = false;
-    isChatting = true;
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
@@ -555,38 +556,50 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                                     /// 友達リクエストボタン
                                     ElevatedButton(
-                                      onPressed: () async{
+                                      onPressed: isDisabledRequest! ? null : () async{
+                                        setState(() {
+                                          isDisabledRequest = true;
+                                        });
 
-                                      /// フレンドに追加しようとするuidが既に登録済みかを確認
-                                      bool isUidExist = await UserFirestore.checkExistFriendUid(
-                                                          meUser!.uid,
-                                                          futureSnapshot.data!.uid
-                                                        );
-                                       
-                                        if (isUidExist == false) {
-                                        /// 登録済みではない場合
-                                        /// 自分のfirendサブコレクションに相手のuidを追加
-                                          await UserFirestore.setFriendUid(
-                                            meUser.uid,                // tartgetUid
-                                            futureSnapshot.data!.uid,  // addUid
-                                            futureSnapshot.data!,      // UserData of talkser
+                                        // uidが既にリクエスト中か確認
+                                        isFriendRequestExist = await UserFirestore.checkExistFriendRequest(
+                                                                 meUser!.uid,
+                                                                 futureSnapshot.data!.uid
+                                                               );                                    
+
+                                        /// uidが既にフレンド登録済みかを確認
+                                        isFriendUidExist = await UserFirestore.checkExistFriendUid(
+                                                             meUser.uid,
+                                                             futureSnapshot.data!.uid
+                                                           );
+                                        
+                                        if (isFriendRequestExist == false && isFriendUidExist == false) {
+                                          // 登録済みではない場合
+                                          // 自他のfriend_requestコレクションに
+                                          // リクエストドキュメントを作成する関数を作成
+
+                                          // 相手：pending 
+                                          await UserFirestore.setFriendRequestToFriend(
+                                            widget.talkRoom.talkuserUid,
+                                            meUser.uid,
+                                          );
+                                          // 自分：waiting
+                                          await UserFirestore.setFriendRequestToMe(
+                                            meUser.uid,
+                                            widget.talkRoom.talkuserUid,
                                           );
 
-                                          /// 相手のfirendサブコレクションに自分のuidを追加
-                                          await UserFirestore.setFriendUid(
-                                            futureSnapshot.data!.uid,   // tartgetUid
-                                            meUser.uid,                 // addUid
-                                            meUser,                     // UserData of mine
-                                          );
-
-                                        } else { // ある場合は追加する必要がないのでnull
-                                        /// 登録済みの場合
-                                        /// 何もする必要がないので空関数を実行
-                                        (){};
-                                        }
+                                          setState(() {isFriendRequestExist = true;});
+                                          
+                                        } else {
+                                          setState(() {});
+                                          }
                                       },
-
-                                      child: const Text('友達に追加'),
+                                      child: isFriendRequestExist == false && isFriendUidExist == false
+                                        ? const Text('友達に追加')
+                                        : isFriendRequestExist == true
+                                          ? const Text('リクエスト中')
+                                          : const Text('既に友達です')
                                       ),
                 
                                     const Spacer(flex: 6),

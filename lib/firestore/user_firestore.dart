@@ -640,24 +640,74 @@ static Future<void> setFriendUid(String? targetUid, String? setUid, User userDat
   }
 
 
-
-  static Future<bool> checkExistFriendUid(String? targetUid, String? friendUid) async {
+  /// uidが既にフレンド登録済みかを確認する関数です
+  static Future<bool> checkExistFriendUid(String? myUid, String? talkuserUid) async {
     try {
-      final DocumentSnapshot documentSnapshot =  await _userCollection.doc(targetUid)
+      final DocumentSnapshot documentSnapshot =  await _userCollection.doc(myUid)
                                                         .collection('friend')
-                                                        .doc(friendUid)
+                                                        .doc(talkuserUid)
                                                         .get();
         print('checkExistFriendUid == ${documentSnapshot.exists}');
 
       return documentSnapshot.exists;
     } catch (e) {
-      print('friendUidの削除失敗 ===== $e');
+      print('checkExistFriendUid: 実行失敗 ===== $e');
+      return false;
+    }
+  }
+
+  /// uidが既にフレンドリクエスト中かを確認する関数です
+  static Future<bool> checkExistFriendRequest(String? myUid, String? talkuserUid) async {
+    try {
+      final DocumentSnapshot documentSnapshot =  await _userCollection.doc(myUid)
+                                                        .collection('friend_request')
+                                                        .doc(talkuserUid)
+                                                        .get();
+        print('checkExistFriendRequestId == ${documentSnapshot.exists}');
+
+      return documentSnapshot.exists;
+    } catch (e) {
+      print('checkExistFriendRequest: 実行失敗 ===== $e');
       return false;
     }
   }
 
 
 
+static Future<void> setFriendRequestToFriend(String? talkuserUid, String? myUid) async {
+    try {
+      await _userCollection.doc(talkuserUid)
+                           .collection('friend_request')
+                           .doc(myUid)
+                           .set({
+                             'friend_uid': myUid,
+                             'request_status': 'pending',
+                           });
 
+      return;
+    } catch (e) {
+      print('setFriendRequestToFriend: requestドキュメント作成失敗 ===== $e');
+      return;
+    }
+  }
+
+  static Future<void> setFriendRequestToMe(String? myUid, String? talkuserUid) async {
+    try {
+      await _userCollection.doc(myUid)
+                           .collection('friend_request')
+                           .doc(talkuserUid)
+                           .set({
+                             'friend_uid': talkuserUid,
+                             'request_status': 'waiting',
+                           });
+
+      return;
+    } catch (e) {
+      print('setFriendRequestToFriend: requestドキュメント作成失敗 ===== $e');
+      return;
+    }
+  }
+  
 
 }
+
