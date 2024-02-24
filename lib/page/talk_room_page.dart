@@ -559,9 +559,9 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                                       /// フレンドに追加しようとするuidが既に登録済みかを確認
                                       bool isUidExist = await UserFirestore.checkExistFriendUid(
-                                                               meUser!.uid,
-                                                               futureSnapshot.data!.uid
-                                                         );
+                                                          meUser!.uid,
+                                                          futureSnapshot.data!.uid
+                                                        );
                                        
                                         if (isUidExist == false) {
                                         /// 登録済みではない場合
@@ -570,14 +570,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                             meUser.uid,                // tartgetUid
                                             futureSnapshot.data!.uid,  // addUid
                                             futureSnapshot.data!,      // UserData of talkser
-                                            );
+                                          );
 
                                           /// 相手のfirendサブコレクションに自分のuidを追加
                                           await UserFirestore.setFriendUid(
                                             futureSnapshot.data!.uid,   // tartgetUid
                                             meUser.uid,                 // addUid
                                             meUser,                     // UserData of mine
-                                            );
+                                          );
 
                                         } else { // ある場合は追加する必要がないのでnull
                                         /// 登録済みの場合
