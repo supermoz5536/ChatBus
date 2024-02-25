@@ -801,7 +801,7 @@ static Future<void> setFriendRequestToFriend(String? talkuserUid, String? myUid)
 
 
 
-static Future<QuerySnapshot<Map<String, dynamic>>?> fetchFriendLatestSnapshot(List<String?>? friendIds) async{
+static Future<QuerySnapshot<Map<String, dynamic>>?>? fetchFriendLatestSnapshot(List<String?>? friendIds) async{
   try{
       final snapshot = await _userCollection.where(FieldPath.documentId, whereIn: friendIds)
                                             .get();
