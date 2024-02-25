@@ -421,18 +421,27 @@ class UserFirestore {
 
 
 
-static tUpdateField(String? talkuserUid, String? roomId, bool matchedStatus){
-  if(talkuserUid != null){
-    return  _userCollection.doc(talkuserUid).update({
-      'matched_status': matchedStatus,
-      'room_id': roomId,
-    });
+static Future<void> updateUserName(String? myUid, String? newUserName) async{
+  try {
+    await _userCollection.doc(myUid)
+                         .update({
+                            'user_name': newUserName
+                          });
+  } catch (e) {
+    print('updateUserName: ユーザーネーム更新失敗');
   }
 }
-//ユーザーコレクションから相手のドキュメントを取得
-//取得したドキュメントをマップに変換
-//該当の項目を更新
 
+static Future<void> updateStatement(String? myUid, String? newStatement) async{
+  try {
+    await _userCollection.doc(myUid)
+                         .update({
+                            'statement': newStatement
+                          });
+  } catch (e) {
+    print('updateUserName: ユーザーネーム更新失敗');
+  }
+}
 
 
 
@@ -812,6 +821,12 @@ static Future<QuerySnapshot<Map<String, dynamic>>?>? fetchFriendLatestSnapshot(L
     return null;
   }
 }
+
+
+
+
+
+
 
 
 }

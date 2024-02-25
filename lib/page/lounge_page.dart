@@ -20,6 +20,7 @@ import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
+import 'package:udemy_copy/utils/custom_length_text_Input_formatter.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
@@ -67,6 +68,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController statementController = TextEditingController();
   StreamSubscription? dMSubscription;
   StreamSubscription? friendRequestSubscription;
   // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス
@@ -848,62 +851,221 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             Expanded(
               //ListView が無限の長さを持つので直接 column でラップすると不具合
               //Expanded で長さを限界値に指定
-              child: ListView(children: [
-                SizedBox(
-                  height: 160.0,
-                  child: DrawerHeader(
-                      child: Column(
-                    children: [
-                      Text('プロフィール画像の設定'),
-                      Spacer(flex: 1),
-                      Text('名前の設定'),
-                      Spacer(flex: 1),
-                      Text('自己紹介文の設定'),
-                      Spacer(flex: 1),
-                      SizedBox(
-                          child: ElevatedButton(
-                              onPressed: () {}, child: Text('ランダムネーミングのボタン'))),
-                    ],
-                  )),
-                ),
-                ListTile(title: Text('設定しておくと安心だよ！')),
-                ListTile(title: Text('IDの設定 :')),
-                Spacer(flex: 1),
-                ListTile(title: Text('パスワードの設定 :')),
+              child: ListView(
+                children: [
+                  SizedBox(
+                    height: 380,
+                    child: DrawerHeader(
+                        child: Column(
+                          children: [
+
+                            CircleAvatar(     
+                              radius: 50,
+                              backgroundImage: NetworkImage(
+                                meUser!.userImageUrl!),
+                            ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('名前'),
+                                    subtitle: Text('${meUser!.userName}',
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      ),),
+                                  )),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    // ボタンの最小サイズを設定
+                                    minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                  onPressed:(){
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_){
+                                        return AlertDialog(
+                                          title: const Text('名前を変更しますか？'),
+                                          content: TextField(
+                                            controller: nameController,
+                                            decoration: const InputDecoration(
+                                              hintText: '新しい名前を入力',
+                                              hintStyle: TextStyle(
+                                                color: Color.fromARGB(255, 153, 153, 153)
+                                              )
+                                            ),
+                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 16)],
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () async{
+                                                // db上のmyUidのドキュメントの
+                                                // 'user_name'フィールドを
+                                                // 入力されているテキスト内容で update して
+                                                // meUsern 状態変数を更新してUI再描画
+                                                await UserFirestore.updateUserName(
+                                                  meUser!.uid,
+                                                  nameController.text,
+                                                );
+                                                ref.read(meUserProvider.notifier).updateUserName(nameController.text);
+                                                if (mounted) Navigator.pop(context);
+                                              },
+                                              child: const Text('決定')),
+                                            TextButton(
+                                              onPressed: () {
+                                                if (mounted) Navigator.pop(context);                                        
+                                              },
+                                              child: const Text('キャンセル'))
+                                          ],
+                                        );
+                                    });
+                                  },
+                                  child: const Text('変更') 
+                                ), 
+                            ]),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('自己紹介文'),
+                                    subtitle: Text('${meUser!.statement}',
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      ),),
+                                  )),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    // ボタンの最小サイズを設定
+                                    minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                  onPressed:(){
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_){
+                                        return AlertDialog(
+                                          title: const Text('自己紹介文を変更しますか？'),
+                                          content: TextField(
+                                            controller: statementController,
+                                            decoration: const InputDecoration(
+                                              hintText: '新しい自己紹介文を入力',
+                                              hintStyle: TextStyle(
+                                                color: Color.fromARGB(255, 153, 153, 153)
+                                              )
+                                            ),
+                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 120)],
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () async{
+                                                // db上のmyUidのドキュメントの
+                                                // 'statement'フィールドを
+                                                // 入力されているテキスト内容で update して
+                                                // meUsern 状態変数を更新してUI再描画
+                                                await UserFirestore.updateStatement(
+                                                  meUser!.uid,
+                                                  statementController.text,
+                                                );
+                                                ref.read(meUserProvider.notifier).updateStatement(statementController.text);
+                                                if (mounted) Navigator.pop(context);
+                                              },
+                                              child: const Text('決定')),
+                                            TextButton(
+                                              onPressed: () {
+                                                if (mounted) Navigator.pop(context);                                        
+                                              },
+                                              child: const Text('キャンセル'))
+                                          ],
+                                        );
+                                    });
+                                  },
+                                  child: const Text('変更') 
+                                ), 
+                            ]),
+                      ],
+                    )),
+                  ),
               ]),
             ),
 
-            const Divider(),
-
-            Row(
-              children: [
-                const Text('翻訳言語'),
-                const SizedBox(width: 30,),
-                DropdownButton(
-                  isDense: true,
-                  underline: Container(
-                    height: 1,
-                    color: const Color.fromARGB(255, 198, 198, 198),),
-                  icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                  iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                  value: currentTargetLanguageCode = targetLanguageCode,
-                  items: <String>['en', 'ja', 'es']
-                    .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,   //引数の言語コードをシステム識別用に設定
-                        child: Text(
-                          languageNames[value]!,
-                          style: const TextStyle(color: Colors.black)));
-                    }).toList(),
-                  onChanged: (String? newTargetLanguageCode) {
-                      setState(() {
-                        ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
-                        // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
-                      });
-                  },
-                ),
-              ],
+            const SizedBox(
+              height: 50,
+              child: Center(
+                child: Text('Comming soon!')),
             ),
+            
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                      color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                ),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: ListTile(
+                      title: Text('アプリの表示言語'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: dropdownButtonAppLanguage(setState),
+                  ),
+                ],
+              ),
+            ),
+
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                      color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                ),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: ListTile(
+                      title: Text('翻訳先の言語'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: DropdownButton(
+                      isDense: true,
+                      underline: Container(
+                        height: 1,
+                        color: const Color.fromARGB(255, 198, 198, 198),),
+                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                      value: currentTargetLanguageCode = targetLanguageCode,
+                      items: <String>['en', 'ja', 'es']
+                        .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,   //引数の言語コードをシステム識別用に設定
+                            child: Text(
+                              languageNames[value]!,
+                              style: const TextStyle(color: Colors.black)));
+                        }).toList(),
+                      onChanged: (String? newTargetLanguageCode) {
+                          setState(() {
+                            ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
+                            // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
+                          });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
 
 
             Container(
