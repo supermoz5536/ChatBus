@@ -140,6 +140,22 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
 
 
 
+  /// myUidと相手のUidでjoinedされたdmroomを削除
+  static Future<void> deleteDMRoom(String? dMRoomId) async{
+    try {
+       await _dMRoomCollection.doc(dMRoomId).delete();
+      
+    } catch(e) {
+      print('deleteDMRoom: 実行失敗');
+      return null;
+    }
+  }
+
+
+
+
+
+
   /// 'is_unread'Fieldの配列に、
   /// myUidを含むDMRoomIdを参照するメソッド
   static Stream<QuerySnapshot<Map<String, dynamic>>> streamDMNotification(String? myUid) {
@@ -256,10 +272,13 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
   /// 'is_read'Filed の配列から
   /// myUidを削除します。
   static Future<void> removeIsReadElement(String? dMroomId, String? myUid) async{
+    try{
       await _dMRoomCollection.doc(dMroomId).update({
         'is_unread': FieldValue.arrayRemove([myUid]),
       });
-    
+    } catch (e){
+      print('removeIsReadElement: DM通知のフラグ削除失敗');
+    }
   }
 
 

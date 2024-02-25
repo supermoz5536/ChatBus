@@ -31,6 +31,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
   bool isInputEmpty = true;
   TalkRoom? talkRoom;
   Future<Map<String, dynamic>?>? myDataFuture;
+  Future<User?>? futureFriendProfile;
   MatchingProgress? matchingProgress;
   int? currentIndex;
   bool deleteConfirmedMarker = false;
@@ -44,8 +45,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
   @override
   void initState() {
     super.initState();
-      // currentIndex = 0;
-      // talkRoom = TalkRoom(myUid: myUid, roomId: '');
+    futureFriendProfile = UserFirestore.fetchProfile(widget.talkuserProfile!.uid);
+
   }
   
 
@@ -433,47 +434,71 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
 
       body: Stack(
         children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        
-              children: [
-
-                const Spacer(flex: 2),
+          FutureBuilder(
+            future: futureFriendProfile,
+            builder: (context, futureFriendProfileSnapshot) {
+              if (futureFriendProfileSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (futureFriendProfileSnapshot.hasError) {
+                return const Text('エラーが発生しました');
+              } else if (futureFriendProfileSnapshot.hasData) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        
+                    children: [
                 
-                CircleAvatar(            
-                  backgroundImage: NetworkImage(widget.talkuserProfile!.userImageUrl!),
-                  radius: 60,
-                  ),
-
-                const Spacer(flex: 1),
-
-                Text(
-                  widget.talkuserProfile!.userName!,
-                  style: const TextStyle(
-                    fontSize: 35
-                  ),
-                ),
-
-                const Spacer(flex: 1),
-
-
-                SizedBox(
-                  height: 100,
-                  width: 300,
-                    child: Text(
-                      widget.talkuserProfile!.statement!,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 34, 34, 34),
-                        fontSize: 17.5,
-                      ), 
-                    )
-                  ),
-
-                const Spacer(flex: 1),
-                const Spacer(flex: 5),
-
-            ]),
+                      const Spacer(flex: 2),
+                      
+                      CircleAvatar(            
+                        // backgroundImage: NetworkImage(widget.talkuserProfile!.userImageUrl!),
+                        backgroundImage: NetworkImage(
+                          futureFriendProfileSnapshot.data!.userImageUrl!
+                        ),
+                        radius: 60,
+                        ),
+                
+                      const Spacer(flex: 1),
+                
+                      Text(
+                        // widget.talkuserProfile!.userName!,
+                        futureFriendProfileSnapshot.data!.userName!,
+                        style: const TextStyle(
+                          fontSize: 35
+                        ),
+                      ),
+                
+                      const Spacer(flex: 1),
+                
+                
+                      SizedBox(
+                        height: 100,
+                        width: 300,
+                          child: Text(
+                            // widget.talkuserProfile!.statement!,
+                            futureFriendProfileSnapshot.data!.statement!,
+                            style: const TextStyle(
+                              color: Color.fromARGB(255, 34, 34, 34),
+                              fontSize: 17.5,
+                            ), 
+                          )
+                        ),
+                
+                      const Spacer(flex: 1),
+                      const Spacer(flex: 5),
+                
+                  ]),
+                );
+              } else {
+                return const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Center(child: Text('情報が取得できませんでした。')),
+                  ],
+                );
+              }
+              
+            }
           ),
 
 
@@ -646,11 +671,22 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                             onPressed: () async{
                                 if (deleteConfirmedMarker){
                                   /// 自分のfriendサブコレクションから相手のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(meUser.uid, widget.talkuserProfile!.uid);
-
+                                    await UserFirestore.deleteFriendUid(
+                                      meUser.uid,
+                                      widget.talkuserProfile!.uid
+                                    );
                                     /// 相手のfriendサブコレクションから自分のドキュメントIDを削除
-                                    await UserFirestore.deleteFriendUid(widget.talkuserProfile!.uid, meUser.uid);
-
+                                    await UserFirestore.deleteFriendUid(
+                                      widget.talkuserProfile!.uid,
+                                      meUser.uid
+                                    );
+                                    /// 自分と相手のuidで構成されたDMRoomIdの取得と削除
+                                    String? dMRoomId = await DMRoomFirestore.getDMRoomId(
+                                                          meUser.uid,
+                                                          widget.talkuserProfile!.uid
+                                                       );
+                                    await DMRoomFirestore.deleteDMRoom(dMRoomId);
+                                    
                                     /// LoungeBackPage に画面遷移
                                     if (context.mounted) {
                                       LoungeBack loungeBack = LoungeBack(currentIndex: 2);

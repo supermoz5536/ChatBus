@@ -75,7 +75,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                   /// 画面遷移時に必要なコンストラクタの値: uid
                                   final doc = futureFriendDetailsSnapshot.data!.docs[index];
                                   final Map<String, dynamic> talkuserFields = doc.data();
-                                  User user = User(
+                                  User talkuserData = User(
                                                 userName: talkuserFields['user_name'],
                                                 uid: doc.id,
                                                 userImageUrl: talkuserFields['user_image_url'],
@@ -106,7 +106,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                                               context,
                                                               MaterialPageRoute(
                                                                   builder: (context) =>
-                                                                      ProfilePage(user)),
+                                                                      ProfilePage(talkuserData)),
                                                               (_) => false);
                                                         }                                              
                                                       },
