@@ -48,6 +48,7 @@ class FriendRequestNotifierService {
                         // UI表示用の相手の名前の取得
                         Map<String, dynamic>? docMap = doc.data();
 
+                        print('fasfasdfas');
                         // talkuserUid の 'user_name'フィールドの値を取得
                         User? talkuserProf = await UserFirestore.fetchProfile(doc.data()['friend_uid']);
                         

@@ -782,5 +782,37 @@ static Future<void> setFriendRequestToFriend(String? talkuserUid, String? myUid)
   }
 
 
+ static  Future<List<String?>?> fetchFriendIds(String? myUid) async{
+    try {
+       var snapshot = await _userCollection.doc(myUid)
+                            .collection('friend')
+                            .get();
+
+        List<String?>? friendIds = snapshot.docs.map((doc) {
+                                     return doc.id;
+                                   }).toList();
+
+      return friendIds;
+    } catch (e) {
+      print('updateFriendRequestAccepted: requestドキュメント更新失敗 ===== $e');
+      return null;
+    }
+  }
+
+
+
+static Future<QuerySnapshot<Map<String, dynamic>>?> fetchFriendLatestSnapshot(List<String?>? friendIds) async{
+  try{
+      final snapshot = await _userCollection.where(FieldPath.documentId, whereIn: friendIds)
+                                            .get();
+      print('fetchFriendLatestSnapshot関数: フレンドコレクションの.getが実行されました');
+      return snapshot;
+  }catch(e) {
+    print('ユーザー情報取得失敗 ----- $e');
+    return null;
+  }
+}
+
+
 }
 

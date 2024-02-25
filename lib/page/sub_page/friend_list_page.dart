@@ -7,13 +7,39 @@ import 'package:udemy_copy/page/profile_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 
 class FriendListPage extends ConsumerStatefulWidget {
-  const FriendListPage({super.key});
+  final User? meUserData;
+  const FriendListPage(this.meUserData, {super.key});
 
   @override
   ConsumerState<FriendListPage> createState() => _FriendListPageState();
 }
 
 class _FriendListPageState extends ConsumerState<FriendListPage> {
+  Future<List<String?>?>? futureFriendIds;
+  QuerySnapshot<Map<String, dynamic>>? snapshot;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    futureFriendIds = UserFirestore.fetchFriendIds(widget.meUserData!.uid);
+    futureFriendIds!.then((friendIds) async{
+    var tempSnapshot = await UserFirestore.fetchFriendLatestSnapshot(friendIds);
+      setState(() {
+        // snapshotがFriendListPageのメンバ変数として宣言されてるので
+        // setState()はtempSnapshotではなくsnapshotの状態変更を感知する
+        // なので、代入して状態値を変更した後に、画面の再描画を行います。
+        //
+        //要するに、snapshot が状態変数として捉えられるのは、
+        //それが Stateクラス内で宣言され、
+        //ウィジェットの状態を保持・管理するために使用されているからです。
+        //tempSnapshot はその状態変数に
+        //非同期処理の結果を割り当てるための中間ステップとして機能します。
+        snapshot = tempSnapshot;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,24 +48,26 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
    return Scaffold(
     body: Stack(
         children: [                           
-          StreamBuilder<QuerySnapshot>(       
-            stream: UserFirestore.friendSnapshot(meUser!.uid),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {              
-                return Padding(
+          // StreamBuilder<QuerySnapshot>(       
+          //   stream: UserFirestore.friendSnapshot(meUser!.uid),
+          //   builder: (context, snapshot) {
+              if (snapshot != null)            
+                // return 
+                Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
                     child: ListView.builder(
                         physics: const RangeMaintainingScrollPhysics(),  //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true,                                //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
                         reverse: false,                                  //スクロールがした始まりで上に滑っていく設定になる
-                        itemCount: snapshot.data!.docs.length,
+                        itemCount: snapshot!.docs.length,
                         itemBuilder: (conxtext, index){
+                        print('buildウィジェット内 snapshot!.docs.length == ${snapshot!.docs.length}');
 
                             /// UIロジックで描画する素材と舞台
                             ///「image_path」「名前」「国名」「trailingIcon: 友達リストから削除」
                             /// 画面遷移時に必要なコンストラクタの値: uid
-                            final doc = snapshot.data!.docs[index];
-                            final Map<String, dynamic> talkuserFields = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
+                            final doc = snapshot!.docs[index];
+                            final Map<String, dynamic> talkuserFields = doc.data();
                             User user = User(
                                           userName: talkuserFields['user_name'],
                                           uid: doc.id,
@@ -113,23 +141,25 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                               // endIndent: ,
                                             ),                                        
                                 ]);
-
-
                         }),
-                      );
-                  } else {
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                         Center(child: Text('まだ友達がいません。')),
-                         Center(child: Text('チャット相手のアイコンをタップして\n友達リクエストを送りましょう!')),
-                      ],
-                    );
-              }
-            }
-           ),
+                      ),
+                  // } else {
+                  //   return 
+                    if (snapshot == null)
+                      const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(child: Text('まだ友達がいません。')),
+                          Center(child: Text('チャット相手のアイコンをタップして\n友達リクエストを送りましょう!')),
+              //         ],
+              //       );
+              // }
+          //   }
+          //  ),
          ],
        ),
+      ]
+     )
     );
   }
 }

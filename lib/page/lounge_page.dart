@@ -1088,7 +1088,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
       body: Stack(
         children: <Widget>[
-          ScreenFunctions.setCurrentScreem(currentIndex, talkRoom!),
+          ScreenFunctions.setCurrentScreem(currentIndex, meUser, talkRoom!),
 
 
 

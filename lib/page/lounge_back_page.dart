@@ -453,7 +453,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
 
       body: Stack(
         children: <Widget>[
-          ScreenFunctions.setCurrentScreem(currentIndex, talkRoom!),
+          ScreenFunctions.setCurrentScreem(currentIndex, meUser, talkRoom!),
 
 
 

@@ -64,6 +64,7 @@ class DMNotifierService {
                               talkuserUid = userId;
                         }
                         
+                        print('testtest');
                         // talkuserUid の 'user_name'フィールドの値を取得
                         User? talkuserProf = await UserFirestore.fetchProfile(talkuserUid);
                         talkuserName = talkuserProf!.userName;

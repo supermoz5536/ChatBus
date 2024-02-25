@@ -25,14 +25,15 @@ class DMRoomFirestore {
 static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? snapshot) async{  //この引数のsnapshotはどこで取得してるのか？
   try{
       List<DMRoom> dMRooms = [];       
-
+      print('fetchJoinedDMRooms内のデバッグプリント: ${snapshot!.docs.length}');
     /// TalkuserUidを取得するための予備記述
     /// 'jointed_user'フィールドの各配列に記述されたIDを
     /// リスト型変数 userIds に各々代入する
-    for(var doc in snapshot!.docs){
+    for(var doc in snapshot!.docs) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
       List<dynamic> userIds = data['jointed_user'];
       late String talkuserUid; // 初期値の遅延代入宣言
+      
 
     /// TalkuserUidを取得するための本記述
     /// 'jointed_user'には myUid か talkUserUid が配置されてるので
