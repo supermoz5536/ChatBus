@@ -1,6 +1,6 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:math';
-
+import 'package:path_provider/path_provider.dart';
 
 class UserFirebaseStorage{
 
@@ -33,6 +33,16 @@ static Future<String?> getProfImage () async{
   }   
 
 
+
+// static Future<String?> downloadAndUploadImage(String? myUid, String? imageUrl) async{
+//  try{
+//     final response = await http.get(Uri.parse(imageUrl));
+
+//     } catch (e) {
+//       print('downloadAndUploadImage: エラー ===== $e');
+//       return Future.value(null); 
+//     }
+//   }   
 
 
 } 

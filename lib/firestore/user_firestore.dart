@@ -101,7 +101,7 @@ class UserFirestore {
                      /// ② 言語は、新規作成時はデバイス設定言語 →「手動変換 & db保存」→ 継続利用でfield値を継続　「やるだけ」
                      /// ③ Field値の継続 「やるだけ」
 
-                    String? userImageUrl = await UserFirebaseStorage.getProfImage(); // ■■■■①■■■■ 匿名認証が設定できたら修正
+                    // String? userImageUrl = await UserFirebaseStorage.getProfImage(); // ■■■■①■■■■ 匿名認証が設定できたら修正
                     String? deviceCountry = Shared_Prefes.fetchCountry();
                     Map<String, dynamic> docData = docIdSnapshot.data() as Map<String, dynamic>;
                     
@@ -116,7 +116,7 @@ class UserFirestore {
                        return {
                         'myUid': sharedPrefesMyUid,
                         'userName': docData['user_name'],
-                        'userImageUrl': userImageUrl,
+                        'userImageUrl': docData['user_image_url'],
                         'statement': docData['statement'],
                         'language': docData['language'],
                         'country': deviceCountry,
@@ -172,7 +172,7 @@ class UserFirestore {
 
 
                   
-            //  } else { // ■■■■■■■■■■■■■■■ この条件分岐は catch error で処理されるので必要ない可能性が高い ■■■■■■■■■■■■■■■
+            //  } else { // ■■■■■■■■■■■■■■■ この条件分岐は catch error で処理されるので、そちらに記述するべき ■■■■■■■■■■■■■■■
             //  /// ■ .getでデータに取得に「失敗」した場合
             //  /// つまり、既存の端末Uidはあるが、db上にUidが既に削除されてる場合
             //  /// 新規アカウント作成 ＆ 端末Uid更新

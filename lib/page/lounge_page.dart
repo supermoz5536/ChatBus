@@ -1038,33 +1038,13 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
-                    child: DropdownButton(
-                      isDense: true,
-                      underline: Container(
-                        height: 1,
-                        color: const Color.fromARGB(255, 198, 198, 198),),
-                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-                      value: currentTargetLanguageCode = targetLanguageCode,
-                      items: <String>['en', 'ja', 'es']
-                        .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,   //引数の言語コードをシステム識別用に設定
-                            child: Text(
-                              languageNames[value]!,
-                              style: const TextStyle(color: Colors.black)));
-                        }).toList(),
-                      onChanged: (String? newTargetLanguageCode) {
-                          setState(() {
-                            ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
-                            // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
-                          });
-                      },
-                    ),
+                    child: dropdownButtonTranslateTargetLanguage(targetLanguageCode),
                   ),
                 ],
               ),
             ),
+
+
 
 
 
@@ -1453,5 +1433,31 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         ],
       ),
     );
+  }
+
+  DropdownButton<String> dropdownButtonTranslateTargetLanguage(String? targetLanguageCode) {
+    return DropdownButton(
+                    isDense: true,
+                    underline: Container(
+                      height: 1,
+                      color: const Color.fromARGB(255, 198, 198, 198),),
+                    icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                    iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                    value: currentTargetLanguageCode = targetLanguageCode,
+                    items: <String>['en', 'ja', 'es']
+                      .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,   //引数の言語コードをシステム識別用に設定
+                          child: Text(
+                            languageNames[value]!,
+                            style: const TextStyle(color: Colors.black)));
+                      }).toList(),
+                    onChanged: (String? newTargetLanguageCode) {
+                        setState(() {
+                          ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
+                          // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
+                        });
+                    },
+                  );
   }
 }
