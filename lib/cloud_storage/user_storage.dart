@@ -9,40 +9,28 @@ static final Reference _userBucket = _firebaseStorageInstance.ref().child('user/
 
 
 
-static Future<String?> getProfImage () async{
+static Future<String?> downloadAndUploadProfImage(String? myUid, Reference? randomImageRef) async{
  try{
-    ListResult result = await _userBucket.child('profile_default/').listAll();
+      print('downloadAndUploadProfImage 実行開始');
 
-    int randomIndex = Random().nextInt(result.items.length);
-    // .nextInt は 0から指定した数までの範囲でランダムに数を生成
-    // 取得した要素数（6個）の中でランダムな数字を生成
+      // systemバケットの'random_profile_image'階層内にある
+      // ランダム指定した画像データの参照を用いてバイト(画像)データを取得
+      final byteData = await randomImageRef!.getData();  
 
-    Reference randomImageRef = result.items[randomIndex];
-    // ListResult型オブジェクトの .itemsメソッドは、参照ディレクトリ内の全ての要素のリスト
-    // .items の後に [] を記述すると「リストからの特定の要素を取得」することの意味
+      // storageのmyUidの階層に、
+      // ① 参照を作成して
+      // ② 取得データをアップロード
+      Reference? myDirRef = _userBucket.child('$myUid/profile_image/profile_image.png');
+      await myDirRef.putData(byteData!);
 
-    //  print('Download URL: 直前確認');
-     String randomImageUrl = await randomImageRef.getDownloadURL();
-    //  print('Download URL: $randomImageUrl');
-     return randomImageUrl;
-
+      // 保存した画像のURLを取得
+      String? userImageUrl = await myDirRef.getDownloadURL();
+      return userImageUrl;
     } catch (e) {
-      print('getProfImage: エラー ===== $e');
+      print('downloadAndUploadImage: エラー ===== $e');
       return Future.value(null); 
     }
   }   
-
-
-
-// static Future<String?> downloadAndUploadImage(String? myUid, String? imageUrl) async{
-//  try{
-//     final response = await http.get(Uri.parse(imageUrl));
-
-//     } catch (e) {
-//       print('downloadAndUploadImage: エラー ===== $e');
-//       return Future.value(null); 
-//     }
-//   }   
 
 
 } 

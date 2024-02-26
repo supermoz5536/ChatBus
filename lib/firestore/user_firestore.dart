@@ -1,7 +1,9 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
+import 'package:udemy_copy/cloud_storage/system_storage.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/utils/http_functions.dart';
@@ -40,12 +42,15 @@ class UserFirestore {
             String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
 
             /// 画像 言語コード 国コード(IPから) の取得
-            String? userImageUrl = await UserFirebaseStorage.getProfImage();
             String? deviceLanguage = ui.window.locale.languageCode;
             String? ip = await Http.getPublicIPAddress();
             String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
-            
-            
+            Reference? userImageRef = await SystemFirebaseStorage.fetchRandomProfImage();
+            String? userImageUrl = await UserFirebaseStorage.downloadAndUploadProfImage(
+              authUid,
+              userImageRef,
+            );
+  
               /// 新規アカウントを追加
               /// supportInitFields()で、全Fieldは初期値に設定
               await _userCollection
@@ -97,11 +102,6 @@ class UserFirestore {
                      print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
 
                      /// Field情報をリフレッシュして、既存の端末Uidをそのまま使用
-                     /// ① プロフimageのURLは、匿名認証IDの保存画像を引き継ぐ　「匿名認証が実装できるまでは、とりあえずランダム取得」
-                     /// ② 言語は、新規作成時はデバイス設定言語 →「手動変換 & db保存」→ 継続利用でfield値を継続　「やるだけ」
-                     /// ③ Field値の継続 「やるだけ」
-
-                    // String? userImageUrl = await UserFirebaseStorage.getProfImage(); // ■■■■①■■■■ 匿名認証が設定できたら修正
                     String? deviceCountry = Shared_Prefes.fetchCountry();
                     Map<String, dynamic> docData = docIdSnapshot.data() as Map<String, dynamic>;
                     
@@ -133,10 +133,14 @@ class UserFirestore {
                      String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
 
                      /// 画像 言語コード 国コード(IPから) の取得
-                     String? userImageUrl = await UserFirebaseStorage.getProfImage();
                      String? deviceLanguage = ui.window.locale.languageCode;
                      String? ip = await Http.getPublicIPAddress();
                      String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
+                     Reference? userImageRef = await SystemFirebaseStorage.fetchRandomProfImage();
+                     String? userImageUrl = await UserFirebaseStorage.downloadAndUploadProfImage(
+                       authUid,
+                       userImageRef,
+                     );
 
                         /// 新規アカウントを作成
                         /// supportInitFields()で、全Fieldは初期値に設定
@@ -242,7 +246,7 @@ class UserFirestore {
       'is_lounge': true,
       'user_name': 'user_name',
       'user_image_url': userImageUrl,
-      'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
+      'statement': 'ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ',
       'language': deviceLanguage,
       'country': deviceCountry,
       'native_language': '',
