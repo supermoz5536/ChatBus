@@ -46,7 +46,7 @@ class UserFirestore {
             String? ip = await Http.getPublicIPAddress();
             String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
             Reference? userImageRef = await SystemFirebaseStorage.fetchRandomProfImage();
-            String? userImageUrl = await UserFirebaseStorage.downloadAndUploadProfImage(
+            String? userImageUrl = await UserFirebaseStorage.downloadAndUploadRandomProfImage(
               authUid,
               userImageRef,
             );
@@ -137,7 +137,7 @@ class UserFirestore {
                      String? ip = await Http.getPublicIPAddress();
                      String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
                      Reference? userImageRef = await SystemFirebaseStorage.fetchRandomProfImage();
-                     String? userImageUrl = await UserFirebaseStorage.downloadAndUploadProfImage(
+                     String? userImageUrl = await UserFirebaseStorage.downloadAndUploadRandomProfImage(
                        authUid,
                        userImageRef,
                      );

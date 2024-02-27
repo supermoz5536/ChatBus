@@ -9,10 +9,8 @@ static final Reference _userBucket = _firebaseStorageInstance.ref().child('user/
 
 
 
-static Future<String?> downloadAndUploadProfImage(String? myUid, Reference? randomImageRef) async{
+static Future<String?> downloadAndUploadRandomProfImage(String? myUid, Reference? randomImageRef) async{
  try{
-      print('downloadAndUploadProfImage 実行開始');
-
       // systemバケットの'random_profile_image'階層内にある
       // ランダム指定した画像データの参照を用いてバイト(画像)データを取得
       final byteData = await randomImageRef!.getData();  
@@ -30,14 +28,27 @@ static Future<String?> downloadAndUploadProfImage(String? myUid, Reference? rand
       print('downloadAndUploadImage: エラー ===== $e');
       return Future.value(null); 
     }
-  }   
+  }
+
+
+
+static Future<void> uploadCustomProfImage(String? myUid, var byteData) async{
+ try{
+
+      // storageのmyUidの階層に、
+      // ① 参照を作成して
+      // ② データをアップロード
+      Reference? myDirRef = _userBucket.child('$myUid/profile_image/profile_image.png');
+      await myDirRef.putData(byteData!);
+
+    } catch (e) {
+      print('uploadCustomProfImage: エラー ===== $e');
+    }
+  }
+
+
 
 
 } 
-
-
-
-
-
 
 

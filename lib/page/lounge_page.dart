@@ -850,7 +850,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           children: [
             Expanded(
               //ListView が無限の長さを持つので直接 column でラップすると不具合
-              //Expanded で長さを限界値に指定
+              //Expanded で長さを限界値に指定.
               child: ListView(
                 children: [
                   SizedBox(
@@ -859,11 +859,43 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         child: Column(
                           children: [
 
-                            CircleAvatar(     
-                              radius: 50,
-                              backgroundImage: NetworkImage(
-                                meUser!.userImageUrl!),
+                            Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: NetworkImage(meUser!.userImageUrl!),
+                                      fit: BoxFit.cover)),
+                              // BoxFith は画像の表示方法の制御
+                              // cover は満遍なく埋める
+                              child: InkWell(
+                                splashColor: Colors.black.withOpacity(0.1),
+                                radius: 100,
+                                customBorder: const CircleBorder(),
+                                onTap: () {
+                                  // 画像のアップロードと
+                                  // ウィジェットを更新させて
+                                  // 画像の読み込みとUIを再描画
+                                  
+                                },
+                                child: const SizedBox(width: 110, height: 110),
+                                // InkWellの有効範囲はchildのWidgetの範囲に相当するので
+                                // タップの有効領域確保のために、空のSizedBoxを設定
+                              ),
                             ),
+                          ),
+
+                            // Ink(
+                            //   child: InkWell(
+                            //     onTap: (){},
+                            //     child: CircleAvatar(     
+                            //       radius: 50,
+                            //       backgroundImage: NetworkImage(
+                            //         meUser!.userImageUrl!),
+                            //     ),
+                            //   ),
+                            // ),
 
                             Row(
                               children: [
@@ -990,10 +1022,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               ]),
             ),
 
-            const SizedBox(
-              height: 50,
-              child: Center(
-                child: Text('Comming soon!')),
+            const Center(
+              child: SizedBox(
+                height: 50,
+                child: Center(
+                  child: Text('Comming soon!')),
+              ),
             ),
             
 
