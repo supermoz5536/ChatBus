@@ -432,7 +432,7 @@ static Future<void> updateUserName(String? myUid, String? newUserName) async{
                             'user_name': newUserName
                           });
   } catch (e) {
-    print('updateUserName: ユーザーネーム更新失敗');
+    print('updateUserName: user_name フィールドの更新失敗');
   }
 }
 
@@ -443,7 +443,18 @@ static Future<void> updateStatement(String? myUid, String? newStatement) async{
                             'statement': newStatement
                           });
   } catch (e) {
-    print('updateUserName: ユーザーネーム更新失敗');
+    print('updateUserName: statement フィールドの更新失敗');
+  }
+}
+
+static Future<void> updateUserImageUrl(String? myUid, String? newUrl) async{
+  try {
+    await _userCollection.doc(myUid)
+                         .update({
+                            'user_image_url': newUrl
+                          });
+  } catch (e) {
+    print('updateUserImageUrl: user_image_url フィールドの更新失敗');
   }
 }
 

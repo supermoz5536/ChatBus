@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -873,11 +874,15 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 splashColor: Colors.black.withOpacity(0.1),
                                 radius: 100,
                                 customBorder: const CircleBorder(),
-                                onTap: () {
-                                  // 画像のアップロードと
-                                  // ウィジェットを更新させて
-                                  // 画像の読み込みとUIを再描画
-                                  
+                                onTap: () async{
+                                  // 画像Dataのピックアップし
+                                  // Firestorageのプロフ画像を更新
+                                  // Firestoreのurlを更新
+                                  // 状態変数の更新
+                                  // ウィジェット再描画.
+                                  String? newUserImageUrl = await UserFirebaseStorage.pickAndUploadProfImage(meUser!.uid);
+                                  UserFirestore.updateUserImageUrl(meUser!.uid, newUserImageUrl);
+                                  ref.read(meUserProvider.notifier).updateUserImageUrl(newUserImageUrl);
                                 },
                                 child: const SizedBox(width: 110, height: 110),
                                 // InkWellの有効範囲はchildのWidgetの範囲に相当するので
