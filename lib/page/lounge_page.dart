@@ -373,7 +373,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     showDialogNameController.removeListener(() {setState((){});});
     showDialogNameController.dispose();
     nameController.dispose();
-    showDialogNameController.dispose();
     statementController.dispose();
     super.dispose();
   }
