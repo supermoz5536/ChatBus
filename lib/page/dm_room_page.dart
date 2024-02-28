@@ -30,6 +30,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
   bool isInputEmpty = true;
   bool? isDisabled;
   bool? isChatting;
+  User? meUser;
   Future<String?>? futureTranslation;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
@@ -44,6 +45,14 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
     isDisabled = false;
     isChatting = true;
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // db上のmyUidの未読フラグを削除
+      DMRoomFirestore.removeIsReadElement(
+        widget.dMRoom.dMRoomId,
+        meUser!.uid
+      );
+      });
 
     // UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
     //     .then((_) async {
@@ -85,7 +94,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    User? meUser = ref.watch(meUserProvider);
+    meUser = ref.watch(meUserProvider);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 246, 246, 246),
