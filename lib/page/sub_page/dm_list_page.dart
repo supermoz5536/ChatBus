@@ -60,7 +60,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                 stream: DMRoomFirestore.fetchDMSnapshot(meUser!.uid),  
                 builder: (context, streamSnapshot) {
                   if (streamSnapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
 
                   } else if (streamSnapshot.hasError) {
                     return const Text('データの取得失敗しました');
