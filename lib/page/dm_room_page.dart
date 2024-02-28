@@ -10,6 +10,7 @@ import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
+import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
@@ -311,6 +312,11 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                 widget.dMRoom.dMRoomId,
                 meUser!.uid
                 );
+              
+              // 状態管理してるListオブジェクトから
+              // 該当の通知要素を削除
+              ref.read(dMNotificationsProvider.notifier)
+                 .removeDMNotification(widget.dMRoom.dMRoomId);
         
               if (context.mounted) {
                 LoungeBack loungeBack = LoungeBack(currentIndex: 1);

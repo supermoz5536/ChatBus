@@ -8,18 +8,37 @@ import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 
 class DMListPage extends ConsumerStatefulWidget {
-  const DMListPage({super.key});
+  final User? meUserData;
+  const DMListPage(this.meUserData, {super.key});
 
   @override
   ConsumerState<DMListPage> createState() => _DMListPageState();
 }
 
 class _DMListPageState extends ConsumerState<DMListPage> {
-// int? selectedDMIndex;
+  User? meUser;
+  Future<QuerySnapshot<Object?>>? futureStreamFirstSnapshot;
+  Future<List<DMRoom>?>? futureDMRooms;
+  
+  @override
+  void initState() {
+    super.initState();
+
+      futureStreamFirstSnapshot = DMRoomFirestore
+                                    .fetchDMSnapshot(widget.meUserData!.uid)
+                                    .first;
+      // futureStreamFirstSnapshot!.then((StreamFirstSnapshot) async{
+      //  var tempDMRooms = await DMRoomFirestore
+      //                     .fetchJoinedDMRooms(
+      //                         meUser!.uid,
+      //                         StreamFirstSnapshot,
+      //                     );
+      // });
+  }
 
   @override
   Widget build(BuildContext context) {
-    User? meUser = ref.watch(meUserProvider);
+    meUser = ref.watch(meUserProvider);
 
     return Scaffold(
         // appBar: AppBar(
@@ -31,46 +50,41 @@ class _DMListPageState extends ConsumerState<DMListPage> {
         //   ),
 
 
-        body:StreamBuilder<QuerySnapshot>(
-                stream: DMRoomFirestore.fetchDMSnapshot(meUser!.uid),  
-                builder: (context, streamSnapshot) {
-                  if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {
+        body:
 
-                    /// 事前のFutureBuilder用のFutureを生成
-                    /// StreamBuilderは、更新データをリスンし、利用可能になるたびにビルダー関数を再実行します。
-                    /// このビルダー関数はAsyncSnapshot<T>型のオブジェクトを引数として受け取ります。
-                    /// ここでTはストリームが提供するデータの型です。
-                    /// Firestoreの場合、TはQuerySnapshotになります。
-                    /// 
-                    /// AsyncSnapshotクラスは、非同期操作の現在の状態をカプセル化します。
-                    /// 主に以下のプロパティを持っています：
-                    /// 
-                    /// data：非同期操作から受け取った最新のデータ。
-                    /// connectionState：非同期操作の現在の状態
-                    /// 　Ex.：ConnectionState.waiting、ConnectionState.doneなど）
-                    /// error：非同期操作中に発生したエラー。
-                    final Future<List<DMRoom>?> futureDMRooms = DMRoomFirestore
-                                                                .fetchJoinedDMRooms(
-                                                                  meUser.uid,
-                                                                  streamSnapshot.data
-                                                                  );
-
-
-
-                      return FutureBuilder<List<DMRoom>?>(
-                        future: futureDMRooms,
+                       FutureBuilder<QuerySnapshot<Object?>?>(
+                        future: futureStreamFirstSnapshot,
                         builder: (context, futureSnapshot) {
                           if(futureSnapshot.connectionState == ConnectionState.waiting){
                             return const CircularProgressIndicator();
+                          } else if (futureSnapshot.hasError) {
+                            return const Text('エラーが発生しました');
                           } else {
-                          if(futureSnapshot.hasData) {
-                            List<DMRoom> dMRooms = futureSnapshot.data!;  //ここでtoalkRoomsを宣言
+                          // if(futureSnapshot.hasData) {
 
-                            return ListView.builder(            
-                                itemCount: dMRooms.length,     
-                                itemBuilder: (context, index) {
-                              return Column(
-                                children: <Widget>[
+                            return 
+                            StreamBuilder<QuerySnapshot>(
+                                    stream: DMRoomFirestore.fetchDMSnapshot(meUser!.uid),  
+                                    builder: (context, streamSnapshot) {
+                                      if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {
+                                        var streamSnapshotData = streamSnapshot.data;
+
+                                        
+                                        DMRoomFirestore.fetchJoinedDMRooms(
+                                          meUser!.uid,
+                                          streamSnapshotData,
+                                        ).then((result) {
+                                        List<DMRoom> dMRooms = result!;
+                                  
+                                      
+                                    
+                                    
+                                    return                    
+                                    ListView.builder(            
+                                        itemCount: dMRooms.length,     
+                                        itemBuilder: (context, index) {
+                                      return Column(
+                                        children: <Widget>[
 
                                               /// Ink()とMaterial()は互換可能
                                               /// 使い分けは、SizeBox()とContainer()と同じ考え方でOK
@@ -81,7 +95,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                   onTap: () async{
                                                     /// 画面遷移に必要なコンストラクタ用を用意して
                                                     DMRoom dMRoom = DMRoom(
-                                                      myUid: meUser.uid,
+                                                      myUid: meUser!.uid,
                                                       talkuserUid: dMRooms[index].talkuserUid,
                                                       dMRoomId: dMRooms[index].dMRoomId
                                                     );
@@ -89,7 +103,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                     // db上のmyUidの未読フラグを削除して
                                                     await DMRoomFirestore.removeIsReadElement(
                                                       dMRoom.dMRoomId,
-                                                      meUser.uid
+                                                      meUser!.uid
                                                     );
 
                                                     /// DMRoomPageへの画面遷移
@@ -146,26 +160,40 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                 // endIndent: ,
                                               ),                                        
                                   ]);
-
                                     },
                                   );
-                                } else {
-                                return Text('トークの取得に失敗しました');
-                                }                    
+                                        });
+                              }else{
+                              return const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(child: Text('まだメッセージがありません。')),
+                                                Center(child: Text('友達にメッセージを送りましょう!')),
+                                    ],
+                                  );
+                                  }
+                                  return Text('トークの取得に失敗しました');
+                            }
+                        );
+
+
+                                // } else {
+                                // return Text('トークの取得に失敗しました');
+                                // }                    
                           }
                         }
-                      );            
-                    }else{
-                    return const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                         Center(child: Text('まだメッセージがありません。')),
-                         Center(child: Text('友達にメッセージを送りましょう!')),
-                      ],
-                    );
-                    }
-               }
-           ),
+                      ),         
+          //           }else{
+          //           return const Column(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //                Center(child: Text('まだメッセージがありません。')),
+          //                Center(child: Text('友達にメッセージを送りましょう!')),
+          //             ],
+          //           );
+          //           }
+          //      }
+          //  ),
        );
    }
 

@@ -340,7 +340,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
     // 最後に super.dispose() でリソースの慣習的な解放処理を行う
     super.dispose();
-    print('LoungePage: dispose( )の実行完了');
   }
 
 
