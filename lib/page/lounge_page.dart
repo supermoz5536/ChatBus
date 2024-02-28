@@ -146,100 +146,126 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             builder: (context, setState) {
               return AlertDialog(
                 title: const Center(child: Text('始める前に')),
-                  content: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,                  
-                    children: [
-                      const Text(
-                        'チャット開始に必要な以下の設定してください。',
-                        style: TextStyle(
-                          fontSize: 15,
-                        ),
-                        ),
-                      Row(                    
-                        children: [
-                          // ■ 左縦列
-                          const Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children:[
-                              SizedBox(height: 30),
-                              Text(
-                                '性別',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
-                                ),),
-                              SizedBox(height: 40),
-                              Text(
-                                'アプリ表示言語',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
-                                ),),
-                              SizedBox(height: 20),
-                              Text(
-                                '学習してる言語',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold
-                                ),),
-                            ]),
-                                      
-                          // ■ 右縦列
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // const SizedBox(height: 50),  
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.man_2_outlined,
-                                      size: 50,
-                                      color: showDialogGender == 'male' ? Colors.lightBlue
-                                                                        : Colors.grey),
-                                    onPressed: () {
-                                      setState(() {
-                                        showDialogGender = 'male';
-                                        isGenderSelected = true;
-                                      });
-                                    },
-                                  ),
-                      
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.woman_2_outlined,
-                                      size: 50,
-                                      color: showDialogGender == 'female' ? Colors.lightBlue
-                                                                          : Colors.grey),
-                                    onPressed: () {
-                                      setState(() {
-                                        showDialogGender = 'female';
-                                        isGenderSelected = true;
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 20),  
-                              dropdownButtonAppLanguage(setState),
-                              const SizedBox(height: 20),  
-                              dropdownButtonSelectedLanguage(setState),
-                            ],
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,                  
+                      children: [
+                        const Text(
+                          'チャット開始に必要な以下の設定してください。',
+                          style: TextStyle(
+                            fontSize: 15,
                           ),
-                      
-                      ]),
-                      const SizedBox(height: 25),
-                      const Text(
-                        '既にIDかメールアドレスを持ってる場合はコチラからログインできます。',
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                        )
-                    ],
+                          ),
+                        Row(                    
+                          children: [
+                            // ■ 左縦列
+                            const Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children:[
+                                SizedBox(height: 30),
+                                Text(
+                                  '性別',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                                SizedBox(height: 40),
+                                Text(
+                                  'アプリ表示言語',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                                SizedBox(height: 20),
+                                Text(
+                                  '学習してる言語',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                                SizedBox(height: 20),
+                                Text(
+                                  '名前',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold
+                                  ),),
+                              ]),
+                              
+                                        
+                            // ■ 右縦列
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // const SizedBox(height: 50),  
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.man_2_outlined,
+                                        size: 50,
+                                        color: showDialogGender == 'male' ? Colors.lightBlue
+                                                                          : Colors.grey),
+                                      onPressed: () {
+                                        setState(() {
+                                          showDialogGender = 'male';
+                                          isGenderSelected = true;
+                                        });
+                                      },
+                                    ),
+                        
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.woman_2_outlined,
+                                        size: 50,
+                                        color: showDialogGender == 'female' ? Colors.lightBlue
+                                                                            : Colors.grey),
+                                      onPressed: () {
+                                        setState(() {
+                                          showDialogGender = 'female';
+                                          isGenderSelected = true;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                    
+                                const SizedBox(height: 20),  
+                                dropdownButtonAppLanguage(setState),
+                                const SizedBox(height: 20),  
+                                dropdownButtonSelectedLanguage(setState),
+                                const SizedBox(height: 20),  
+                                Container(
+                                  height: 20,
+                                  width: 100,                                  child: TextField(
+                                    controller: nameController,
+                                    decoration: const InputDecoration(
+                                      hintText: '新しい名前を入力',
+                                      hintStyle: TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      )
+                                    ),
+                                    keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                    maxLines: 1, 
+                                    inputFormatters: [CustomLengthTextInputFormatter(maxCount: 16)],
+                                  ),
+                                ),
+                              ],
+                            ),
+                        
+                        ]),
+                        const SizedBox(height: 25),
+                        const Text(
+                          '既にIDかメールアドレスを持ってる場合はコチラからログインできます。',
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                          )
+                      ],
+                    ),
                   ),
               
                 actions: [
