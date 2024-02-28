@@ -68,7 +68,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   int? selectedUnreadIndex;
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
-  final TextEditingController controller = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController showDialogNameController = TextEditingController();
   final TextEditingController statementController = TextEditingController();
@@ -373,7 +372,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
     showDialogNameController.removeListener(() {setState((){});});
     showDialogNameController.dispose();
-    controller.dispose();
     nameController.dispose();
     showDialogNameController.dispose();
     statementController.dispose();

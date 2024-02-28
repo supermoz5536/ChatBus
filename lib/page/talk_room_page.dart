@@ -48,7 +48,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   final _overlayController3rd = OverlayPortalController();
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController footerTextController = TextEditingController();
 
   @override // 追加機能の記述部分であることの明示
   void initState() {
@@ -656,7 +656,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
           child: TextField(
             controller:
-                controller, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                footerTextController, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
             onChanged: (value) {
               // TextFiledのテキストが変更されるたびに呼び出される応答関数を指定
               setState(() {
@@ -675,13 +675,13 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
         // ■ 送信アイコン
         IconButton(
-            onPressed: controller.text.isEmpty
+            onPressed: footerTextController.text.isEmpty
             ? null
             : () async {
               await RoomFirestore.sendMessage(
                   roomId: widget.talkRoom.roomId!,
-                  message: controller.text);
-              controller.clear();
+                  message: footerTextController.text);
+              footerTextController.clear();
               setState(() {
                 isInputEmpty = true;
               });
