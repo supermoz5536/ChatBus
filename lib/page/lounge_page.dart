@@ -1260,8 +1260,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           setState(() {
                                             selectedHistoryIndex = index;
                                             currentIndex = 3;
-                                            talkRoom!.roomId =
-                                                talkuserFields['room_id'];
+                                            talkRoom!.talkuserUid = talkuserFields['talkuser_id'];
+                                            talkRoom!.roomId = talkuserFields['room_id'];
                                           });
                                         },
                                       )
@@ -1279,8 +1279,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                         setState(() {
                                           selectedHistoryIndex = index;
                                           currentIndex = 3;
-                                          talkRoom!.roomId =
-                                              talkuserFields['room_id'];
+                                          talkRoom!.talkuserUid = talkuserFields['talkuser_id'];
+                                          talkRoom!.roomId = talkuserFields['room_id'];
                                         });
                                       },
                                     );

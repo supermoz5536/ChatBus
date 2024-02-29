@@ -617,7 +617,7 @@ static Future<void> initForMatching (
   
 }
 
-
+/// MatchingHistoryPageのUI描画部分のリストで表示するための情報の書き込み関数
 static Future<void> updateHistory (String? myUid, String? talkuserUid, String? roomId) async{
        DocumentSnapshot docSnapshot = await _userCollection.doc(talkuserUid).get();
        String name = docSnapshot['user_name'];
