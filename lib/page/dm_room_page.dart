@@ -100,6 +100,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
       backgroundColor: const Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
         title: const Text('ダイレクトメッセージ!'),
+        
       ),
       body: Stack(        
         children: [
