@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/friend_request_notification.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
@@ -14,6 +15,7 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
@@ -47,6 +49,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
+  final _overlayController1st = OverlayPortalController();
+  final _overlayController2nd = OverlayPortalController();
   final _overlayController3rd = OverlayPortalController();
   final TextEditingController footerTextController = TextEditingController();
 
@@ -106,6 +110,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     final serviceNotifier = LanguageNotifierService(ref);
+    List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
+
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -140,7 +146,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                 radius: 100,
                                 customBorder: const CircleBorder(),
                                 onTap: () {
-                                  Scaffold.of(context).openDrawer();
+                                  // Scaffold.of(context).openDrawer();
                                 },
                                 child: const SizedBox(width: 200, height: 200),
                                 // InkWellの有効範囲はchildのWidgetの範囲に相当するので
@@ -160,6 +166,257 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               color: Colors.white,
               height: 0,
             )),
+        actions: <Widget>[
+
+          // ■ リクエスト通知ボタン
+          OverlayPortal(
+            /// controller: 表示と非表示を制御するコンポーネント
+            /// overlayChildBuilder: OverlayPortal内の表示ウィジェットを構築する応答関数です。
+            controller: _overlayController1st,
+            overlayChildBuilder: (BuildContext context) {
+            
+            /// 画面サイズ情報を取得
+            final Size screenSize = MediaQuery.of(context).size;
+            
+
+              return Stack(
+                children: [
+
+                  /// 範囲外をタップしたときにOverlayを非表示する処理
+                  /// Stack()最下層の全領域がスコープの範囲
+                  GestureDetector(
+                    onTap: () {
+                      _overlayController1st.toggle();
+                    },
+                    child: Container(color: Colors.transparent),
+                  ),
+
+                  /// ポップアップの表示位置, 表示内容
+                  Positioned(
+                    top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
+                    left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
+                    height: screenSize.height * 0.3, // 画面高さの30%の高さ
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅
+                    child: Card(
+                      elevation: 20,
+                      color: Colors.white,
+                      child: friendNotifications.isEmpty
+                        ? Column(
+                          children: [
+                            Container(
+                                  height: 30,
+                                  width: double.infinity,
+                                  color: const Color.fromARGB(255, 94, 94, 94),
+                                  child: const Center(
+                                    child: Text(
+                                      '友達リクエスト',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                            const Padding(
+                              padding: EdgeInsets.all(50),
+                              child: Center(child: 
+                                Text('リクエストの通知はありません',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 91, 91, 91),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                )),
+                            ),
+                          ],
+                        )
+
+                        : SingleChildScrollView(
+                            child: Column(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    color: const Color.fromARGB(255, 94, 94, 94),
+                                    child: const Center(
+                                      child: Text(
+                                        '友達リクエスト',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ),
+                                    )
+                                  ),
+                                  // Columnが無限の高さを持っているので
+                                  // ListView.builderが高さを把握できるように
+                                  // Expandedで利用可能な最大範囲を確定させる.
+                                  ListView.builder(
+                                      // shrinkWrap: アイテムの合計サイズに基づいて自身の高さを調整します
+                                      shrinkWrap: true,
+                                      // SingleChildScrollView がスクロール機能を担当するので.
+                                      // ListView.builderのその機能をOFFにする
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: friendNotifications.length,
+                                      itemBuilder: (cnntext, index) {
+                                        Widget? tile;
+                                        if (friendNotifications[index]!.requestStatus == 'pending') {
+                                          tile = Row(children: <Widget>[
+
+                                            Expanded(
+                                              flex: 4,
+                                              child: ListTile(
+                                                title: Text(friendNotifications[index]!.friendName!,
+                                                style: const TextStyle(
+                                                  fontSize: 14
+                                                ),),
+                                              ),
+                                            ),
+
+                                            ElevatedButton(
+                                              style: ButtonStyle(
+                                                // ボタンの最小サイズを設定
+                                                minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                              child: const Text('承認する',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color.fromARGB(255, 82, 82, 82))),
+                                              onPressed: () async{
+                                              // 承認する場合の処理
+
+                                              // 自分のフレンドリクエストドキュメントを削除
+                                              await UserFirestore.deleteFriendRequest(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
+                                              // 状態関数から、該当要素を削除してUI再描画
+                                              ref.read(friendRequestNotificationsProvider.notifier)
+                                                 .removeFriendRequestNotification(
+                                                    friendNotifications[index]!.frienduserUid);
+
+                                              // 相手のフレンドリクエストドキュメントをacceptedに更新
+                                              await UserFirestore.updateFriendRequestAccepted(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
+                                              
+                                              /// 自分のfirendサブコレクションに相手のuidを追加
+                                              /// FriendListPageで、User情報は取得するので
+                                              /// フィールド情報は必要ない
+                                              await UserFirestore.setFriendUidToMe(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                              );
+
+                                              /// 相手のfirendサブコレクションに自分のuidを追加
+                                              /// FriendListPageで、User情報は取得するので.
+                                              /// フィールド情報は必要ない
+                                              await UserFirestore.setFriendUidToTalkuser(
+                                                meUser!.uid,
+                                                friendNotifications[index]!.frienduserUid
+                                                );
+
+                                              },
+                                            ),
+
+                                            Padding(
+                                              padding: const EdgeInsets.only(left: 10, right: 10),
+                                              child: ElevatedButton(
+                                                style: ButtonStyle(
+                                                  // ボタンの最小サイズを設定
+                                                  minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                                child: const Text('却下する',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color.fromARGB(255, 82, 82, 82))),
+                                                onPressed: () async{
+                                                  // 却下する場合の処理
+                                                  // 相手のフレンドリクエストドキュメントをdeniedに更新
+                                                  await UserFirestore.updateFriendRequestDenied(
+                                                    meUser!.uid,
+                                                    friendNotifications[index]!.frienduserUid
+                                                    );
+
+                                                  // 自分のフレンドリクエストドキュメントを削除
+                                                  await UserFirestore.deleteFriendRequest(
+                                                    meUser!.uid,
+                                                    friendNotifications[index]!.frienduserUid
+                                                    );
+
+                                                  // 状態関数から、該当要素を削除してUI再描画
+                                                  ref.read(friendRequestNotificationsProvider.notifier)
+                                                    .removeFriendRequestNotification(
+                                                        friendNotifications[index]!.frienduserUid);
+                                                },
+                                              ),
+                                            ),
+                                            // const Expanded(flex: 1,child: SizedBox()),
+                                          ]);
+                                        } else {
+                                          tile = ListTile(
+                                                   title: Text(friendNotifications[index]!.friendName!),
+                                                   subtitle: friendNotifications[index]!.requestStatus! == 'waiting'
+                                                     ? const Text('リクエストの承認を待っています。')
+                                                     : friendNotifications[index]!.requestStatus! == 'accepted'
+                                                       ? const Text('リクエストが承認されました。')
+                                                       : const Text('リクエストが却下されました。'),
+                                                   onTap: () async{
+                                                    // 自分のフレンドリクエストドキュメントを削除
+                                                    await UserFirestore.deleteFriendRequest(
+                                                      meUser!.uid,
+                                                      friendNotifications[index]!.frienduserUid
+                                                      );
+
+                                                    // 状態関数から、該当要素を削除してUI再描画
+                                                    ref.read(friendRequestNotificationsProvider.notifier)
+                                                      .removeFriendRequestNotification(
+                                                          friendNotifications[index]!.frienduserUid);
+                                                   },
+                                                 );
+                                        }
+                                        return Column(
+                                          children: [
+                                             tile,
+                                             const Divider(
+                                                height: 0,
+                                                color: Color.fromARGB(255, 199, 199, 199),
+                                                indent: 10,
+                                                endIndent: 10,
+                                              ),   
+                                          ],
+                                        );
+                                      }                         
+                                    ),
+                                 ],
+                              ),
+                          ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            child: Badge(
+                  backgroundColor: Colors.red,
+                  isLabelVisible: friendNotifications!.isNotEmpty,
+                  largeSize: 20,
+                  label: Text('${friendNotifications.length}'),                  
+                  child: IconButton(
+                      onPressed: () {_overlayController1st.toggle();},
+                      icon: const Icon(Icons.person_add_outlined,
+                          color: Color.fromARGB(255, 176, 176, 176)),
+                      iconSize: 35,
+                      tooltip: '友達リクエスト',
+                    ),
+                )
+          ),
+
+
+
+        ],
       ),
 
       body: Stack(        
