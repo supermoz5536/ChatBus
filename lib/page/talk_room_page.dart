@@ -25,6 +25,8 @@ import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
+import 'package:udemy_copy/utils/service/dm_notifier_service.dart';
+import 'package:udemy_copy/utils/service/friend_request_notifier_service.dart';
 import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
@@ -52,10 +54,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
+  DMNotifierService? dMNotifierservice;
+  FriendRequestNotifierService? friendRequestNotifierservice;
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final _overlayController3rd = OverlayPortalController();
   final TextEditingController footerTextController = TextEditingController();
+  StreamSubscription? dMSubscription;
+  StreamSubscription? friendRequestSubscription;
 
   @override // 追加機能の記述部分であることの明示
   void initState() {
@@ -71,29 +77,24 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
           const Duration(milliseconds: 400), //リスナー開始までの時間
         );
 
-          var talkuserDocStream = UserFirestore.streamTalkuserDoc(widget.talkRoom.talkuserUid);
-          print('トークルーム: streamの起動(リスンの参照を取得)');
-          // print ('コンストラクタのtalkRoomのmyUid == ${widget.talkRoom.myUid}');
+        var talkuserDocStream = UserFirestore.streamTalkuserDoc(widget.talkRoom.talkuserUid);
+        print('トークルーム: streamの起動(リスンの参照を取得)');
 
-          talkuserDocSubscription = talkuserDocStream.listen((snapshot) {
-            print('トークルーム: streamデータをリスン');
-            print(
-                'トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
-
-            if (snapshot.data()!.isNotEmpty &&
-                (snapshot.data()!['chatting_status'] == false ||
-                    snapshot.data()!['is_lounge'] == true)) {
-              // ■■■■■■islounge を実装したら、上記のコメントアウトを実装する
-
-              print('トークルーム: [chatting_status == false] OR [is_lounge == true]');
-              print('トークルーム: isDisabled == false にしてフッター再描画');
-              setState(() {
-                isChatting = false;
-                // 状態を更新：フッターUIを再描画
-              });
-            }
-          });
+        talkuserDocSubscription = talkuserDocStream.listen((snapshot) {
+          print('トークルーム: streamデータをリスン');
+          print('トークルーム: chatting_status: ${snapshot.data()!['chatting_status']}');
+          if (snapshot.data()!.isNotEmpty &&
+              (snapshot.data()!['chatting_status'] == false ||
+                  snapshot.data()!['is_lounge'] == true)) {
+            print('トークルーム: [chatting_status == false] OR [is_lounge == true]');
+            print('トークルーム: isDisabled == false にしてフッター再描画');
+            setState(() {
+              // 状態を更新：フッターUIを再描画
+              isChatting = false;
+            });
+          }
         });
+      });
 
     UserFirestore.updateHistory(
       widget.talkRoom.myUid,
@@ -103,16 +104,35 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
     /// アイコンの表示とポップアップ描画に必要な情報のFuture
     futureTalkuserProfile = UserFirestore.fetchProfile(widget.talkRoom.talkuserUid);
-    
 
-  } // initState
+    // コンテクストの完全な確率を確認してからの状態変更を伴うリスナーを設置
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // DMの通知リスナー起動
+      if (dMNotifierservice != null) {
+        dMSubscription = dMNotifierservice!.setupUnreadDMNotification(widget.talkRoom.myUid);
+      }
+      // フレンドリクエストの通知リスナー起動
+      if (friendRequestNotifierservice != null) {
+        friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(widget.talkRoom.myUid);
+      }
+    });
+  }
+
+  // disposeメソッドをオーバーライド
+  @override
+  void dispose() {
+    if (dMSubscription != null) dMSubscription!.cancel();
+    if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     User? meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
-    final serviceNotifier = LanguageNotifierService(ref);
+    dMNotifierservice = DMNotifierService(ref);
+    friendRequestNotifierservice = FriendRequestNotifierService(ref);
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
 

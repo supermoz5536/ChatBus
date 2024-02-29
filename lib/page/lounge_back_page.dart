@@ -104,13 +104,13 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
     print('dMNotifierservice == ${meUser!.uid}');        
       // DMの通知リスナー起動
       if (dMNotifierservice != null) {
-      print('LoungeBackPage: setupUnreadDMNotification開始');
-      dMSubscription = dMNotifierservice!.setupUnreadDMNotification(meUser!.uid);
+        print('LoungeBackPage: setupUnreadDMNotification開始');
+        dMSubscription = dMNotifierservice!.setupUnreadDMNotification(meUser!.uid);
       }
       // フレンドリクエストの通知リスナー起動
       if (friendRequestNotifierservice != null) {
-      print('LoungeBackPage: setupFriendRequestNotification');
-      friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(meUser!.uid);
+        print('LoungeBackPage: setupFriendRequestNotification');
+        friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(meUser!.uid);
       }
     });
     // });
