@@ -99,7 +99,18 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 246, 246, 246),
       appBar: AppBar(
-        title: const Text('ダイレクトメッセージ!'),
+        backgroundColor: Colors.white,
+        elevation: 3,
+        shadowColor: Colors.black.withOpacity(0.7),
+        surfaceTintColor: Colors.transparent,
+        title: const Text('ダイレクトメッセージ'),
+        centerTitle: true,
+        bottom: const PreferredSize(
+            preferredSize: Size.fromHeight(15),
+            child: Divider(
+              color: Colors.white,
+              height: 0,
+            )),
         
       ),
       body: Stack(        
