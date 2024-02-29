@@ -116,6 +116,44 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
         surfaceTintColor: Colors.transparent,
         title: const Text('トークルーム'),
         centerTitle: true,
+        leading: 
+                StreamBuilder<DocumentSnapshot>(
+                    stream: UserFirestore.streamProfImage(meUser!.uid),
+                    //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!.exists) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8, left: 10),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                          snapshot.data!['user_image_url']),
+                                      fit: BoxFit.cover)),
+                              // BoxFith は画像の表示方法の制御
+                              // cover は満遍なく埋める
+                              child: InkWell(
+                                splashColor: Colors.black.withOpacity(0.1),
+                                radius: 100,
+                                customBorder: const CircleBorder(),
+                                onTap: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
+                                child: const SizedBox(width: 200, height: 200),
+                                // InkWellの有効範囲はchildのWidgetの範囲に相当するので
+                                // タップの有効領域確保のために、空のSizedBoxを設定
+                              ),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return const Text('');
+                      }
+                    }),
+
         bottom: const PreferredSize(
             preferredSize: Size.fromHeight(15),
             child: Divider(
@@ -123,6 +161,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               height: 0,
             )),
       ),
+
       body: Stack(        
         children: [
           

@@ -388,7 +388,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     languageNotifierService = LanguageNotifierService(ref);
     dMNotifierservice = DMNotifierService(ref);
     friendRequestNotifierservice = FriendRequestNotifierService(ref);
-
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
     
