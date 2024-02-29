@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -31,8 +30,6 @@ import 'package:udemy_copy/utils/service/friend_request_notifier_service.dart';
 import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'dart:ui' as ui;
-
-
 
 
 class LoungePage extends ConsumerStatefulWidget {
@@ -305,32 +302,32 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   }
 
 
-    DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
-    return DropdownButton(
-      isDense: true,
-      underline: Container(
-        height: 1,
-        color: const Color.fromARGB(255, 198, 198, 198),),
-      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-      iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
-      value: currentLanguageCode,
-      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,   //引数の言語コードをシステム識別用に設定
-            child: Text(
-              languageNames[value]!,
-              style: const TextStyle(color: Colors.black)));
-          }).toList(),
-      onChanged: (String? newLanguageCode) {
-          setState(() {
-            // 初期値はデバイスの設定言語
-            currentLanguageCode = newLanguageCode!;
-          });
-            // meUserの状態変数の更新（'language'だけはdbも更新）
-            languageNotifierService!.changeLanguage(currentLanguageCode);
-            // selectedNativeLanguageの状態変数更新
-            ref.read(selectedNativeLanguageProvider.notifier)
-              .switchSelectedNativeLanguage(currentLanguageCode);
+  DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
+  return DropdownButton(
+    isDense: true,
+    underline: Container(
+      height: 1,
+      color: const Color.fromARGB(255, 198, 198, 198),),
+    icon: const Icon(Icons.keyboard_arrow_down_outlined),
+    iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+    value: currentLanguageCode,
+    items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,   //引数の言語コードをシステム識別用に設定
+          child: Text(
+            languageNames[value]!,
+            style: const TextStyle(color: Colors.black)));
+        }).toList(),
+    onChanged: (String? newLanguageCode) {
+        setState(() {
+          // 初期値はデバイスの設定言語
+          currentLanguageCode = newLanguageCode!;
+        });
+          // meUserの状態変数の更新（'language'だけはdbも更新）
+          languageNotifierService!.changeLanguage(currentLanguageCode);
+          // selectedNativeLanguageの状態変数更新
+          ref.read(selectedNativeLanguageProvider.notifier)
+            .switchSelectedNativeLanguage(currentLanguageCode);
       },
     );
   }

@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/cloud_storage/user_storage.dart';
+import 'package:udemy_copy/constant/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -24,6 +26,7 @@ import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
+import 'package:udemy_copy/utils/custom_length_text_input_formatter.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/service/dm_notifier_service.dart';
 import 'package:udemy_copy/utils/service/friend_request_notifier_service.dart';
@@ -43,7 +46,10 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 }
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
+  User? meUser;
   Future<User?>? futureTalkuserProfile;
+  String? currentLanguageCode;
+  String? currentTargetLanguageCode;
   User? talkuserProfile;
   bool? isDisabled = false;
   bool? isDisabledRequest = false;
@@ -54,11 +60,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
+  LanguageNotifierService? languageNotifierService;
   DMNotifierService? dMNotifierservice;
   FriendRequestNotifierService? friendRequestNotifierservice;
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final _overlayController3rd = OverlayPortalController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController statementController = TextEditingController();
   final TextEditingController footerTextController = TextEditingController();
   StreamSubscription? dMSubscription;
   StreamSubscription? friendRequestSubscription;
@@ -107,6 +116,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
     // コンテクストの完全な確率を確認してからの状態変更を伴うリスナーを設置
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      currentLanguageCode = meUser!.language;
+
       // DMの通知リスナー起動
       if (dMNotifierservice != null) {
         dMSubscription = dMNotifierservice!.setupUnreadDMNotification(widget.talkRoom.myUid);
@@ -118,7 +129,38 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     });
   }
 
-  // disposeメソッドをオーバーライド
+  DropdownButton<String> dropdownButtonAppLanguage(StateSetter setState) {
+  return DropdownButton(
+    isDense: true,
+    underline: Container(
+      height: 1,
+      color: const Color.fromARGB(255, 198, 198, 198),),
+    icon: const Icon(Icons.keyboard_arrow_down_outlined),
+    iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+    value: currentLanguageCode,
+    items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,   //引数の言語コードをシステム識別用に設定
+          child: Text(
+            languageNames[value]!,
+            style: const TextStyle(color: Colors.black)));
+        }).toList(),
+    onChanged: (String? newLanguageCode) {
+        setState(() {
+          // 初期値はデバイスの設定言語
+          currentLanguageCode = newLanguageCode!;
+        });
+          // meUserの状態変数の更新（'language'だけはdbも更新）
+          languageNotifierService!.changeLanguage(currentLanguageCode);
+          // selectedNativeLanguageの状態変数更新
+          ref.read(selectedNativeLanguageProvider.notifier)
+            .switchSelectedNativeLanguage(currentLanguageCode);
+      },
+    );
+  }
+
+
+  // disposeメソッドをオーバーライド.
   @override
   void dispose() {
     if (dMSubscription != null) dMSubscription!.cancel();
@@ -128,14 +170,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    User? meUser = ref.watch(meUserProvider);
+    meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
+    languageNotifierService = LanguageNotifierService(ref);
     dMNotifierservice = DMNotifierService(ref);
     friendRequestNotifierservice = FriendRequestNotifierService(ref);
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
-
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -146,8 +188,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
         surfaceTintColor: Colors.transparent,
         title: const Text('トークルーム'),
         centerTitle: true,
-        leading: 
-                StreamBuilder<DocumentSnapshot>(
+        leading:  StreamBuilder<DocumentSnapshot>(
                     stream: UserFirestore.streamProfImage(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
@@ -598,6 +639,275 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
         ],
       ),
 
+      drawer: Drawer(
+        child: Column(
+          children: [
+            Expanded(
+              //ListView が無限の長さを持つので直接 column でラップすると不具合
+              //Expanded で長さを限界値に指定.
+              child: ListView(
+                children: [
+                  SizedBox(
+                    height: 380,
+                    child: DrawerHeader(
+                        child: Column(
+                          children: [
+
+                            Material(
+                            color: Colors.transparent,
+                            child: Ink(
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: NetworkImage(meUser!.userImageUrl!),
+                                      fit: BoxFit.cover)),
+                              // BoxFith は画像の表示方法の制御
+                              // cover は満遍なく埋める
+                              child: InkWell(
+                                splashColor: Colors.black.withOpacity(0.1),
+                                radius: 100,
+                                customBorder: const CircleBorder(),
+                                onTap: () async{
+                                  // 画像Dataのピックアップし
+                                  // Firestorageのプロフ画像を更新
+                                  // Firestoreのurlを更新
+                                  // 状態変数の更新
+                                  // ウィジェット再描画.
+                                  String? newUserImageUrl = await UserFirebaseStorage.pickAndUploadProfImage(meUser!.uid);
+                                  UserFirestore.updateUserImageUrl(meUser!.uid, newUserImageUrl);
+                                  ref.read(meUserProvider.notifier).updateUserImageUrl(newUserImageUrl);
+                                },
+                                child: const SizedBox(width: 110, height: 110),
+                                // InkWellの有効範囲はchildのWidgetの範囲に相当するので
+                                // タップの有効領域確保のために、空のSizedBoxを設定
+                              ),
+                            ),
+                          ),
+
+                            // Ink(
+                            //   child: InkWell(
+                            //     onTap: (){},
+                            //     child: CircleAvatar(     
+                            //       radius: 50,
+                            //       backgroundImage: NetworkImage(
+                            //         meUser!.userImageUrl!),
+                            //     ),
+                            //   ),
+                            // ),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('名前'),
+                                    subtitle: Text('${meUser!.userName}',
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      ),),
+                                  )),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    // ボタンの最小サイズを設定
+                                    minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                  onPressed:(){
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_){
+                                        return AlertDialog(
+                                          title: const Text('名前を変更しますか？'),
+                                          content: TextField(
+                                            controller: nameController,
+                                            decoration: const InputDecoration(
+                                              hintText: '新しい名前を入力',
+                                              hintStyle: TextStyle(
+                                                color: Color.fromARGB(255, 153, 153, 153)
+                                              )
+                                            ),
+                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 16)],
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () async{
+                                                // db上のmyUidのドキュメントの
+                                                // 'user_name'フィールドを
+                                                // 入力されているテキスト内容で update して
+                                                // meUsern 状態変数を更新してUI再描画
+                                                await UserFirestore.updateUserName(
+                                                  meUser!.uid,
+                                                  nameController.text,
+                                                );
+                                                ref.read(meUserProvider.notifier).updateUserName(nameController.text);
+                                                if (mounted) Navigator.pop(context);
+                                              },
+                                              child: const Text('決定')),
+                                            TextButton(
+                                              onPressed: () {
+                                                if (mounted) Navigator.pop(context);                                        
+                                              },
+                                              child: const Text('キャンセル'))
+                                          ],
+                                        );
+                                    });
+                                  },
+                                  child: const Text('変更') 
+                                ), 
+                            ]),
+
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('自己紹介文'),
+                                    subtitle: Text('${meUser!.statement}',
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      ),),
+                                  )),
+                                ElevatedButton(
+                                  style: ButtonStyle(
+                                    // ボタンの最小サイズを設定
+                                    minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                                  onPressed:(){
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_){
+                                        return AlertDialog(
+                                          title: const Text('自己紹介文を変更しますか？'),
+                                          content: TextField(
+                                            controller: statementController,
+                                            decoration: const InputDecoration(
+                                              hintText: '新しい自己紹介文を入力',
+                                              hintStyle: TextStyle(
+                                                color: Color.fromARGB(255, 153, 153, 153)
+                                              )
+                                            ),
+                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 120)],
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () async{
+                                                // db上のmyUidのドキュメントの
+                                                // 'statement'フィールドを
+                                                // 入力されているテキスト内容で update して
+                                                // meUsern 状態変数を更新してUI再描画
+                                                await UserFirestore.updateStatement(
+                                                  meUser!.uid,
+                                                  statementController.text,
+                                                );
+                                                ref.read(meUserProvider.notifier).updateStatement(statementController.text);
+                                                if (mounted) Navigator.pop(context);
+                                              },
+                                              child: const Text('決定')),
+                                            TextButton(
+                                              onPressed: () {
+                                                if (mounted) Navigator.pop(context);                                        
+                                              },
+                                              child: const Text('キャンセル'))
+                                          ],
+                                        );
+                                    });
+                                  },
+                                  child: const Text('変更') 
+                                ), 
+                            ]),
+                      ],
+                    )),
+                  ),
+              ]),
+            ),
+
+            const Center(
+              child: SizedBox(
+                height: 50,
+                child: Center(
+                  child: Text('Comming soon!')),
+              ),
+            ),
+            
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                      color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                ),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: ListTile(
+                      title: Text('アプリの表示言語'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: dropdownButtonAppLanguage(setState),
+                  ),
+                ],
+              ),
+            ),
+
+
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                      color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                ),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: ListTile(
+                      title: Text('翻訳先の言語'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: dropdownButtonTranslateTargetLanguage(targetLanguageCode),
+                  ),
+                ],
+              ),
+            ),
+
+
+
+
+
+            Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                        color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                  ),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: const Row(children: [
+                  Text('サブスクリプション： フリープラン'),
+                ])),
+
+
+            Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    top: BorderSide(
+                        color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+                  ),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: const Row(children: [
+                  Text('ログインID表示 環境設定関連'),
+                ]))
+          ],
+        ),
+      ),
+
       body: Stack(        
         children: [
           
@@ -919,9 +1229,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               }),
 
 
-
-
-
           // ■フッター部分(chatting)
           Column(
             // column()の縦移動で、画面1番下に配置
@@ -1044,7 +1351,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                                         /// uidが既にフレンド登録済みかを確認
                                         isFriendUidExist = await UserFirestore.checkExistFriendUid(
-                                                             meUser.uid,
+                                                             meUser!.uid,
                                                              futureSnapshot.data!.uid
                                                            );
                                         
@@ -1056,11 +1363,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           // 相手：pending 
                                           await UserFirestore.setFriendRequestToFriend(
                                             widget.talkRoom.talkuserUid,
-                                            meUser.uid,
+                                            meUser!.uid,
                                           );
                                           // 自分：waiting
                                           await UserFirestore.setFriendRequestToMe(
-                                            meUser.uid,
+                                            meUser!.uid,
                                             widget.talkRoom.talkuserUid,
                                           );
 
@@ -1094,8 +1401,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               }
               }
             )
-
-
 
         ],
       ),
@@ -1259,6 +1564,33 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
       ],
     );
+  }
+
+
+  DropdownButton<String> dropdownButtonTranslateTargetLanguage(String? targetLanguageCode) {
+    return DropdownButton(
+                    isDense: true,
+                    underline: Container(
+                      height: 1,
+                      color: const Color.fromARGB(255, 198, 198, 198),),
+                    icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                    iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
+                    value: currentTargetLanguageCode = targetLanguageCode,
+                    items: <String>['en', 'ja', 'es']
+                      .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,   //引数の言語コードをシステム識別用に設定
+                          child: Text(
+                            languageNames[value]!,
+                            style: const TextStyle(color: Colors.black)));
+                      }).toList(),
+                    onChanged: (String? newTargetLanguageCode) {
+                        setState(() {
+                          ref.read(targetLanguageProvider.notifier).updateTargetLanguage(newTargetLanguageCode);
+                          // プロバイダーの翻訳ターゲットの言語コードの状態変数に、onChangedで入力された言語コードに変更
+                        });
+                    },
+                  );
   }
 }
 
