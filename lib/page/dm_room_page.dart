@@ -307,93 +307,104 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                 .end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
-                color: Colors.white,
+                decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 250, 250, 250),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 4.5), // 上方向への影
+                        blurRadius: 7, // ぼかしの量
+                      )
+                    ]),
                 height: 68, // フッター領域の縦幅
                 child: Row(
-      children: [
-        // ■ 「戻る」ボタン
-        ElevatedButton(
-          onPressed: isDisabled! ? null : () async {
-              setState(() {
-                isDisabled = true;
-                // 二重タップ防止
-                // isProcessingの使い方は、progressMarkerと同じ
-                // trueにして、タップをブロック
-              });
-        
-              await Future.delayed(
-                const Duration(milliseconds: 50), //無効にする時間
-              );
-        
-              // await talkuserDocSubscription!.cancel();
-              // matching_progress_pageに戻る時の一連の処理
+                  children: [
 
-              // 退出時にdb上の未読フラグを削除
-              await DMRoomFirestore.removeIsReadElement(
-                widget.dMRoom.dMRoomId,
-                meUser!.uid
-                );
-              
-              // 状態管理してるListオブジェクトから
-              // 該当の通知要素を削除
-              ref.read(dMNotificationsProvider.notifier)
-                 .removeDMNotification(widget.dMRoom.dMRoomId);
-        
-              if (context.mounted) {
-                LoungeBack loungeBack = LoungeBack(currentIndex: 1);
-                Navigator.pushAndRemoveUntil(
-                    context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
-                    SlideRightRoute(
-                        page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
-                    (_) => false);
-              }
-              /// 入力のタップを解除
-              isDisabled = false;
-            },
-          child: const Text('戻る'),
-        ),
+                    const SizedBox(width: 20,),
+                    
+                    // ■ 「戻る」ボタン
+                    ElevatedButton(
+                      onPressed: isDisabled! ? null : () async {
+                          setState(() {
+                            isDisabled = true;
+                            // 二重タップ防止
+                            // isProcessingの使い方は、progressMarkerと同じ
+                            // trueにして、タップをブロック
+                          });
+                    
+                          await Future.delayed(
+                            const Duration(milliseconds: 50), //無効にする時間
+                          );
+                    
+                          // await talkuserDocSubscription!.cancel();
+                          // matching_progress_pageに戻る時の一連の処理
+
+                          // 退出時にdb上の未読フラグを削除
+                          await DMRoomFirestore.removeIsReadElement(
+                            widget.dMRoom.dMRoomId,
+                            meUser!.uid
+                            );
+                          
+                          // 状態管理してるListオブジェクトから
+                          // 該当の通知要素を削除
+                          ref.read(dMNotificationsProvider.notifier)
+                            .removeDMNotification(widget.dMRoom.dMRoomId);
+                    
+                          if (context.mounted) {
+                            LoungeBack loungeBack = LoungeBack(currentIndex: 1);
+                            Navigator.pushAndRemoveUntil(
+                                context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
+                                SlideRightRoute(
+                                    page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
+                                (_) => false);
+                          }
+                          /// 入力のタップを解除
+                          isDisabled = false;
+                        },
+                      child: const Text('戻る'),
+                    ),
 
 
-        // ■ 入力フィールド
-        Expanded(
-            child: Padding(
-          // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
-          padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
+                    // ■ 入力フィールド
+                    Expanded(
+                        child: Padding(
+                      // TextFieldウィジェットをExpandedウィジェットで横に伸長させている
+                      padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
-          child: TextField(
-            controller:
-                controller, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
-            onChanged: (value) {
-              // TextFiledの値(value)を引数
-              setState(() {
-                // valueに変化があったら、応答関数で状態を更新
-                isInputEmpty = value.isEmpty; // isEmptyメソッドは、bool値を返す
-              });
-            },
-            decoration: const InputDecoration(
-              filled: true,
-              fillColor: Color.fromARGB(255, 244, 241, 241),
-              contentPadding: EdgeInsets.only(left: 10),
-              border: InputBorder.none,
-            ),
-          ),
-        )),
+                      child: TextField(
+                        controller:
+                            controller, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                        onChanged: (value) {
+                          // TextFiledの値(value)を引数
+                          setState(() {
+                            // valueに変化があったら、応答関数で状態を更新
+                            isInputEmpty = value.isEmpty; // isEmptyメソッドは、bool値を返す
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 244, 241, 241),
+                          contentPadding: EdgeInsets.only(left: 10),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    )),
 
-        //■送信アイコン
-        IconButton(
-            onPressed: () async {
-              await DMRoomFirestore.sendDM(
-                dMRoomId: widget.dMRoom.dMRoomId,
-                message: controller.text,
-                talkuserUid: widget.dMRoom.talkuserUid,
-                );
-              controller.clear();
-            },
-            icon: Icon(
-              Icons.send,
-              color: isInputEmpty ? Colors.grey : Colors.blue,
-                    ))
-                  ],
+                    //■送信アイコン
+                    IconButton(
+                        onPressed: () async {
+                          await DMRoomFirestore.sendDM(
+                            dMRoomId: widget.dMRoom.dMRoomId,
+                            message: controller.text,
+                            talkuserUid: widget.dMRoom.talkuserUid,
+                            );
+                          controller.clear();
+                        },
+                        icon: Icon(
+                          Icons.send,
+                          color: isInputEmpty ? Colors.grey : Colors.blue,
+                                ))
+                              ],
                 ),
               ),
             ],
