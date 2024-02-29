@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
+import 'package:udemy_copy/model/dm_notification.dart';
 import 'package:udemy_copy/model/friend_request_notification.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
@@ -15,6 +17,7 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
@@ -110,6 +113,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     final serviceNotifier = LanguageNotifierService(ref);
+    List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
 
 
@@ -146,7 +150,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                 radius: 100,
                                 customBorder: const CircleBorder(),
                                 onTap: () {
-                                  // Scaffold.of(context).openDrawer();
+                                  Scaffold.of(context).openDrawer();
                                 },
                                 child: const SizedBox(width: 200, height: 200),
                                 // InkWellの有効範囲はchildのWidgetの範囲に相当するので
@@ -414,6 +418,161 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                 )
           ),
 
+
+          // ■ DMの通知ボタン
+          OverlayPortal(
+            /// controller: 表示と非表示を制御するコンポーネント
+            /// overlayChildBuilder: OverlayPortal内の表示ウィジェットを構築する応答関数です。
+            controller: _overlayController2nd,
+            overlayChildBuilder: (BuildContext context) {
+            
+            /// 画面サイズ情報を取得
+            final Size screenSize = MediaQuery.of(context).size;
+            
+
+              return Stack(
+                children: [
+
+                  /// 範囲外をタップしたときにOverlayを非表示する処理
+                  /// Stack()最下層の全領域がスコープの範囲
+                  GestureDetector(
+                    onTap: () {
+                      _overlayController2nd.toggle();
+                    },
+                    child: Container(color: Colors.transparent),
+                  ),
+
+                  /// ポップアップの表示位置, 表示内容
+                  Positioned(
+                    top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
+                    left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
+                    height: screenSize.height * 0.3, // 画面高さの30%の高さ
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅.
+                    child: Card(
+                      elevation: 20,
+                      color: Colors.white,
+                      child: dMNotifications.isEmpty
+                        ? Column(
+                          children: [
+                            Container(
+                                  height: 30,
+                                  width: double.infinity,
+                                  color: const Color.fromARGB(255, 94, 94, 94),
+                                  child: const Center(
+                                    child: Text(
+                                      'メール通知',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                      )
+                                    ),
+                                  )
+                                ),
+                            const Padding(
+                              padding: EdgeInsets.all(50),
+                              child: Center(child: 
+                                Text('未読のメールはありません',
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 91, 91, 91),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                )),
+                            ),
+                          ],
+                        )
+
+                        : SingleChildScrollView(
+                            child: Column(
+                                children: [
+                                  Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    color: const Color.fromARGB(255, 192, 192, 192),
+                                    child: const Center(
+                                      child: Text(
+                                        'メール通知',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold
+                                        )
+                                      ),
+                                    )
+                                  ),
+                                  // Columnが無限の高さを持っているので
+                                  // ListView.builderが高さを把握できるように
+                                  // Expandedで利用可能な最大範囲を確定させる.
+                                  ListView.builder(
+                                      // shrinkWrap: アイテムの合計サイズに基づいて自身の高さを調整します
+                                      shrinkWrap: true,
+                                      // SingleChildScrollView がスクロール機能を担当するので
+                                      // ListView.builderのその機能をOFFにする
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      itemCount: dMNotifications.length,
+                                      itemBuilder: (cnntext, index) {
+                                        return Column(
+                                          children: [
+                                            ListTile(
+                                              title: Text(dMNotifications[index]!.talkuserName!),
+                                              subtitle: Text('${dMNotifications[index]!.lastMessage!}',
+                                                style: const TextStyle(
+                                                  color: Color.fromARGB(255, 133, 133, 133))),
+                                              onTap: () async{
+                                                // db上のmyUidの未読フラグを削除
+                                                await DMRoomFirestore.removeIsReadElement(
+                                                  dMNotifications[index]!.dMRoomId,
+                                                  meUser!.uid
+                                                  );
+                                                            
+                                                // 状態管理してるListオブジェクトから
+                                                // index番目（タップした）の通知要素を削除
+                                                ref.read(dMNotificationsProvider.notifier)
+                                                  .removeDMNotification(dMNotifications[index]!.dMRoomId,);
+                                                            
+                                                // // 状態管理してるListオブジェクト自体を更新します
+                                                // // 理由は、要素の更新だけしても
+                                                // // データのメモリアドレスが変更されないため
+                                                // // riverpodが更新をキャッチできず
+                                                // // ウィジェットの再描画が発生しないから
+                                                // ref.read(dMNotificationsProvider.notifier)
+                                                //   .setDMNotifications(dMNotifications);
+                                              },
+                                            ),
+                                              
+                                              const Divider(
+                                                height: 0,
+                                                color: Color.fromARGB(255, 199, 199, 199),
+                                                indent: 10,
+                                                endIndent: 10,
+                                              ),   
+                                          ],
+                                        );
+                                      }                         
+                                    ),
+                                 ],
+                              ),
+                          ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            child: Badge(
+                  backgroundColor: Colors.red,
+                  isLabelVisible: dMNotifications!.isNotEmpty,
+                  largeSize: 20,
+                  label: Text('${dMNotifications.length}'),                  
+                  child: IconButton(
+                      onPressed: () {_overlayController2nd.toggle();},
+                      icon: const Icon(Icons.notifications_none_outlined,
+                          color: Color.fromARGB(255, 176, 176, 176)),
+                      iconSize: 35,
+                      tooltip: '受信メールの通知',
+                    ),
+                )
+          ),
 
 
         ],
