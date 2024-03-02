@@ -144,50 +144,46 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             builder: (context, setState) {
               showDialogNameController.addListener(() {setState((){});});
                 return AlertDialog(
-                  title: const Center(child: Text('始める前に')),
+                  title: Center(child: Text(AppLocalizations.of(context)!.beforeStart)),
                     content: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,                  
                         children: [
-                          const Text(
-                            'チャット開始に必要な以下の設定してください。',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.setBelow,
+                            style: const TextStyle(
                               fontSize: 15,
                             ),
                             ),
                           Row(                    
                             children: [
                               // ■ 左縦列
-                              const Column(
+                              Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
                                 children:[
-                                  SizedBox(height: 30),
+                                  const SizedBox(height: 30),
                                   Text(
-                                    '性別',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context)!.gender,
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold
                                     ),),
-                                  // SizedBox(height: 40),
-                                  // Text(
-                                  //   'アプリ表示言語',
-                                  //   style: TextStyle(
-                                  //     fontSize: 15,
-                                  //     fontWeight: FontWeight.bold
-                                  //   ),),
-                                  SizedBox(height: 20),
+                                  const SizedBox(height: 20),
+                                  Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.learningLanguage,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold
+                                      ),),
+                                  ),
+                                  const SizedBox(height: 20),
                                   Text(
-                                    '学習してる言語',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold
-                                    ),),
-                                  SizedBox(height: 20),
-                                  Text(
-                                    '名前',
-                                    style: TextStyle(
+                                    AppLocalizations.of(context)!.name,
+                                    style: const TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold
                                     ),),
@@ -242,9 +238,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     width: 150,
                                     child: TextField(
                                       controller: showDialogNameController,
-                                      decoration: const InputDecoration(
-                                        hintText: '名前を入力',
-                                        hintStyle: TextStyle(
+                                      decoration: InputDecoration(
+                                        hintText: AppLocalizations.of(context)!.inputName,
+                                        hintStyle: const TextStyle(
                                           color: Color.fromARGB(255, 153, 153, 153)
                                         )
                                       ),
@@ -258,9 +254,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           
                           ]),
                           const SizedBox(height: 25),
-                          const Text(
-                            '既にIDかメールアドレスを持ってる場合はコチラからログインできます。',
-                            style: TextStyle(
+                          Text(
+                            AppLocalizations.of(context)!.alreadyRegistered,
+                            style: const TextStyle(
                               fontSize: 12,
                             ),
                             )
@@ -282,7 +278,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       if (mounted) Navigator.pop(context);
                                     }  
                                 },
-                      child: Text('OK',
+                      child: Text(AppLocalizations.of(context)!.ok,
                         style: TextStyle(
                           color: isMydataFutureDone == true
                               && isGenderSelected == true
@@ -402,7 +398,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return Text('エラーが発生しました');
+                return Text(AppLocalizations.of(context)!.error);
               } else {
                 return StreamBuilder<DocumentSnapshot>(
                     stream: UserFirestore.streamProfImage(snapshot.data!['myUid']),
@@ -481,7 +477,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.9, // 画面幅の90%の幅
+                    width: screenSize.width * 0.95, // 画面幅の90%の幅
                     child: Card(
                       elevation: 20,
                       color: Colors.white,
@@ -492,10 +488,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   height: 30,
                                   width: double.infinity,
                                   color: const Color.fromARGB(255, 94, 94, 94),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      '友達リクエスト',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.friendRequest,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
@@ -503,11 +499,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     ),
                                   )
                                 ),
-                            const Padding(
-                              padding: EdgeInsets.all(50),
+                            Padding(
+                              padding: const EdgeInsets.all(50),
                               child: Center(child: 
-                                Text('リクエストの通知はありません',
-                                style: TextStyle(
+                                Text(AppLocalizations.of(context)!.thereIsNoFriendRequest,
+                                style: const TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold
@@ -524,10 +520,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     height: 30,
                                     width: double.infinity,
                                     color: const Color.fromARGB(255, 94, 94, 94),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        '友達リクエスト',
-                                        style: TextStyle(
+                                        AppLocalizations.of(context)!.friendRequest,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold
@@ -564,8 +560,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               style: ButtonStyle(
                                                 // ボタンの最小サイズを設定
                                                 minimumSize: MaterialStateProperty.all(const Size(0, 30))),
-                                              child: const Text('承認する',
-                                                style: TextStyle(
+                                              child: Text(AppLocalizations.of(context)!.acceptRequest,
+                                                style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Color.fromARGB(255, 82, 82, 82))),
                                               onPressed: () async{
@@ -614,8 +610,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 style: ButtonStyle(
                                                   // ボタンの最小サイズを設定
                                                   minimumSize: MaterialStateProperty.all(const Size(0, 30))),
-                                                child: const Text('却下する',
-                                                  style: TextStyle(
+                                                child: Text(AppLocalizations.of(context)!.denyRequest,
+                                                  style: const TextStyle(
                                                     fontSize: 12,
                                                     color: Color.fromARGB(255, 82, 82, 82))),
                                                 onPressed: () async{
@@ -645,10 +641,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           tile = ListTile(
                                                    title: Text(friendNotifications[index]!.friendName!),
                                                    subtitle: friendNotifications[index]!.requestStatus! == 'waiting'
-                                                     ? const Text('リクエストの承認を待っています。')
+                                                     ? Text(AppLocalizations.of(context)!.waitingForRequest)
                                                      : friendNotifications[index]!.requestStatus! == 'accepted'
-                                                       ? const Text('リクエストが承認されました。')
-                                                       : const Text('リクエストが却下されました。'),
+                                                       ? Text(AppLocalizations.of(context)!.acceptedRequest)
+                                                       : Text(AppLocalizations.of(context)!.deniedRequest),
                                                    onTap: () async{
                                                     // 自分のフレンドリクエストドキュメントを削除
                                                     await UserFirestore.deleteFriendRequest(
@@ -694,7 +690,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       icon: const Icon(Icons.person_add_outlined,
                           color: Color.fromARGB(255, 176, 176, 176)),
                       iconSize: 35,
-                      tooltip: '友達リクエスト',
+                      tooltip: AppLocalizations.of(context)!.friendRequest,
                     ),
                 )
           ),
@@ -740,10 +736,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   height: 30,
                                   width: double.infinity,
                                   color: const Color.fromARGB(255, 94, 94, 94),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      'メール通知',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.mailNotification,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
@@ -751,11 +747,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     ),
                                   )
                                 ),
-                            const Padding(
-                              padding: EdgeInsets.all(50),
+                            Padding(
+                              padding: const EdgeInsets.all(50),
                               child: Center(child: 
-                                Text('未読のメールはありません',
-                                style: TextStyle(
+                                Text(AppLocalizations.of(context)!.thereIsNoUnreadMail,
+                                style: const TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold
@@ -772,10 +768,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     height: 30,
                                     width: double.infinity,
                                     color: const Color.fromARGB(255, 192, 192, 192),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        'メール通知',
-                                        style: TextStyle(
+                                        AppLocalizations.of(context)!.mailNotification,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold
@@ -851,7 +847,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       icon: const Icon(Icons.notifications_none_outlined,
                           color: Color.fromARGB(255, 176, 176, 176)),
                       iconSize: 35,
-                      tooltip: '受信メールの通知',
+                      tooltip: AppLocalizations.of(context)!.notificationOfInbox,
                     ),
                 )
           ),
@@ -866,7 +862,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               icon: const Icon(Icons.contacts_outlined,
                   color: Color.fromARGB(255, 176, 176, 176)),
               iconSize: 27,
-              tooltip: 'マッチング履歴の表示',
+              tooltip: AppLocalizations.of(context)!.displayMatchingHistory,
               // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
               // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
               // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる,
@@ -936,7 +932,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               children: [
                                 Expanded(
                                   child: ListTile(
-                                    title: const Text('名前'),
+                                    title: Text(AppLocalizations.of(context)!.name),
                                     subtitle: Text('${meUser!.userName}',
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 153, 153, 153)
@@ -952,12 +948,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: const Text('名前を変更しますか？'),
+                                          title: Text(AppLocalizations.of(context)!.changeName),
                                           content: TextField(
                                             controller: nameController,
-                                            decoration: const InputDecoration(
-                                              hintText: '新しい名前を入力',
-                                              hintStyle: TextStyle(
+                                            decoration: InputDecoration(
+                                              hintText: AppLocalizations.of(context)!.inputNewName,
+                                              hintStyle: const TextStyle(
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
@@ -978,17 +974,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ref.read(meUserProvider.notifier).updateUserName(nameController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: const Text('決定')),
+                                              child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: const Text('キャンセル'))
+                                              child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
                                     });
                                   },
-                                  child: const Text('変更') 
+                                  child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
 
@@ -996,7 +992,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               children: [
                                 Expanded(
                                   child: ListTile(
-                                    title: const Text('自己紹介文'),
+                                    title: Text(AppLocalizations.of(context)!.statement),
                                     subtitle: Text('${meUser!.statement}',
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 153, 153, 153)
@@ -1012,12 +1008,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: const Text('自己紹介文を変更しますか？'),
+                                          title: Text(AppLocalizations.of(context)!.changeStatement),
                                           content: TextField(
                                             controller: statementController,
-                                            decoration: const InputDecoration(
-                                              hintText: '新しい自己紹介文を入力',
-                                              hintStyle: TextStyle(
+                                            decoration: InputDecoration(
+                                              hintText: AppLocalizations.of(context)!.inputNewStatement,
+                                              hintStyle: const TextStyle(
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
@@ -1038,17 +1034,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ref.read(meUserProvider.notifier).updateStatement(statementController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: const Text('決定')),
+                                              child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: const Text('キャンセル'))
+                                              child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
                                     });
                                   },
-                                  child: const Text('変更') 
+                                  child: Text(AppLocalizations.of(context)!.cancel) 
                                 ), 
                             ]),
                       ],
@@ -1076,9 +1072,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: ListTile(
-                      title: Text('アプリの表示言語'),
+                      title: Text(AppLocalizations.of(context)!.appLanguage),
                     ),
                   ),
                   Padding(
@@ -1100,9 +1096,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: ListTile(
-                      title: Text('翻訳先の言語'),
+                      title: Text(AppLocalizations.of(context)!.targetLanguage),
                     ),
                   ),
                   Padding(
@@ -1125,8 +1121,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('サブスクリプション： フリープラン'),
+                child: Row(children: [
+                  Text(AppLocalizations.of(context)!.subscription),
                 ])),
 
 
@@ -1138,8 +1134,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('ログインID表示 環境設定関連'),
+                child: Row(children: [
+                  Text(AppLocalizations.of(context)!.environmentalSetting),
                 ]))
           ],
         ),
@@ -1157,10 +1153,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             ))),
             height: 50,
             width: 280,
-            child: const Center(
+            child: Center(
                 child: Text(
-              'マッチングの履歴',
-              style: TextStyle(fontSize: 24),
+              AppLocalizations.of(context)!.headerMatchingHistryDrawer,
+              style: const TextStyle(fontSize: 24),
             ))),
         FutureBuilder(
             future: myDataFuture,
@@ -1168,7 +1164,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return Text('エラーが発生しました');
+                return Text(AppLocalizations.of(context)!.error);
               } else {
                 return StreamBuilder<QuerySnapshot>(
                     stream: UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
@@ -1200,16 +1196,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   String dateLabel = '';
 
                                   if (createdAt.isBefore(oneWeek)) {
-                                    dateLabel = '1週間以上前';
+                                    dateLabel = AppLocalizations.of(context)!.moreThanOneWeekAgo;
                                   } else if (createdAt.isAfter(oneWeek) &&
                                       createdAt.isBefore(yesterday)) {
-                                    dateLabel = 'この１週間';
+                                    dateLabel = AppLocalizations.of(context)!.thisWeek;
                                   } else if (createdAt.isAfter(today) ||
                                       createdAt.isAtSameMomentAs(today)) {
-                                    dateLabel = '今日';
+                                    dateLabel = AppLocalizations.of(context)!.today;
                                   } else if (createdAt.isAfter(yesterday) ||
                                       createdAt.isAtSameMomentAs(yesterday)) {
-                                    dateLabel = '昨日';
+                                    dateLabel = AppLocalizations.of(context)!.yesterday;
                                   }
 
                                   String prevDateLabel = '';
@@ -1221,18 +1217,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             .toDate();
 
                                     if (prevCreatedAt.isBefore(oneWeek)) {
-                                      prevDateLabel = '1週間以上前';
+                                      prevDateLabel = AppLocalizations.of(context)!.moreThanOneWeekAgo;
                                     } else if (prevCreatedAt.isAfter(oneWeek) &&
                                         prevCreatedAt.isBefore(yesterday)) {
-                                      prevDateLabel = 'この１週間';
+                                      prevDateLabel = AppLocalizations.of(context)!.thisWeek;
                                     } else if (prevCreatedAt.isAfter(today) ||
                                         prevCreatedAt.isAtSameMomentAs(today)) {
-                                      prevDateLabel = '今日';
-                                    } else if (prevCreatedAt
-                                            .isAfter(yesterday) ||
-                                        prevCreatedAt
-                                            .isAtSameMomentAs(yesterday)) {
-                                      prevDateLabel = '昨日';
+                                      prevDateLabel = AppLocalizations.of(context)!.today;
+                                    } else if (prevCreatedAt.isAfter(yesterday) ||
+                                        prevCreatedAt.isAtSameMomentAs(yesterday)) {
+                                      prevDateLabel = AppLocalizations.of(context)!.yesterday;
                                     }
                                   }
 
@@ -1285,9 +1279,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           ),
                         );
                       }
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 300),
-                        child: Text('まだマッチングの履歴がないようです'),
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 300),
+                        child: Text(AppLocalizations.of(context)!.thereIsNoMatchingHistory),
                       );
                     });
               }
@@ -1381,7 +1375,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           child: IconButton(
                             icon: const Icon(Icons.travel_explore_outlined),
                             iconSize: 35,
-                            tooltip: 'マッチングしたい相手の設定ができます',
+                            tooltip: AppLocalizations.of(context)!.searchPageTooltip,
                             color: selectedBottomIconIndex == 0
                                 ? const Color.fromARGB(255, 79, 155, 255)
                                 : const Color.fromARGB(255, 176, 176, 176),
@@ -1398,7 +1392,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           flex: 1,
                           child: Center(
                             child: Text(
-                              AppLocalizations.of(context)!.search,
+                              AppLocalizations.of(context)!.searchBelowIcon,
                               style: TextStyle(
                                 color: selectedBottomIconIndex == 0
                                     ? const Color.fromARGB(255, 79, 155, 255)
@@ -1422,7 +1416,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           child: IconButton(
                             icon: const Icon(Icons.email_outlined),
                             iconSize: 35,
-                            tooltip: '友達から受信したメールの一覧が見られます',
+                            tooltip: AppLocalizations.of(context)!.dMListPageTooltip,
                             color: selectedBottomIconIndex == 1
                                 ? const Color.fromARGB(255, 79, 155, 255)
                                 : const Color.fromARGB(255, 176, 176, 176),
@@ -1439,7 +1433,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           flex: 1,
                           child: Center(
                             child: Text(
-                              AppLocalizations.of(context)!.message,
+                              AppLocalizations.of(context)!.messageBelowIcon,
                               style: TextStyle(
                                 color: selectedBottomIconIndex == 1
                                     ? const Color.fromARGB(255, 79, 155, 255)
@@ -1463,7 +1457,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           child: IconButton(
                             icon: const Icon(Icons.people_alt_outlined),
                             iconSize: 35,
-                            tooltip: '友達の一覧が見られます',
+                            tooltip: AppLocalizations.of(context)!.friendListPageTooltip,
                             color: selectedBottomIconIndex == 2
                                 ? const Color.fromARGB(255, 79, 155, 255)
                                 : const Color.fromARGB(255, 176, 176, 176),
@@ -1480,7 +1474,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           flex: 1,
                           child: Center(
                             child: Text(
-                              AppLocalizations.of(context)!.friends,
+                              AppLocalizations.of(context)!.friendsBelowIcon,
                               style: TextStyle(
                                 color: selectedBottomIconIndex == 2
                                     ? const Color.fromARGB(255, 79, 155, 255)

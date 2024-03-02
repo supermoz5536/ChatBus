@@ -5,6 +5,7 @@ import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -29,14 +30,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         child: ListView(
           children: [
 
-            const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text(
-                '検索の設定をして\nチャットを始めよう!',
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Color.fromARGB(255, 75, 75, 75),
-                  fontWeight: FontWeight.bold)),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context)!.headerSearchPage,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Color.fromARGB(255, 75, 75, 75),
+                    fontWeight: FontWeight.bold)),
+              ),
             ),
 
             const Divider(
@@ -60,21 +64,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
-                  title: const Text(
-                    '母国語の選択',
-                    style: TextStyle(
+                  title: Text(
+                    AppLocalizations.of(context)!.titleSelectNativeLanguage,
+                    style: const TextStyle(
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: const Text('自分がネイティブに話せる言語を3つ選択できます！'),
+                  subtitle: Text(AppLocalizations.of(context)!.subTitleSelectNativeLanguage),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
               
                     SwitchListTile(
-                      title: const Text(
-                        '英語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.english,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedNativeLanguage!.en!,
@@ -90,9 +94,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
               
                     SwitchListTile(
-                      title: const Text(
-                        '日本語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.japanese,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedNativeLanguage.ja!,
@@ -109,9 +113,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
               
                     SwitchListTile(
-                      title: const Text(
-                        'スペイン語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.spanish,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedNativeLanguage.es!,
@@ -142,21 +146,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
-                  title: const Text(
-                    '言語フィルター',
-                    style: TextStyle(
+                  title: Text(
+                    AppLocalizations.of(context)!.titleLanguageFilter,
+                    style: const TextStyle(
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: const Text('マッチング相手の話す言語を1つ選択できます！'),
+                  subtitle: Text(AppLocalizations.of(context)!.subTitleLanguageFilter),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
               
                     SwitchListTile(
-                      title: const Text(
-                        '英語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.english,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
@@ -169,9 +173,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
               
                     SwitchListTile(
-                      title: const Text(
-                        '日本語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.japanese,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
@@ -184,9 +188,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
               
                     SwitchListTile(
-                      title: const Text(
-                        'スペイン語',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.spanish,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedLanguage.es!,
@@ -217,13 +221,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
-                  title: const Text(
-                    'ジェンダーフィルター',
-                    style: TextStyle(
+                  title: Text(
+                    AppLocalizations.of(context)!.titleGenderFilter,
+                    style: const TextStyle(
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: const Text('マッチングしたい人の性別を選択できます！'),
+                  subtitle: Text(AppLocalizations.of(context)!.subTitleGenderFilter),
                   children: [
                               
                     const Divider(
@@ -235,9 +239,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
                               
                     CheckboxListTile(
-                      title: const Text(
-                        '男性',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.male,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedGender!.male
@@ -258,9 +262,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
                               
                     CheckboxListTile(
-                      title: const Text(
-                        '女性',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.female,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedGender.female
@@ -281,9 +285,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     ),
                               
                     CheckboxListTile(
-                      title: const Text(
-                        '男性と女性',
-                        style: TextStyle(
+                      title: Text(
+                        AppLocalizations.of(context)!.maleAndFemale,
+                        style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
                       value: selectedGender.both

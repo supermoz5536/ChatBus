@@ -1,51 +1,86 @@
 {
-    "start": "START",
-    "@start": {
-        "description": "Inside the button to start chat in LaungePage."
-    },
-
-    "search": "Search",
-    "@search": {
-        "description": "Under Search Icon."
-    },
-
-    "message": "Message",
-    "@message": {
-        "description": "Under Message Icon."
-    },
-
-    "friends": "Friends",
-    "@friends": {
-        "description": "Under Friends Icon."
-    },
-
-    "termsOfUse": "About the Terms of Use!\nDon't say anything that might offend others!\nDon't use it to meet people.\nDon't give out your personal information!\nIt's a promise to have a good time!\n",
-    "@termsOfUse": {
-        "description": "The terms that the system says in MatchingProgress."
-    },
-
-    "systemMessageInMatchingProgress": "I'm searching for a chat partner!",
-    "@systemMessageInMatchingProgress": {
-        "description": "The message that system says in MatchingProgress."
-    },
-
-    "cancel": "Cancel",
-    "@cancel": {
-        "description": "Inside the button to cancel in MatchingProgress."
-    },
-
-    "exit": "EXIT",
-    "@exit": {
-        "description": "Inside the button to exit in TalkRoom."
-    },
-
-    "goNext": "Go Next",
-    "@goNext": {
-        "description": "Inside the button to find next chat partner in TalkRoom."
-    },
-
-    "goHome": "Go Home",
-    "@goHome": {
-        "description": "Inside the button to back to Launge in TalkRoom."
-    }
+"error":	"An error has occurred",
+"name":	"Name",
+"statement":	"Introduction statement",
+"ok":	"OK",
+"cancel":	"Cancel",
+"change":	"Change",
+"changeName":	"Change name?",
+"inputNewName":	"Enter new name",
+"inputName":	"Enter name",
+"changeStatement":	"Change introduction statement?",
+"inputNewStatement":	"Enter new introduction statement",
+"appLanguage":	"App display language",
+"targetLanguage":	"Target translation language",
+"subscription":	"Subscription: Free Plan",
+"environmentalSetting":	"Environmental Settings",
+"noMessage":	"No messages",
+"addFriend":	"Add friend",
+"requesting":	"Requesting",
+"alreadyFriend":	"Already friends",
+"translation":	"Translation",
+"back":	"Back",
+"english":	"English",
+"japanese":	"Japanese",
+"spanish":	"Spanish",
+"korean":	"Korean",
+"chinese":	"Chinese",
+"friendRequest":	"Friend Request",
+"thereIsNoFriendRequest":	"No notifications of friend requests",
+"acceptRequest":	"Accept",
+"denyRequest":	"Decline",
+"waitingForRequest":	"Waiting for a friend request",
+"acceptedRequest":	"Your request has been accepted",
+"deniedRequest":	"Your request has been declined",
+"mailNotification":	"Email notification",
+"thereIsNoUnreadMail":	"No unread emails",
+"notificationOfInbox":	"Notification of new emails",
+"displayMatchingHistory":	"Show matching history",
+"headerMatchingHistryDrawer":	"History of matches",
+"moreThanOneWeekAgo":	"Over a week ago",
+"thisWeek":	"This week",
+"today":	"Today",
+"yesterday":	"Yesterday",
+"thereIsNoMatchingHistory":	"No history of matches",
+"beforeStart":	"Before you start",
+"setBelow":	"Please set the following.",
+"gender":	"Gender",
+"learningLanguage":	"Language\nyou learn",
+"start":	"Start chat",
+"alreadyRegistered":	"If you have already registered your email, you can log in here.",
+"searchPageTooltip":	"Settings for matching with a partner",
+"dMListPageTooltip":	"List of emails received from friends",
+"friendListPageTooltip":	"List of friends",
+"searchBelowIcon":	"Search",
+"messageBelowIcon":	"Messages",
+"friendsBelowIcon":	"Friend",
+"headerMatchingProgressPage":	"Matching",
+"termsOfUse":	"Let's talk about the terms of use\nDon't make statements that could discomfort others!\nDon't use this for romantic encounters!\nDon't share personal information!\nThese are promises for a fun time!\n",
+"searchingYourPartner":	"Searching for your chat partner!",
+"headerTalkRoomPage":	"Talk Room",
+"endChat":	"EXIT",
+"findNextPartner":	"Go Next",
+"backToHome":	"Go Home",
+"headerDMRoomPage":	"Direct Messages",
+"newMessageFromHere":	"new messages from here",
+"headerProfilePage":	"Profile Page",
+"noProfileInformation":	"No profile information.",
+"greeting":	"Greet",
+"block":	"Block",
+"confirmReally":	"Really?",
+"headerMatchedHistoryPage":	"Talk History",
+"headerSearchPage":	"Set up search!\nStart chatting!",
+"titleSelectNativeLanguage":	"Select native language",
+"subTitleSelectNativeLanguage":	"You can select up to 3 languages that you can speak fluently!",
+"titleLanguageFilter":	"Language filter",
+"subTitleLanguageFilter":	"You can select one language spoken by the matching partner!",
+"titleGenderFilter":	"Gender filter",
+"subTitleGenderFilter":	"You can select the gender of the person you want to match with!",
+"male":	"Male",
+"female":	"Female",
+"maleAndFemale":	"Male and Female",
+"thereIsNoFriend":	"There are no friends yet.",
+"sendRequestToYourChatPartner":	"Send a friend request to your chat partner!",
+"thereIsNoMessage":	"There are no messages yet.",
+"sendMessageToYourFriend":	"Send a message to your friend!"
 }

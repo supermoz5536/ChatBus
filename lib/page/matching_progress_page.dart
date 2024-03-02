@@ -240,7 +240,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 188, 234, 255),
       appBar: AppBar(
-        title: const Text('Waiting Room'),
+        title: Text(AppLocalizations.of(context)!.headerMatchingProgressPage),
       ),
       body: Stack(
         // Stackは、childrenに積み重ねて表示させたいウィジェットを下層から順に追加する  //https://coderenkin.com/flutter-stack/
@@ -305,7 +305,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
                                 horizontal: 18, vertical: 6),
                             child: ListTile(
                               title: // コンテナのchild部分に、[1]のメッセージを表示
-                                  Text(AppLocalizations.of(context)!.systemMessageInMatchingProgress),
+                                  Text(AppLocalizations.of(context)!.searchingYourPartner),
                             )),
                       );
                     }

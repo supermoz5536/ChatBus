@@ -186,7 +186,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
         elevation: 3,
         shadowColor: Colors.black.withOpacity(0.7),
         surfaceTintColor: Colors.transparent,
-        title: const Text('トークルーム'),
+        title: Text(AppLocalizations.of(context)!.headerTalkRoomPage),
         centerTitle: true,
         leading:  StreamBuilder<DocumentSnapshot>(
                     stream: UserFirestore.streamProfImage(meUser!.uid),
@@ -272,10 +272,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                   height: 30,
                                   width: double.infinity,
                                   color: const Color.fromARGB(255, 94, 94, 94),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      '友達リクエスト',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.friendRequest,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
@@ -283,11 +283,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     ),
                                   )
                                 ),
-                            const Padding(
-                              padding: EdgeInsets.all(50),
+                            Padding(
+                              padding: const EdgeInsets.all(50),
                               child: Center(child: 
-                                Text('リクエストの通知はありません',
-                                style: TextStyle(
+                                Text(AppLocalizations.of(context)!.thereIsNoFriendRequest,
+                                style: const TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold
@@ -304,10 +304,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     height: 30,
                                     width: double.infinity,
                                     color: const Color.fromARGB(255, 94, 94, 94),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        '友達リクエスト',
-                                        style: TextStyle(
+                                        AppLocalizations.of(context)!.friendRequest,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold
@@ -344,8 +344,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                               style: ButtonStyle(
                                                 // ボタンの最小サイズを設定
                                                 minimumSize: MaterialStateProperty.all(const Size(0, 30))),
-                                              child: const Text('承認する',
-                                                style: TextStyle(
+                                              child: Text(AppLocalizations.of(context)!.acceptRequest,
+                                                style: const TextStyle(
                                                   fontSize: 12,
                                                   color: Color.fromARGB(255, 82, 82, 82))),
                                               onPressed: () async{
@@ -394,8 +394,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 style: ButtonStyle(
                                                   // ボタンの最小サイズを設定
                                                   minimumSize: MaterialStateProperty.all(const Size(0, 30))),
-                                                child: const Text('却下する',
-                                                  style: TextStyle(
+                                                child: Text(AppLocalizations.of(context)!.denyRequest,
+                                                  style: const TextStyle(
                                                     fontSize: 12,
                                                     color: Color.fromARGB(255, 82, 82, 82))),
                                                 onPressed: () async{
@@ -425,10 +425,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           tile = ListTile(
                                                    title: Text(friendNotifications[index]!.friendName!),
                                                    subtitle: friendNotifications[index]!.requestStatus! == 'waiting'
-                                                     ? const Text('リクエストの承認を待っています。')
+                                                     ? Text(AppLocalizations.of(context)!.waitingForRequest)
                                                      : friendNotifications[index]!.requestStatus! == 'accepted'
-                                                       ? const Text('リクエストが承認されました。')
-                                                       : const Text('リクエストが却下されました。'),
+                                                       ? Text(AppLocalizations.of(context)!.acceptedRequest)
+                                                       : Text(AppLocalizations.of(context)!.deniedRequest),
                                                    onTap: () async{
                                                     // 自分のフレンドリクエストドキュメントを削除
                                                     await UserFirestore.deleteFriendRequest(
@@ -474,7 +474,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                       icon: const Icon(Icons.person_add_outlined,
                           color: Color.fromARGB(255, 176, 176, 176)),
                       iconSize: 35,
-                      tooltip: '友達リクエスト',
+                      tooltip: AppLocalizations.of(context)!.friendRequest,
                     ),
                 )
           ),
@@ -519,10 +519,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                   height: 30,
                                   width: double.infinity,
                                   color: const Color.fromARGB(255, 94, 94, 94),
-                                  child: const Center(
+                                  child: Center(
                                     child: Text(
-                                      'メール通知',
-                                      style: TextStyle(
+                                      AppLocalizations.of(context)!.mailNotification,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold
@@ -530,11 +530,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     ),
                                   )
                                 ),
-                            const Padding(
-                              padding: EdgeInsets.all(50),
+                            Padding(
+                              padding: const EdgeInsets.all(50),
                               child: Center(child: 
-                                Text('未読のメールはありません',
-                                style: TextStyle(
+                                Text(AppLocalizations.of(context)!.thereIsNoUnreadMail,
+                                style: const TextStyle(
                                   color: Color.fromARGB(255, 91, 91, 91),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold
@@ -551,10 +551,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     height: 30,
                                     width: double.infinity,
                                     color: const Color.fromARGB(255, 192, 192, 192),
-                                    child: const Center(
+                                    child: Center(
                                       child: Text(
-                                        'メール通知',
-                                        style: TextStyle(
+                                        AppLocalizations.of(context)!.mailNotification,
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold
@@ -630,7 +630,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                       icon: const Icon(Icons.notifications_none_outlined,
                           color: Color.fromARGB(255, 176, 176, 176)),
                       iconSize: 35,
-                      tooltip: '受信メールの通知',
+                      tooltip: AppLocalizations.of(context)!.notificationOfInbox,
                     ),
                 )
           ),
@@ -699,7 +699,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                               children: [
                                 Expanded(
                                   child: ListTile(
-                                    title: const Text('名前'),
+                                    title: Text(AppLocalizations.of(context)!.name),
                                     subtitle: Text('${meUser!.userName}',
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 153, 153, 153)
@@ -715,12 +715,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: const Text('名前を変更しますか？'),
+                                          title: Text(AppLocalizations.of(context)!.changeName),
                                           content: TextField(
                                             controller: nameController,
-                                            decoration: const InputDecoration(
-                                              hintText: '新しい名前を入力',
-                                              hintStyle: TextStyle(
+                                            decoration: InputDecoration(
+                                              hintText: AppLocalizations.of(context)!.inputNewName,
+                                              hintStyle: const TextStyle(
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
@@ -741,17 +741,17 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 ref.read(meUserProvider.notifier).updateUserName(nameController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: const Text('決定')),
+                                              child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: const Text('キャンセル'))
+                                              child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
                                     });
                                   },
-                                  child: const Text('変更') 
+                                  child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
 
@@ -759,7 +759,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                               children: [
                                 Expanded(
                                   child: ListTile(
-                                    title: const Text('自己紹介文'),
+                                    title: Text(AppLocalizations.of(context)!.statement),
                                     subtitle: Text('${meUser!.statement}',
                                       style: const TextStyle(
                                         color: Color.fromARGB(255, 153, 153, 153)
@@ -775,12 +775,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: const Text('自己紹介文を変更しますか？'),
+                                          title: Text(AppLocalizations.of(context)!.changeStatement),
                                           content: TextField(
                                             controller: statementController,
-                                            decoration: const InputDecoration(
-                                              hintText: '新しい自己紹介文を入力',
-                                              hintStyle: TextStyle(
+                                            decoration: InputDecoration(
+                                              hintText: AppLocalizations.of(context)!.inputNewStatement,
+                                              hintStyle: const TextStyle(
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
@@ -801,17 +801,17 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 ref.read(meUserProvider.notifier).updateStatement(statementController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: const Text('決定')),
+                                              child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: const Text('キャンセル'))
+                                              child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
                                     });
                                   },
-                                  child: const Text('変更') 
+                                  child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
                       ],
@@ -839,9 +839,9 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: ListTile(
-                      title: Text('アプリの表示言語'),
+                      title: Text(AppLocalizations.of(context)!.appLanguage),
                     ),
                   ),
                   Padding(
@@ -863,9 +863,9 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: ListTile(
-                      title: Text('翻訳先の言語'),
+                      title: Text(AppLocalizations.of(context)!.targetLanguage),
                     ),
                   ),
                   Padding(
@@ -888,8 +888,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('サブスクリプション： フリープラン'),
+                child: Row(children: [
+                  Text(AppLocalizations.of(context)!.subscription),
                 ])),
 
 
@@ -901,8 +901,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('ログインID表示 環境設定関連'),
+                child: Row(children: [
+                  Text(AppLocalizations.of(context)!.environmentalSetting),
                 ]))
           ],
         ),
@@ -1039,18 +1039,18 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                               elevation: 4,
                                               items: <PopupMenuEntry<dynamic>>[
 
-                                                const PopupMenuItem(
+                                                PopupMenuItem(
                                                   value: 1,
-                                                  padding: EdgeInsets.only(left: 20, right: 1),
+                                                  padding: const EdgeInsets.only(left: 20, right: 1),
                                                   child: ListTile(
-                                                    leading: Icon(
+                                                    leading: const Icon(
                                                       Icons.translate_outlined,
                                                       color: Colors.white,
                                                       ),
                                                     title: Text(
-                                                      '翻訳',
-                                                      style: TextStyle(color: Colors.white)),
-                                                    tileColor: Color.fromARGB(255, 48, 48, 48),
+                                                      AppLocalizations.of(context)!.translation,
+                                                      style: const TextStyle(color: Colors.white)),
+                                                    tileColor: const Color.fromARGB(255, 48, 48, 48),
                                                     dense: true,
                                                   ),
                                                 ),
@@ -1222,8 +1222,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                         }),
                   );
                 } else {
-                  return const Center(
-                    child: Text('メッセージがありません'),
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.thereIsNoMessage),
                   );
                 }
               }),
@@ -1378,10 +1378,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           }
                                       },
                                       child: isFriendRequestExist == false && isFriendUidExist == false
-                                        ? const Text('友達に追加')
+                                        ? Text(AppLocalizations.of(context)!.addFriend)
                                         : isFriendRequestExist == true
-                                          ? const Text('リクエスト中')
-                                          : const Text('既に友達です')
+                                          ? Text(AppLocalizations.of(context)!.requesting)
+                                          : Text(AppLocalizations.of(context)!.alreadyFriend)
                                       ),
                 
                                     const Spacer(flex: 6),
@@ -1425,7 +1425,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
             // トーク相手にチャット終了を伝える
             await UserFirestore.updateChattingStatus(widget.talkRoom.myUid, false);
           },
-           child: Text(AppLocalizations.of(context)!.exit),
+           child: Text(AppLocalizations.of(context)!.endChat),
         ),
 
         // ■ 入力フィールド
@@ -1525,7 +1525,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: Text(AppLocalizations.of(context)!.goNext),
+          child: Text(AppLocalizations.of(context)!.findNextPartner),
         )),
 
         // ■ 「最初の画面に戻る」ボタン
@@ -1559,7 +1559,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   isDisabled = false;
                   //入力のタップを解除
                 },
-          child: Text(AppLocalizations.of(context)!.goHome),
+          child: Text(AppLocalizations.of(context)!.backToHome),
         )),
 
       ],

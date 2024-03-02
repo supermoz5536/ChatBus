@@ -20,6 +20,7 @@ import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class DMRoomPage extends ConsumerStatefulWidget {
@@ -87,7 +88,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
         elevation: 3,
         shadowColor: Colors.black.withOpacity(0.7),
         surfaceTintColor: Colors.transparent,
-        title: const Text('ダイレクトメッセージ'),
+        title: Text(AppLocalizations.of(context)!.headerDMRoomPage),
         centerTitle: true,
         bottom: const PreferredSize(
             preferredSize: Size.fromHeight(15),
@@ -139,10 +140,10 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                             return const SizedBox.shrink();
                           }
                           if (message.isDivider == true && snapshot.data!.docs.length >= 2) {
-                            return const Center(
+                            return Center(
                               child: Text(
-                                '------ ここから新しいメッセージ ------',
-                                style: TextStyle(
+                                '------ ${AppLocalizations.of(context)!.newMessageFromHere} ------',
+                                style: const TextStyle(
                                   color: Color.fromARGB(255, 176, 176, 176),
                                   fontWeight: FontWeight.bold
                                 ),),
@@ -243,18 +244,18 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                               elevation: 4,
                                               items: <PopupMenuEntry<dynamic>>[
 
-                                                const PopupMenuItem(
+                                                PopupMenuItem(
                                                   value: 1,
-                                                  padding: EdgeInsets.only(left: 20, right: 1),
+                                                  padding: const EdgeInsets.only(left: 20, right: 1),
                                                   child: ListTile(
-                                                    leading: Icon(
+                                                    leading: const Icon(
                                                       Icons.translate_outlined,
                                                       color: Colors.white,
                                                       ),
                                                     title: Text(
-                                                      '翻訳',
-                                                      style: TextStyle(color: Colors.white)),
-                                                    tileColor: Color.fromARGB(255, 48, 48, 48),
+                                                      AppLocalizations.of(context)!.translation,
+                                                      style: const TextStyle(color: Colors.white)),
+                                                    tileColor: const Color.fromARGB(255, 48, 48, 48),
                                                     dense: true,
                                                   ),
                                                 ),
@@ -427,8 +428,8 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                         }),
                   );
                 } else {
-                  return const Center(
-                    child: Text('メッセージがありません'),
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noMessage),
                   );
                 }
               }),
@@ -497,7 +498,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           /// 入力のタップを解除
                           isDisabled = false;
                         },
-                      child: const Text('戻る'),
+                      child: Text(AppLocalizations.of(context)!.back),
                     ),
 
 
@@ -669,10 +670,10 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                           }
                                       },
                                       child: isFriendRequestExist == false && isFriendUidExist == false
-                                        ? const Text('友達に追加')
+                                        ? Text(AppLocalizations.of(context)!.addFriend)
                                         : isFriendRequestExist == true
-                                          ? const Text('リクエスト中')
-                                          : const Text('既に友達です')
+                                          ? Text(AppLocalizations.of(context)!.requesting)
+                                          : Text(AppLocalizations.of(context)!.alreadyFriend)
                                       ),
                 
                                     const Spacer(flex: 6),

@@ -13,7 +13,7 @@ import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -66,7 +66,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError) {
-                return Text('エラーが発生しました');
+                return Text(AppLocalizations.of(context)!.error);
               } else {
                 return StreamBuilder<DocumentSnapshot>(
                     stream: UserFirestore.streamProfImage(meUser!.uid),
@@ -106,7 +106,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                     });
               }
             }),
-        title: const Text('プロフィールページ'),
+        title: Text(AppLocalizations.of(context)!.headerProfilePage),
         centerTitle: true,
         bottom: const PreferredSize(
             preferredSize: Size.fromHeight(15),
@@ -441,7 +441,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
               if (futureFriendProfileSnapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               } else if (futureFriendProfileSnapshot.hasError) {
-                return const Text('エラーが発生しました');
+                return Text(AppLocalizations.of(context)!.error);
               } else if (futureFriendProfileSnapshot.hasData) {
                 return Center(
                   child: Column(
@@ -491,10 +491,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                   ]),
                 );
               } else {
-                return const Column(
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Center(child: Text('情報が取得できませんでした。')),
+                    Center(child: Text(AppLocalizations.of(context)!.noProfileInformation)),
                   ],
                 );
               }
@@ -559,9 +559,9 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               // });
                             },
                       style: ElevatedButton.styleFrom(elevation: 4),
-                      child: const Text(
-                        '戻る',
-                        style: TextStyle(fontSize: 17)
+                      child: Text(
+                        AppLocalizations.of(context)!.back,
+                        style: const TextStyle(fontSize: 17)
                       ),
                     )),
 
@@ -642,10 +642,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                           },
                         ),
                         const Spacer(flex: 1),
-                        const Center(
+                        Center(
                           child: Text(
-                            '挨拶する',
-                            style: TextStyle(
+                            AppLocalizations.of(context)!.greeting,
+                            style: const TextStyle(
                               color: Color.fromARGB(255, 79, 155, 255),
                               fontSize: 17,
                               fontWeight: FontWeight.bold
@@ -709,7 +709,9 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                         
                         Center(
                           child: Text(
-                            deleteConfirmedMarker ? '本当？' : 'ブロックする',
+                            deleteConfirmedMarker
+                              ? AppLocalizations.of(context)!.confirmReally
+                              : AppLocalizations.of(context)!.block,
                             style: const TextStyle(
                               color: Color.fromARGB(255, 79, 155, 255),
                               fontSize: 17,

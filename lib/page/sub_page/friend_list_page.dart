@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/profile_page.dart';
-import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class FriendListPage extends ConsumerStatefulWidget {
   final User? meUserData;
@@ -46,7 +47,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                     if (futureFriendIdsSnapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (futureFriendIdsSnapshot.hasError) {
-                      return const Text('エラーが発生しました');
+                      return Text(AppLocalizations.of(context)!.error);
                     } else {
                       friendIds = futureFriendIdsSnapshot.data!;
                     }
@@ -57,7 +58,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                         if (futureFriendDetailsSnapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
                         } else if (futureFriendDetailsSnapshot.hasError) {
-                          return const Text('エラーが発生しました');
+                          return Text(AppLocalizations.of(context)!.error);
                         } else if (futureFriendDetailsSnapshot.hasData) {
 
                         
@@ -151,11 +152,11 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                               }),
                               );
                       } else {
-                        return const Column(
+                        return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Center(child: Text('まだ友達がいません。')),
-                            Center(child: Text('チャット相手のアイコンをタップして\n友達リクエストを送りましょう!')),
+                            Center(child: Text(AppLocalizations.of(context)!.thereIsNoFriend)),
+                            Center(child: Text(AppLocalizations.of(context)!.sendRequestToYourChatPartner)),
                           ],
                         );
                       }       

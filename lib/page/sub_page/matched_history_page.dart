@@ -59,7 +59,7 @@ class _MatchedHistoryPageState extends ConsumerState<MatchedHistoryPage> {
         // elevation: 3,
         // shadowColor: Colors.black.withOpacity(0.7),
         surfaceTintColor: Colors.transparent,
-        title: const Text('トーク履歴'),
+        title: Text(AppLocalizations.of(context)!.headerMatchedHistoryPage),
         centerTitle: true,
         bottom: const PreferredSize(
             preferredSize: Size.fromHeight(0),
@@ -309,8 +309,8 @@ class _MatchedHistoryPageState extends ConsumerState<MatchedHistoryPage> {
                         }),
                   );
                 } else {
-                  return const Center(
-                    child: Text('メッセージがありません'),
+                  return Center(
+                    child: Text(AppLocalizations.of(context)!.noMessage),
                   );
                 }
               }),
@@ -440,10 +440,10 @@ class _MatchedHistoryPageState extends ConsumerState<MatchedHistoryPage> {
                                           }
                                       },
                                       child: isFriendRequestExist == false && isFriendUidExist == false
-                                        ? const Text('友達に追加')
+                                        ? Text(AppLocalizations.of(context)!.addFriend)
                                         : isFriendRequestExist == true
-                                          ? const Text('リクエスト中')
-                                          : const Text('既に友達です')
+                                          ? Text(AppLocalizations.of(context)!.requesting)
+                                          : Text(AppLocalizations.of(context)!.alreadyFriend)
                                       ),
                 
                                     const Spacer(flex: 6),

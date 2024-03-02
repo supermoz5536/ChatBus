@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,8 @@ import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class DMListPage extends ConsumerStatefulWidget {
   final User? meUserData;
@@ -63,7 +64,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                     return const Center(child: CircularProgressIndicator());
 
                   } else if (streamSnapshot.hasError) {
-                    return const Text('エラーが発生しました');
+                    return Text(AppLocalizations.of(context)!.error);
 
                   } else if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {                 
                     return FutureBuilder<List<DMRoom>?>(
@@ -151,17 +152,17 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                     },
                                   );
                                 } else {
-                                return Text('エラーが発生しました');
+                                return Text(AppLocalizations.of(context)!.error);
                                 }                    
                         }
                       }
                     );            
                   }else{
-                    return const Column(
+                    return  Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                          Center(child: Text('まだメッセージがありません。')),
-                          Center(child: Text('友達にメッセージを送りましょう!')),
+                          Center(child: Text(AppLocalizations.of(context)!.thereIsNoMessage)),
+                          Center(child: Text(AppLocalizations.of(context)!.sendMessageToYourFriend)),
                       ],
                     );
                   }
