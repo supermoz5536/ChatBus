@@ -321,9 +321,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         });
           // meUserの状態変数の更新（'language'だけはdbも更新）
           languageNotifierService!.changeLanguage(currentLanguageCode);
-          // selectedNativeLanguageの状態変数更新
-          ref.read(selectedNativeLanguageProvider.notifier)
-            .switchSelectedNativeLanguage(currentLanguageCode);
+          
+          // ■■■■■■ 必要ないコード思われる ■■■■■■ selectedNativeLanguageの状態変数更新
+          // ■■■■■■ 必要ないコード思われる ■■■■■■ ref.read(selectedNativeLanguageProvider.notifier)
+          // ■■■■■■ 必要ないコード思われる ■■■■■■  .switchSelectedNativeLanguage(currentLanguageCode);
       },
     );
   }

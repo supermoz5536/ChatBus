@@ -11,7 +11,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+//
 
 
 void main() async {
@@ -62,7 +62,7 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       supportedLocales: L10n.all,
-      // locale: const Locale('es'),
+      // locale: const Locale('zh_tw'),
       locale: Locale(user!.language!),
       localizationsDelegates: const[
         AppLocalizations.delegate, 
