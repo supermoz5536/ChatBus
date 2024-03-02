@@ -65,6 +65,9 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
       en: false,
       ja: false,
       es: false,
+      // ko: false,
+      // zh: false,
+      // zh_tw false,
     );
 
     switch(currentSelectedNativeLanguage) {
@@ -76,6 +79,12 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
         break;
       case 'es': 
         newState = newState.copyWith(es: true);
+      // case 'ko': 
+      //   newState = newState.copyWith(ko: true);
+      // case 'zh': 
+      //   newState = newState.copyWith(zh: true);
+      // case 'zh_tw': 
+      //   newState = newState.copyWith(zh_tw: true);
         break;       
     } 
     state = newState;

@@ -5,6 +5,9 @@ class SelectedLanguage{
   bool? en;
   bool? ja;
   bool? es;
+  // bool? ko;
+  // bool? zh;
+  // bool? zhTw;
 
   SelectedLanguage({
     this.en,

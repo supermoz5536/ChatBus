@@ -307,7 +307,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     icon: const Icon(Icons.keyboard_arrow_down_outlined),
     iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
     value: currentLanguageCode,
-    items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+    items: <String>['en', 'ja', 'es', 'ko','zh', 'zh_tw'].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,   //引数の言語コードをシステム識別用に設定
           child: Text(
@@ -338,7 +338,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
       icon: const Icon(Icons.keyboard_arrow_down_outlined),
       iconEnabledColor: const Color.fromARGB(255, 187, 187, 187),
       value: currentSelectedLanguageCode,
-      items: <String>['en', 'ja', 'es'].map<DropdownMenuItem<String>>((String value) {
+      items: <String>['en', 'ja', 'es', 'ko','zh', 'zh_tw'].map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
             value: value,   //引数の言語コードをシステム識別用に設定
             child: Text(
