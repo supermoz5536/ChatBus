@@ -63,7 +63,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                     return const Center(child: CircularProgressIndicator());
 
                   } else if (streamSnapshot.hasError) {
-                    return const Text('データの取得失敗しました');
+                    return const Text('エラーが発生しました');
 
                   } else if(streamSnapshot.hasData && streamSnapshot.data!.docs.isNotEmpty) {                 
                     return FutureBuilder<List<DMRoom>?>(
@@ -151,7 +151,7 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                     },
                                   );
                                 } else {
-                                return Text('トークの取得に失敗しました');
+                                return Text('エラーが発生しました');
                                 }                    
                         }
                       }

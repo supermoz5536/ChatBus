@@ -1463,7 +1463,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           child: IconButton(
                             icon: const Icon(Icons.people_alt_outlined),
                             iconSize: 35,
-                            tooltip: '友達リストが見られます',
+                            tooltip: '友達の一覧が見られます',
                             color: selectedBottomIconIndex == 2
                                 ? const Color.fromARGB(255, 79, 155, 255)
                                 : const Color.fromARGB(255, 176, 176, 176),

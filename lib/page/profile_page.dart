@@ -115,6 +115,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
               height: 0,
             )),
         actions: <Widget>[
+
           // ■ リクエスト通知ボタン
           OverlayPortal(
               controller: _overlayController1st,
@@ -217,7 +218,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                   color: Color.fromARGB(255, 176, 176, 176)),
               iconSize: 27,
               tooltip: 'マッチング履歴の表示',
-              // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す
+              // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す.
               // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
               // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる,
             );

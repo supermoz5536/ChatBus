@@ -32,7 +32,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             const Padding(
               padding: EdgeInsets.all(20.0),
               child: Text(
-                'マッチング相手の設定をして\nチャットを始めよう!',
+                '検索の設定をして\nチャットを始めよう!',
                 style: TextStyle(
                   fontSize: 25,
                   color: Color.fromARGB(255, 75, 75, 75),
@@ -282,7 +282,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                               
                     CheckboxListTile(
                       title: const Text(
-                        '男性 & 女性',
+                        '男性と女性',
                         style: TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
