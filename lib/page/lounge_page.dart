@@ -491,7 +491,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     top: screenSize.height * 0.15, // 画面高さの15%の位置から開始
                     left: screenSize.width * 0.05, // 画面幅の5%の位置から開始
                     height: screenSize.height * 0.3, // 画面高さの30%の高さ
-                    width: screenSize.width * 0.95, // 画面幅の90%の幅
+                    width: screenSize.width * 0.9, // 画面幅の90%の幅
                     child: Card(
                       elevation: 20,
                       color: Colors.white,

@@ -52,6 +52,12 @@ dependencies:
   collection: ^1.18.0
   path_provider: ^2.1.2
   file_picker: ^6.1.1
+  flutter_native_splash: ^2.3.10
+
+flutter_native_splash:
+  color: '#dcfcfc'
+  image: 'web/icons/splash_image.png'
+  web: true
   
 
 
