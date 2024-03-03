@@ -13,7 +13,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
@@ -57,7 +56,6 @@ class MyApp extends ConsumerWidget {
   } else {
     appLocale = Locale(splittedArgument[0], splittedArgument[1]);
   }
-
 
     return MaterialApp(
       /// DevicePreview の必須プロパティ

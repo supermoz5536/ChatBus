@@ -37,8 +37,8 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
   bool deleteConfirmedMarker = false;
   // int? selectedBottomIconIndex;
   int? selectedHistoryIndex;
-  final _overlayController1st = OverlayPortalController();
-  final _overlayController2nd = OverlayPortalController();
+  // final _overlayController1st = OverlayPortalController();
+  // final _overlayController2nd = OverlayPortalController();
   final TextEditingController controller = TextEditingController();
 // TextEditingConttrolloerはTextFieldで使うテキスト入力を管理するクラス.
 

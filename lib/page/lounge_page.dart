@@ -109,10 +109,24 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     gender: result['gender']
                   );
 
-        /// MeUserProvider の状態変数を更新
+        // MeUserProvider の状態変数を更新
         ref.read(meUserProvider.notifier).setUser(user);
-        /// TargetLanguageProvider の状態変数を更新
+
+        // App表示言語：現在選択中のアイテム名をUIに反映
+        // setState()がなくても他の描画プロセスが関連して
+        // UIが反映されるが、一応setState()を記述しておく。
+        setState(() {
+          currentLanguageCode = result['language'];
+        });     
+
+        // TargetLanguageProvider の状態変数を更新
+        // 起動時に、App表示言語と一致させてあげるユーザーフレンドリー
+        // targetLanguageのdropdownMenuのvalueに
+        // 'zh_TW'はないので
+        // その場合は更新せず、初期値の'en'が設定される        
+        if (result['language'] != 'zh_TW') {
         ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
+        }   
 
         // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが
         // dbに該当するドキュメントがなかった場合なので.
@@ -124,6 +138,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         if (dMNotifierservice != null) {
         dMSubscription = dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
         }
+
         // フレンドリクエストの通知リスナー起動
         if (friendRequestNotifierservice != null) {
         friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(result['myUid']);
