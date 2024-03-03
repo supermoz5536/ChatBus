@@ -29,7 +29,7 @@ class UserFirestore {
   try {
         /// 端末保存uidが存在しているかを確認
         String? sharedPrefesMyUid = Shared_Prefes.fetchUid();
-        // String? sharedPrefesMyUid = "dsffdaegaga";
+        // String? sharedPrefesMyUid = "dfdaegaga";
         print('sharedPrefesMyUid == $sharedPrefesMyUid');
 
 

@@ -171,7 +171,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               fontSize: 15,
                             ),
                             ),
-                          Row(                    
+                          Row(    
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,                
                             children: [
                               // ■ 左縦列
                               Column(
@@ -257,8 +258,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                         hintText: AppLocalizations.of(context)!.inputName,
                                         hintStyle: const TextStyle(
                                           color: Color.fromARGB(255, 153, 153, 153)
-                                        )
+                                        ),
                                       ),
+                                      textAlign: TextAlign.center,
                                       keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
                                       maxLines: 1, 
                                       inputFormatters: [CustomLengthTextInputFormatter(maxCount: 16)],
