@@ -757,10 +757,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                 Expanded(
                                   child: ListTile(
                                     title: Text(AppLocalizations.of(context)!.statement),
-                                    subtitle: Text('${meUser!.statement}',
-                                      style: const TextStyle(
-                                        color: Color.fromARGB(255, 153, 153, 153)
-                                      ),),
+                                    // subtitle: Text('${meUser!.statement}',
+                                    //   style: const TextStyle(
+                                    //     color: Color.fromARGB(255, 153, 153, 153)
+                                    //   ),),
                                   )),
                                 ElevatedButton(
                                   style: ButtonStyle(
@@ -811,6 +811,27 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                   child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
+
+                            Row(
+                              children: [
+
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15.0),
+                                  child: Container(
+                                    color: Colors.white,
+                                    height: 100,
+                                    width: 225,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text('${meUser!.statement}',
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 153, 153, 153)
+                                      ),),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
                       ],
                     )),
                   ),
