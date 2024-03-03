@@ -711,7 +711,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeName),
+                                          // title: Text(AppLocalizations.of(context)!.changeName),
                                           content: TextField(
                                             controller: nameController,
                                             decoration: InputDecoration(
@@ -737,17 +737,23 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                                 ref.read(meUserProvider.notifier).updateUserName(nameController.text);
                                                 if (context.mounted) Navigator.pop(context);
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (context.mounted) Navigator.pop(context);                                        
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
                                     });
                                   },
-                                  child: const Text('変更') 
+                                  child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
 
@@ -771,7 +777,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeStatement),
+                                          // title: Text(AppLocalizations.of(context)!.changeStatement),
                                           content: TextField(
                                             controller: statementController,
                                             decoration: InputDecoration(
@@ -797,11 +803,17 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                                 ref.read(meUserProvider.notifier).updateStatement(statementController.text);
                                                 if (context.mounted) Navigator.pop(context);
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.name)),
                                             TextButton(
                                               onPressed: () {
                                                 if (context.mounted) Navigator.pop(context);                                        
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );

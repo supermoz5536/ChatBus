@@ -964,7 +964,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeName),
+                                          // title: Text(AppLocalizations.of(context)!.changeName),
                                           content: TextField(
                                             controller: nameController,
                                             decoration: InputDecoration(
@@ -990,12 +990,22 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ref.read(meUserProvider.notifier).updateUserName(nameController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: Text(AppLocalizations.of(context)!.ok)),
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
+                                              child: Text(AppLocalizations.of(context)!.ok),
+                                              ),
+                                              
+                                              
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: Text(AppLocalizations.of(context)!.cancel))
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
+                                              child: Text(AppLocalizations.of(context)!.cancel),
+                                              )
                                           ],
                                         );
                                     });
@@ -1024,7 +1034,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeStatement),
+                                          // title: Text(AppLocalizations.of(context)!.changeStatement),
                                           content: TextField(
                                             controller: statementController,
                                             decoration: InputDecoration(
@@ -1033,7 +1043,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
-                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            // keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
                                             inputFormatters: [CustomLengthTextInputFormatter(maxCount: 68)],
                                           ),
                                           actions: <Widget>[
@@ -1050,11 +1060,18 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ref.read(meUserProvider.notifier).updateStatement(statementController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.ok)),
+
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
