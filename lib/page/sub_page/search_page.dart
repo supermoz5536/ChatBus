@@ -110,7 +110,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);      
                       },
                     ),
-                    
+
                     // ■ スペイン語
                     SwitchListTile(
                       title: Text(
@@ -125,6 +125,40 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         // レンジ外の場合: 何もしない
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
+                      },
+                    ),
+
+                    // ■ 韓国語
+                    SwitchListTile(
+                      title: Text(
+                        AppLocalizations.of(context)!.korean,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedNativeLanguage.ko!,
+                      onChanged: (bool newValue) {
+                        // 選択言語数がレンジ内か? の確認
+                        // レンジ内の場合: 状態変数を変更
+                        // レンジ外の場合: 何もしない
+                          withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                          if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateKo(newValue);
+                      },
+                    ),
+
+                    // ■ 中国語
+                    SwitchListTile(
+                      title: Text(
+                        AppLocalizations.of(context)!.chinese,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedNativeLanguage.zh!,
+                      onChanged: (bool newValue) {
+                        // 選択言語数がレンジ内か? の確認
+                        // レンジ内の場合: 状態変数を変更
+                        // レンジ外の場合: 何もしない
+                          withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                          if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateZh(newValue);
                       },
                     ),
                   ],

@@ -362,7 +362,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             currentSelectedLanguageCode = newSelectedLanguageCode!;
             isSelectedLanguage = true;
           });
-            // selectedNativeLanguageの状態変数更新
+            // selectedLanguageの状態変数更新
             ref.read(selectedLanguageProvider.notifier)
               .switchSelectedLanguage(currentSelectedLanguageCode);
       },

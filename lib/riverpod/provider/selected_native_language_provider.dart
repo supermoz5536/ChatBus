@@ -26,9 +26,13 @@ import 'dart:ui' as ui;
 final selectedNativeLanguageProvider = StateNotifierProvider<SelectedNativeLanguageNotifier, SelectedLanguage?>((ref) {
   String? currentLanguageCode = ui.window.locale.languageCode;
   SelectedLanguage? initialSelectedNativeLanguage = SelectedLanguage(
+    // デバイス設定言語と一致する言語のパラーメーターのみTrueに設定している
     en: currentLanguageCode == 'en',
     ja: currentLanguageCode == 'ja',
     es: currentLanguageCode == 'es',
+    ko: currentLanguageCode == 'ko',
+    zh: currentLanguageCode == 'zh',
+    zhTw: currentLanguageCode == 'zh_TW',
   );
     return SelectedNativeLanguageNotifier(initialSelectedNativeLanguage);
 });
