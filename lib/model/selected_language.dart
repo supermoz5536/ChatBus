@@ -5,14 +5,17 @@ class SelectedLanguage{
   bool? en;
   bool? ja;
   bool? es;
-  // bool? ko;
-  // bool? zh;
-  // bool? zhTw;
+  bool? ko;
+  bool? zh;
+  bool? zhTw;
 
   SelectedLanguage({
     this.en,
     this.ja,
     this.es,
+    this.ko,
+    this.zh,
+    this.zhTw,
     });
 
 
@@ -28,6 +31,9 @@ class SelectedLanguage{
     if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en'); 
     if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
     if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
+    if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
+    if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
+    if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw'); 
     return selectedLanguageTrueItem;
   } 
 
@@ -37,6 +43,9 @@ class SelectedLanguage{
     bool? en,
     bool? ja,
     bool? es,
+    bool? ko,
+    bool? zh,
+    bool? zhTw,
   }) {
     /// 「a ?? b」 「a != null」なら a の値を代入
     /// 「a ?? b」 「a == null」なら b の値を代入
@@ -55,6 +64,9 @@ class SelectedLanguage{
       en: en ?? this.en,
       ja: ja ?? this.ja,
       es: es ?? this.es,
+      ko: ko ?? this.ko,
+      zh: zh ?? this.zh,
+      zhTw: zhTw ?? this.zhTw,
     );
   }
 
