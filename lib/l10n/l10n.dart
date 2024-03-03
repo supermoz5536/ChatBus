@@ -11,10 +11,10 @@ class L10n {
     const Locale.fromSubtags(
       languageCode: 'zh',
       scriptCode: 'Hant',
+      countryCode: 'TW'
       ),
     const Locale.fromSubtags(
       languageCode: 'zh',
-      scriptCode: 'Hans'
     ),
   };
 }

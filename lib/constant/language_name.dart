@@ -6,5 +6,5 @@ final Map<String, String> languageNames = {
   'es': 'Español',
   'ko': '한국어',
   'zh': '简体中文',
-  'zh_tw': '繁體中文',
+  'zh_TW': '繁體中文',
 };

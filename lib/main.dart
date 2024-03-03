@@ -11,7 +11,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-//
+
 
 
 void main() async {
@@ -49,6 +49,16 @@ class MyApp extends ConsumerWidget {
   // Widget build(BuildContext context) {
   // Riverpod用の書き換えバックアップ  
   User? user = ref.watch(meUserProvider);
+  List<String> splittedArgument = user!.language!.split('_');
+  Locale appLocale;
+
+  if (splittedArgument.length == 1){
+    appLocale = Locale(splittedArgument[0]);
+  } else {
+    appLocale = Locale(splittedArgument[0], splittedArgument[1]);
+  }
+
+
     return MaterialApp(
       /// DevicePreview の必須プロパティ
       useInheritedMediaQuery: true,
@@ -62,8 +72,8 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       supportedLocales: L10n.all,
-      // locale: const Locale('zh_tw'),
-      locale: Locale(user!.language!),
+      // locale: const Locale('zh', 'TW'),
+      locale: appLocale,
       localizationsDelegates: const[
         AppLocalizations.delegate, 
         GlobalMaterialLocalizations.delegate,
