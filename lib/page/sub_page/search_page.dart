@@ -64,6 +64,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
+                  // ■ 母国語パラメーター
                   title: Text(
                     AppLocalizations.of(context)!.titleSelectNativeLanguage,
                     style: const TextStyle(
@@ -76,6 +77,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
               
+                    // ■ 英語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.english,
@@ -84,16 +86,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedNativeLanguage!.en!,
                       onChanged: (bool newValue) {
-                        setState(() {
-                          // 選択言語数がレンジ内か? の確認
-                          // レンジ内の場合: 状態変数を変更
-                          // レンジ外の場合: 何もしない
-                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
-                        });
+                        // 選択言語数がレンジ内か? の確認
+                        // レンジ内の場合: 状態変数を変更
+                        // レンジ外の場合: 何もしない
+                          withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                          if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
                       },
                     ),
-              
+
+                    // ■ 日本語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.japanese,
@@ -102,17 +103,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedNativeLanguage.ja!,
                       onChanged: (bool newValue) {
-                        setState(() {
-                          // 選択言語数がレンジ内か? の確認
-                          // レンジ内の場合: 状態変数を変更
-                          // レンジ外の場合: 何もしない
-                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
-                        });
-              
+                        // 選択言語数がレンジ内か? の確認
+                        // レンジ内の場合: 状態変数を変更
+                        // レンジ外の場合: 何もしない
+                          withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                          if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);      
                       },
                     ),
-              
+                    
+                    // ■ スペイン語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.spanish,
@@ -121,13 +120,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedNativeLanguage.es!,
                       onChanged: (bool newValue) {
-                        setState(() {
-                          // 選択言語数がレンジ内か? の確認
-                          // レンジ内の場合: 状態変数を変更
-                          // レンジ外の場合: 何もしない
-                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                           if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
-                        });
+                        // 選択言語数がレンジ内か? の確認
+                        // レンジ内の場合: 状態変数を変更
+                        // レンジ外の場合: 何もしない
+                          withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
+                          if (withinRange == true) ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
                       },
                     ),
                   ],

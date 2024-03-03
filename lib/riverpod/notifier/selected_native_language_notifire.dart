@@ -60,35 +60,26 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
   }
 
 
-  void switchSelectedNativeLanguage (String? currentSelectedNativeLanguage) {
-    var newState = state!.copyWith(
-      en: false,
-      ja: false,
-      es: false,
-      // ko: false,
-      // zh: false,
-      // zh_tw false,
-    );
+  // void switchSelectedNativeLanguage (String? currentSelectedNativeLanguage) {
+  //   var newState = state!.copyWith(
+  //     en: false,
+  //     ja: false,
+  //     es: false,
+  //   );
 
-    switch(currentSelectedNativeLanguage) {
-      case 'en': 
-        newState = newState.copyWith(en: true);
-        break;
-      case 'ja': 
-        newState = newState.copyWith(ja: true);
-        break;
-      case 'es': 
-        newState = newState.copyWith(es: true);
-      // case 'ko': 
-      //   newState = newState.copyWith(ko: true);
-      // case 'zh': 
-      //   newState = newState.copyWith(zh: true);
-      // case 'zh_tw': 
-      //   newState = newState.copyWith(zh_tw: true);
-        break;       
-    } 
-    state = newState;
-    }
+  //   switch(currentSelectedNativeLanguage) {
+  //     case 'en': 
+  //       newState = newState.copyWith(en: true);
+  //       break;
+  //     case 'ja': 
+  //       newState = newState.copyWith(ja: true);
+  //       break;
+  //     case 'es': 
+  //       newState = newState.copyWith(es: true);
+  //       break;       
+  //   } 
+  //   state = newState;
+  //   }
 
 
 

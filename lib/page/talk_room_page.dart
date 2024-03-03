@@ -152,9 +152,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
         });
           // meUserの状態変数の更新（'language'だけはdbも更新）
           languageNotifierService!.changeLanguage(currentLanguageCode);
-          // selectedNativeLanguageの状態変数更新
-          ref.read(selectedNativeLanguageProvider.notifier)
-            .switchSelectedNativeLanguage(currentLanguageCode);
       },
     );
   }
