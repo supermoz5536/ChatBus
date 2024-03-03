@@ -59,6 +59,23 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
     }
   }
 
+  void updateKo(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(ko: newValue);
+    }
+  }
+
+  void updateZh(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(zh: newValue);
+    }
+  }
+
+  void updateZhTW(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(zhTw: newValue);
+    }
+  }
 
   // void switchSelectedNativeLanguage (String? currentSelectedNativeLanguage) {
   //   var newState = state!.copyWith(
