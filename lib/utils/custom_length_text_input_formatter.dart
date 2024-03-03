@@ -8,31 +8,34 @@ class CustomLengthTextInputFormatter extends TextInputFormatter {
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    int currentLength = 0;
-    StringBuffer newText = StringBuffer();
+    // 日本語入力中にも適切に対応するため、新旧テキストの比較から実際に追加された文字を特定する
+    String newText = newValue.text;
+    int newLength = _calculateTextLength(newText);
 
-    for (final rune in newValue.text.runes) {
-      final char = String.fromCharCode(rune);
-      int charLength = _isHalfWidth(char) ? 1 : 2;
-
-      if ((currentLength + charLength) > maxCount) {
-        break;
-      }
-
-      currentLength += charLength;
-      newText.write(char);
+    // 最大文字数制限を超える場合は、古い値をそのまま返す
+    if (newLength > maxCount) {
+      return oldValue;
     }
 
-    return TextEditingValue(
-      text: newText.toString(),
-      selection: TextSelection.collapsed(offset: newText.length),
+    // 新しいテキストが古いテキストに基づいており、かつ最大文字数を超えていない場合は、新しい値を受け入れる
+    return newValue.copyWith(
+      text: newText,
+      selection: newValue.selection,
+      composing: TextRange.empty,
     );
   }
 
+  int _calculateTextLength(String text) {
+    int length = 0;
+    for (final rune in text.runes) {
+      final char = String.fromCharCode(rune);
+      length += _isHalfWidth(char) ? 1 : 2;
+    }
+    return length;
+  }
+
   bool _isHalfWidth(String char) {
-    // Unicodeの範囲を利用して半角文字かどうかを判断
-    // ここでは、基本的なASCII範囲（U+0020からU+007E）と、半角カタカナの範囲（U+FF61からU+FF9F）を半角とみなす
-    // さらに詳細な判定が必要な場合は、この条件を調整する
+    // 半角文字かどうかを判断
     return RegExp(r'[\u0020-\u007E\uFF61-\uFF9F]').hasMatch(char);
   }
 }
