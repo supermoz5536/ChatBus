@@ -60,12 +60,32 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
     }
   }
 
+  void updateKo(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(ko: newValue);
+    }
+  }
+
+  void updateZh(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(zh: newValue);
+    }
+  }
+
+  void updateZhTW(bool? newValue) {
+    if (state != null) {
+      state = state!.copyWith(zhTw: newValue);
+    }
+  }
 
   void switchSelectedLanguage (String? currentSelectedLanguage) {
     var newState = state!.copyWith(
       en: false,
       ja: false,
       es: false,
+      ko: false,
+      zh: false,
+      zhTw: false,
     );
 
     switch(currentSelectedLanguage) {
@@ -77,7 +97,16 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
         break;
       case 'es': 
         newState = newState.copyWith(es: true);
-        break;       
+        break;
+      case 'ko': 
+        newState = newState.copyWith(ko: true);
+        break;
+      case 'zh': 
+        newState = newState.copyWith(zh: true);
+        break;
+      case 'zh_TW': 
+        newState = newState.copyWith(zhTw: true);
+        break;
     } 
     state = newState;
     }

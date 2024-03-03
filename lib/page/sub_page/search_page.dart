@@ -179,6 +179,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
                   title: Text(
+                    // ■ 言語フィルター
                     AppLocalizations.of(context)!.titleLanguageFilter,
                     style: const TextStyle(
                       fontSize: 20,
@@ -188,7 +189,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
-              
+                    
+                    // ■ 英語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.english,
@@ -197,13 +199,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
                       onChanged: (bool newValue) {
-                        setState(() {
                           // Providerの状態を最新に更新
                           ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
-                        });
                       },
                     ),
-              
+
+                    // ■ 日本語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.japanese,
@@ -212,13 +213,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
                       onChanged: (bool newValue) {
-                        setState(() {
                           // Providerの状態を最新に更新。
                           ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
-                        });
                       },
                     ),
               
+                    // ■ スペイン語
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.spanish,
@@ -227,13 +227,42 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.es!,
                       onChanged: (bool newValue) {
-                        setState(() {
                           // 最新値に状態変数のプロパティに代入して
                           // Providerの状態を最新に更新
                           ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
-                        });
                       },
                     ),
+
+                    // ■ 韓国語
+                    SwitchListTile(
+                      title: Text(
+                        AppLocalizations.of(context)!.korean,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedLanguage.ko!,
+                      onChanged: (bool newValue) {
+                          // 最新値に状態変数のプロパティに代入して
+                          // Providerの状態を最新に更新
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
+                      },
+                    ),
+
+                    // ■ 中国語
+                    SwitchListTile(
+                      title: Text(
+                        AppLocalizations.of(context)!.chinese,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 102, 102, 102),
+                          fontSize: 15)),
+                      value: selectedLanguage.zh!,
+                      onChanged: (bool newValue) {
+                          // 最新値に状態変数のプロパティに代入して
+                          // Providerの状態を最新に更新
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
+                      },
+                    ),
+                    
                   ],
                 ),
               ),

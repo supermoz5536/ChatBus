@@ -26,6 +26,9 @@ final selectedLanguageProvider = StateNotifierProvider<SelectedLanguageNotifier,
   en: true,
   ja: false,
   es: false,
+  ko: false,
+  zh: false,
+  zhTw: false,
   );
     return SelectedLanguageNotifier(initialSelectedLanguage);
 });
