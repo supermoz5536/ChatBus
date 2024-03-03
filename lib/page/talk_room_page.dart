@@ -1345,6 +1345,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                     width: 300,
                                       child: Text(
                                         futureSnapshot.data!.statement!,
+                                        textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 17.5,

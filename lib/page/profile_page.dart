@@ -479,6 +479,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                           child: Text(
                             // widget.talkuserProfile!.statement!,
                             futureFriendProfileSnapshot.data!.statement!,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Color.fromARGB(255, 34, 34, 34),
                               fontSize: 17.5,
