@@ -70,6 +70,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
+                  // "自分が流暢に話せる言語を3つまで選択できます！",
                   subtitle: Text(AppLocalizations.of(context)!.subTitleSelectNativeLanguage),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
