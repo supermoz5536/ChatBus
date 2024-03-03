@@ -216,8 +216,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     children: [
                                       IconButton(
                                         icon: Icon(
-                                          Icons.man_2_outlined,
-                                          size: 50,
+                                          Icons.face_outlined,
+                                          size: 40,
                                           color: showDialogGender == 'male' ? Colors.lightBlue
                                                                             : Colors.grey),
                                         onPressed: () {
@@ -230,8 +230,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           
                                       IconButton(
                                         icon: Icon(
-                                          Icons.woman_2_outlined,
-                                          size: 50,
+                                          Icons.face_2,
+                                          size: 35,
                                           color: showDialogGender == 'female' ? Colors.lightBlue
                                                                               : Colors.grey),
                                         onPressed: () {
