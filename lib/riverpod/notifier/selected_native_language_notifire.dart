@@ -107,6 +107,9 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
       if (state?.en ?? false) 1,
       if (state?.ja ?? false) 1,
       if (state?.es ?? false) 1,
+      if (state?.ko ?? false) 1,
+      if (state?.zh ?? false) 1,
+      if (state?.zhTw ?? false) 1,
     ].length;
 
     // タップした際の処理を反映して
