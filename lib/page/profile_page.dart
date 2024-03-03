@@ -114,322 +114,323 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
               color: Colors.white,
               height: 0,
             )),
-        actions: <Widget>[
+      //   actions: <Widget>[
 
-          // ■ リクエスト通知ボタン
-          OverlayPortal(
-              controller: _overlayController1st,
-              overlayChildBuilder: (BuildContext context) {
-                return Stack(
-                  children: [
-                    GestureDetector(
-                      // Stack()最下層の全領域がスコープの範囲
-                      onTap: () {
-                        _overlayController1st.toggle();
-                      },
-                      child: Container(color: Colors.transparent),
-                    ),
-                    const Positioned(
-                      top: 120,
-                      left: 20,
-                      height: 200,
-                      width: 375,
-                      child: Card(
-                        elevation: 20,
-                        color: Color.fromARGB(255, 156, 156, 156),
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text('リクエスト通知の表示'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              child: IconButton(
-                onPressed: _overlayController1st.toggle,
-                icon: const Icon(Icons.person_add_alt_outlined,
-                    color: Color.fromARGB(255, 176, 176, 176)),
-                iconSize: 35,
-                tooltip: '友達リクエストの通知',
-              )),
+      //     // ■ リクエスト通知ボタン
+      //     OverlayPortal(
+      //         controller: _overlayController1st,
+      //         overlayChildBuilder: (BuildContext context) {
+      //           return Stack(
+      //             children: [
+      //               GestureDetector(
+      //                 // Stack()最下層の全領域がスコープの範囲
+      //                 onTap: () {
+      //                   _overlayController1st.toggle();
+      //                 },
+      //                 child: Container(color: Colors.transparent),
+      //               ),
+      //               const Positioned(
+      //                 top: 120,
+      //                 left: 20,
+      //                 height: 200,
+      //                 width: 375,
+      //                 child: Card(
+      //                   elevation: 20,
+      //                   color: Color.fromARGB(255, 156, 156, 156),
+      //                   child: Padding(
+      //                     padding: EdgeInsets.all(10.0),
+      //                     child: Column(
+      //                       mainAxisAlignment: MainAxisAlignment.center,
+      //                       children: <Widget>[
+      //                         SizedBox(
+      //                           height: 8,
+      //                         ),
+      //                         Text('リクエスト通知の表示'),
+      //                       ],
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ],
+      //           );
+      //         },
+      //         child: IconButton(
+      //           onPressed: _overlayController1st.toggle,
+      //           icon: const Icon(Icons.person_add_alt_outlined,
+      //               color: Color.fromARGB(255, 176, 176, 176)),
+      //           iconSize: 35,
+      //           tooltip: '友達リクエストの通知',
+      //         )),
 
-          // ■ DMの通知ボタン
-          OverlayPortal(
-              controller: _overlayController2nd,
-              overlayChildBuilder: (BuildContext context) {
-                return Stack(
-                  children: [
-                    GestureDetector(
-                      // Stack()最下層の全領域がスコープの範囲
-                      onTap: () {
-                        _overlayController2nd.toggle();
-                      },
-                      child: Container(color: Colors.transparent),
-                    ),
-                    const Positioned(
-                      top: 120,
-                      left: 20,
-                      height: 200,
-                      width: 375,
-                      child: Card(
-                        elevation: 20,
-                        color: Color.fromARGB(255, 156, 156, 156),
-                        child: Padding(
-                          padding: EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text('DM通知の表示'),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-              child: IconButton(
-                onPressed: _overlayController2nd.toggle,
-                icon: const Icon(Icons.notifications_none_outlined,
-                    color: Color.fromARGB(255, 176, 176, 176)),
-                iconSize: 35,
-                tooltip: '受信メールの通知',
-              )),
+      //     // ■ DMの通知ボタン
+      //     OverlayPortal(
+      //         controller: _overlayController2nd,
+      //         overlayChildBuilder: (BuildContext context) {
+      //           return Stack(
+      //             children: [
+      //               GestureDetector(
+      //                 // Stack()最下層の全領域がスコープの範囲
+      //                 onTap: () {
+      //                   _overlayController2nd.toggle();
+      //                 },
+      //                 child: Container(color: Colors.transparent),
+      //               ),
+      //               const Positioned(
+      //                 top: 120,
+      //                 left: 20,
+      //                 height: 200,
+      //                 width: 375,
+      //                 child: Card(
+      //                   elevation: 20,
+      //                   color: Color.fromARGB(255, 156, 156, 156),
+      //                   child: Padding(
+      //                     padding: EdgeInsets.all(10.0),
+      //                     child: Column(
+      //                       mainAxisAlignment: MainAxisAlignment.center,
+      //                       children: <Widget>[
+      //                         SizedBox(
+      //                           height: 8,
+      //                         ),
+      //                         Text('DM通知の表示'),
+      //                       ],
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ],
+      //           );
+      //         },
+      //         child: IconButton(
+      //           onPressed: _overlayController2nd.toggle,
+      //           icon: const Icon(Icons.notifications_none_outlined,
+      //               color: Color.fromARGB(255, 176, 176, 176)),
+      //           iconSize: 35,
+      //           tooltip: '受信メールの通知',
+      //         )),
 
-          // ■ マッチングヒストリーの表示ボタン
-          Builder(builder: (context) {
-            return IconButton(
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
-              icon: const Icon(Icons.contacts_outlined,
-                  color: Color.fromARGB(255, 176, 176, 176)),
-              iconSize: 27,
-              tooltip: 'マッチング履歴の表示',
-              // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す.
-              // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
-              // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる,
-            );
-          })
-        ],
+      //     // ■ マッチングヒストリーの表示ボタン
+      //     Builder(builder: (context) {
+      //       return IconButton(
+      //         onPressed: () {
+      //           Scaffold.of(context).openEndDrawer();
+      //         },
+      //         icon: const Icon(Icons.contacts_outlined,
+      //             color: Color.fromARGB(255, 176, 176, 176)),
+      //         iconSize: 27,
+      //         tooltip: 'マッチング履歴の表示',
+      //         // .of(context)は記述したそのウィジェット以外のスコープでscaffoldを探す.
+      //         // AppBar は Scaffold の内部にあるので、AppBar の context では scaffold が見つけられない
+      //         // Builderウィジェット は Scaffold から独立してるので、その context においては scaffold が見つけられる,
+      //       );
+      //     })
+      //   ],
       ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            Expanded(
-              //ListView が無限の長さを持つので直接 column でラップすると不具合
-              //Expanded で長さを限界値に指定
-              child: ListView(children: [
-                SizedBox(
-                  height: 160.0,
-                  child: DrawerHeader(
-                      child: Column(
-                    children: [
-                      Text('プロフィール画像の設定'),
-                      Spacer(flex: 1),
-                      Text('名前の設定'),
-                      Spacer(flex: 1),
-                      Text('自己紹介文の設定'),
-                      Spacer(flex: 1),
-                      SizedBox(
-                          child: ElevatedButton(
-                              onPressed: () {}, child: Text('ランダムネーミングのボタン'))),
-                    ],
-                  )),
-                ),
-                ListTile(title: Text('設定しておくと安心だよ！')),
-                ListTile(title: Text('IDの設定 :')),
-                Spacer(
-                  flex: 1,
-                ),
-                ListTile(title: Text('パスワードの設定 :')),
-              ]),
-            ),
-            const Divider(),
-            const Spacer(
-              flex: 1,
-            ),
-            Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                        color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
-                  ),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('サブスクリプション： フリープラン'),
-                ])),
-            Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                        color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
-                  ),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: const Row(children: [
-                  Text('ログインID表示 環境設定関連'),
-                ]))
-          ],
-        ),
-      ),
-      endDrawer: Drawer(
-          child: Column(children: <Widget>[
-        Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color.fromARGB(255, 199, 199, 199),
-                  width: 1.0,
-                )
-              )
-            ),
-          height: 50,
-          width: 280,
-          child: const Center(
-            child: Text(
-              'マッチングの履歴',
-              style: TextStyle(fontSize: 24),
-            )
-          )
-        ),
 
-                StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(meUser!.uid),
-                    //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-                        return Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListView.builder(
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  DocumentSnapshot talkuserFields = snapshot.data!.docs[index];
-                                  DateTime createdAt = (talkuserFields['created_at'] as Timestamp)
-                                                       .toDate();
-                                  // グループ処理：ザルに通すデータを取得
+      // drawer: Drawer(
+      //   child: Column(
+      //     children: [
+      //       Expanded(
+      //         //ListView が無限の長さを持つので直接 column でラップすると不具合
+      //         //Expanded で長さを限界値に指定
+      //         child: ListView(children: [
+      //           SizedBox(
+      //             height: 160.0,
+      //             child: DrawerHeader(
+      //                 child: Column(
+      //               children: [
+      //                 Text('プロフィール画像の設定'),
+      //                 Spacer(flex: 1),
+      //                 Text('名前の設定'),
+      //                 Spacer(flex: 1),
+      //                 Text('自己紹介文の設定'),
+      //                 Spacer(flex: 1),
+      //                 SizedBox(
+      //                     child: ElevatedButton(
+      //                         onPressed: () {}, child: Text('ランダムネーミングのボタン'))),
+      //               ],
+      //             )),
+      //           ),
+      //           ListTile(title: Text('設定しておくと安心だよ！')),
+      //           ListTile(title: Text('IDの設定 :')),
+      //           Spacer(
+      //             flex: 1,
+      //           ),
+      //           ListTile(title: Text('パスワードの設定 :')),
+      //         ]),
+      //       ),
+      //       const Divider(),
+      //       const Spacer(
+      //         flex: 1,
+      //       ),
+      //       Container(
+      //           decoration: const BoxDecoration(
+      //             border: Border(
+      //               top: BorderSide(
+      //                   color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+      //             ),
+      //           ),
+      //           padding: const EdgeInsets.all(8),
+      //           child: const Row(children: [
+      //             Text('サブスクリプション： フリープラン'),
+      //           ])),
+      //       Container(
+      //           decoration: const BoxDecoration(
+      //             border: Border(
+      //               top: BorderSide(
+      //                   color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
+      //             ),
+      //           ),
+      //           padding: const EdgeInsets.all(8),
+      //           child: const Row(children: [
+      //             Text('ログインID表示 環境設定関連'),
+      //           ]))
+      //     ],
+      //   ),
+      // ),
+      // endDrawer: Drawer(
+      //     child: Column(children: <Widget>[
+      //   Container(
+      //       decoration: const BoxDecoration(
+      //         border: Border(
+      //           bottom: BorderSide(
+      //             color: Color.fromARGB(255, 199, 199, 199),
+      //             width: 1.0,
+      //           )
+      //         )
+      //       ),
+      //     height: 50,
+      //     width: 280,
+      //     child: const Center(
+      //       child: Text(
+      //         'マッチングの履歴',
+      //         style: TextStyle(fontSize: 24),
+      //       )
+      //     )
+      //   ),
 
-                                  DateTime now = DateTime.now();
-                                  DateTime today = DateTime(
-                                      now.year, now.month, now.day); // 夜中の00:00
-                                  DateTime yesterday =
-                                      today.subtract(const Duration(days: 1));
-                                  DateTime oneWeek =
-                                      today.subtract(const Duration(days: 7));
-                                  // DateTime twoWeek = today.subtract(Duration(days: 14));
-                                  // グループ処理：ザルの編み目を作成
+      //           StreamBuilder<QuerySnapshot>(
+      //               stream: UserFirestore.streamHistoryCollection(meUser!.uid),
+      //               //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
+      //               builder: (context, snapshot) {
+      //                 if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+      //                   return Expanded(
+      //                     child: Padding(
+      //                       padding: const EdgeInsets.all(10.0),
+      //                       child: ListView.builder(
+      //                           itemCount: snapshot.data!.docs.length,
+      //                           itemBuilder: (context, index) {
+      //                             DocumentSnapshot talkuserFields = snapshot.data!.docs[index];
+      //                             DateTime createdAt = (talkuserFields['created_at'] as Timestamp)
+      //                                                  .toDate();
+      //                             // グループ処理：ザルに通すデータを取得
 
-                                  // グループ処理：index当該リストをザルに通す
-                                  String dateLabel = '';
+      //                             DateTime now = DateTime.now();
+      //                             DateTime today = DateTime(
+      //                                 now.year, now.month, now.day); // 夜中の00:00
+      //                             DateTime yesterday =
+      //                                 today.subtract(const Duration(days: 1));
+      //                             DateTime oneWeek =
+      //                                 today.subtract(const Duration(days: 7));
+      //                             // DateTime twoWeek = today.subtract(Duration(days: 14));
+      //                             // グループ処理：ザルの編み目を作成
 
-                                  if (createdAt.isBefore(oneWeek)) {
-                                    dateLabel = '1週間以上前';
-                                  } else if (createdAt.isAfter(oneWeek) &&
-                                      createdAt.isBefore(yesterday)) {
-                                    dateLabel = 'この１週間';
-                                  } else if (createdAt.isAfter(today) ||
-                                      createdAt.isAtSameMomentAs(today)) {
-                                    dateLabel = '今日';
-                                  } else if (createdAt.isAfter(yesterday) ||
-                                      createdAt.isAtSameMomentAs(yesterday)) {
-                                    dateLabel = '昨日';
-                                  }
+      //                             // グループ処理：index当該リストをザルに通す
+      //                             String dateLabel = '';
 
-                                  String prevDateLabel = '';
-                                  // グループ処理：index当該リストの1つ前（配置が上）のリストをザルに通す
-                                  if (index > 0) {
-                                    DateTime prevCreatedAt =
-                                        (snapshot.data!.docs[index - 1]
-                                                ['created_at'] as Timestamp)
-                                            .toDate();
+      //                             if (createdAt.isBefore(oneWeek)) {
+      //                               dateLabel = '1週間以上前';
+      //                             } else if (createdAt.isAfter(oneWeek) &&
+      //                                 createdAt.isBefore(yesterday)) {
+      //                               dateLabel = 'この１週間';
+      //                             } else if (createdAt.isAfter(today) ||
+      //                                 createdAt.isAtSameMomentAs(today)) {
+      //                               dateLabel = '今日';
+      //                             } else if (createdAt.isAfter(yesterday) ||
+      //                                 createdAt.isAtSameMomentAs(yesterday)) {
+      //                               dateLabel = '昨日';
+      //                             }
 
-                                    if (prevCreatedAt.isBefore(oneWeek)) {
-                                      prevDateLabel = '1週間以上前';
-                                    } else if (prevCreatedAt.isAfter(oneWeek) &&
-                                        prevCreatedAt.isBefore(yesterday)) {
-                                      prevDateLabel = 'この１週間';
-                                    } else if (prevCreatedAt.isAfter(today) ||
-                                        prevCreatedAt.isAtSameMomentAs(today)) {
-                                      prevDateLabel = '今日';
-                                    } else if (prevCreatedAt
-                                            .isAfter(yesterday) ||
-                                        prevCreatedAt
-                                            .isAtSameMomentAs(yesterday)) {
-                                      prevDateLabel = '昨日';
-                                    }
-                                  }
+      //                             String prevDateLabel = '';
+      //                             // グループ処理：index当該リストの1つ前（配置が上）のリストをザルに通す
+      //                             if (index > 0) {
+      //                               DateTime prevCreatedAt =
+      //                                   (snapshot.data!.docs[index - 1]
+      //                                           ['created_at'] as Timestamp)
+      //                                       .toDate();
 
-                                  if (index == 0 ||
-                                      dateLabel != prevDateLabel) {
-                                    // 1番上のリスト or 直上に配置されたリストとdateLabelが異なる場合だけTrue
-                                    return Column(children: <Widget>[
-                                      Text(
-                                        '---$dateLabel---',
-                                        style: const TextStyle(fontSize: 17),
-                                      ),
-                                      ListTile(
-                                        leading: CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                talkuserFields['user_image_url'])),
-                                        title: Text(talkuserFields['user_name']),
-                                        tileColor: selectedHistoryIndex == index
-                                            ? Color.fromARGB(255, 225, 225, 225)
-                                            : null,
-                                        onTap: () {
-                                          setState(() {
-                                            selectedHistoryIndex = index;
-                                            currentIndex = 3;
-                                            talkRoom!.roomId =
-                                                talkuserFields['room_id'];
-                                          });
-                                        },
-                                      )
-                                    ]);
-                                  } else {
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                              talkuserFields['user_image_url'])),
-                                      title: Text(talkuserFields['user_name']),
-                                      tileColor: selectedHistoryIndex == index
-                                          ? Color.fromARGB(255, 225, 225, 225)
-                                          : null,
-                                      onTap: () {
-                                        setState(() {
-                                          selectedHistoryIndex = index;
-                                          currentIndex = 3;
-                                          talkRoom!.roomId =
-                                              talkuserFields['room_id'];
-                                        });
-                                      },
-                                    );
-                                  }
-                                }),
-                          ),
-                        );
-                      }
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 300),
-                        child: Text('まだマッチングの履歴がないようです'),
-                      );
-                    })            
-      ]
-      )
-      ),
+      //                               if (prevCreatedAt.isBefore(oneWeek)) {
+      //                                 prevDateLabel = '1週間以上前';
+      //                               } else if (prevCreatedAt.isAfter(oneWeek) &&
+      //                                   prevCreatedAt.isBefore(yesterday)) {
+      //                                 prevDateLabel = 'この１週間';
+      //                               } else if (prevCreatedAt.isAfter(today) ||
+      //                                   prevCreatedAt.isAtSameMomentAs(today)) {
+      //                                 prevDateLabel = '今日';
+      //                               } else if (prevCreatedAt
+      //                                       .isAfter(yesterday) ||
+      //                                   prevCreatedAt
+      //                                       .isAtSameMomentAs(yesterday)) {
+      //                                 prevDateLabel = '昨日';
+      //                               }
+      //                             }
+
+      //                             if (index == 0 ||
+      //                                 dateLabel != prevDateLabel) {
+      //                               // 1番上のリスト or 直上に配置されたリストとdateLabelが異なる場合だけTrue
+      //                               return Column(children: <Widget>[
+      //                                 Text(
+      //                                   '---$dateLabel---',
+      //                                   style: const TextStyle(fontSize: 17),
+      //                                 ),
+      //                                 ListTile(
+      //                                   leading: CircleAvatar(
+      //                                       backgroundImage: NetworkImage(
+      //                                           talkuserFields['user_image_url'])),
+      //                                   title: Text(talkuserFields['user_name']),
+      //                                   tileColor: selectedHistoryIndex == index
+      //                                       ? Color.fromARGB(255, 225, 225, 225)
+      //                                       : null,
+      //                                   onTap: () {
+      //                                     setState(() {
+      //                                       selectedHistoryIndex = index;
+      //                                       currentIndex = 3;
+      //                                       talkRoom!.roomId =
+      //                                           talkuserFields['room_id'];
+      //                                     });
+      //                                   },
+      //                                 )
+      //                               ]);
+      //                             } else {
+      //                               return ListTile(
+      //                                 leading: CircleAvatar(
+      //                                     backgroundImage: NetworkImage(
+      //                                         talkuserFields['user_image_url'])),
+      //                                 title: Text(talkuserFields['user_name']),
+      //                                 tileColor: selectedHistoryIndex == index
+      //                                     ? Color.fromARGB(255, 225, 225, 225)
+      //                                     : null,
+      //                                 onTap: () {
+      //                                   setState(() {
+      //                                     selectedHistoryIndex = index;
+      //                                     currentIndex = 3;
+      //                                     talkRoom!.roomId =
+      //                                         talkuserFields['room_id'];
+      //                                   });
+      //                                 },
+      //                               );
+      //                             }
+      //                           }),
+      //                     ),
+      //                   );
+      //                 }
+      //                 return const Padding(
+      //                   padding: EdgeInsets.only(top: 300),
+      //                   child: Text('まだマッチングの履歴がないようです'),
+      //                 );
+      //               })            
+      // ]
+      // )
+      // ),
 
 
 
@@ -582,7 +583,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                           onPressed: () async{
                              /// db上にmyUidと相手のuid のjoinedされたDMRoomを参照してget()
                              String? dMRoomId = await DMRoomFirestore.getDMRoomId(
-                                                  meUser.uid,
+                                                  meUser!.uid,
                                                   widget.talkuserProfile!.uid
                                                   );
 
@@ -673,7 +674,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                                 if (deleteConfirmedMarker){
                                   /// 自分のfriendサブコレクションから相手のドキュメントIDを削除
                                     await UserFirestore.deleteFriendUid(
-                                      meUser.uid,
+                                      meUser!.uid,
                                       widget.talkuserProfile!.uid
                                     );
                                     /// 相手のfriendサブコレクションから自分のドキュメントIDを削除
