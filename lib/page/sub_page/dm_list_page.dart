@@ -122,12 +122,17 @@ class _DMListPageState extends ConsumerState<DMListPage> {
                                                                       .userName!,
                                                             style: const TextStyle(fontSize: 20,)),
                                                             subtitle: Padding(
-                                                              padding: EdgeInsets.only(top: 8.0),
+                                                              padding: const EdgeInsets.only(top: 8.0),
                                                               child: Text(
                                                                 /// ?? 演算子を使用して
                                                                 /// 左辺の lastMessage == nullの場合に
                                                                 /// 右辺の空テキストを使用
-                                                                dMRooms[index].lastMessage ?? "",
+                                                                dMRooms[index].lastMessage == null 
+                                                                  ? ""
+                                                                  : dMRooms[index].lastMessage!.length < 10
+                                                                    ? dMRooms[index].lastMessage!
+                                                                    // ignore: prefer_interpolation_to_compose_strings
+                                                                    : dMRooms[index].lastMessage!.substring(0, 9) + '...',           
                                                                 style: const TextStyle(
                                                                   color: Color.fromARGB(255, 176, 176, 176),
                                                                   fontSize: 15,

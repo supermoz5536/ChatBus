@@ -568,7 +568,13 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                           children: [
                                             ListTile(
                                               title: Text(dMNotifications[index]!.talkuserName!),
-                                              subtitle: Text('${dMNotifications[index]!.lastMessage!}',
+                                              subtitle: Text(
+                                                dMNotifications[index]!.lastMessage == null
+                                                  ? ''
+                                                  : dMNotifications[index]!.lastMessage!.length < 10
+                                                    ? dMNotifications[index]!.lastMessage!
+                                                    // ignore: prefer_interpolation_to_compose_strings
+                                                    : dMNotifications[index]!.lastMessage!.substring(0, 9) + '...',
                                                 style: const TextStyle(
                                                   color: Color.fromARGB(255, 133, 133, 133))),
                                               onTap: () async{
