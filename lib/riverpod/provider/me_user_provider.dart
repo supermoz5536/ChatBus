@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/riverpod/notifier/me_user_notifier.dart';
+import 'dart:ui' as ui;
 
 /// ■ StateNotifierProviderの基本的な説明
 /// meUserProvider は
@@ -18,13 +19,14 @@ import 'package:udemy_copy/riverpod/notifier/me_user_notifier.dart';
 /// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます。
 final meUserProvider = StateNotifierProvider<MeUserNotifier, User?>((ref) {
+  String? initialLanguageCode = ui.window.locale.languageCode;
   User? initialUser = User(
     /// StateNotifierProvider の初期値の設定（初めて参照された時にのみ使用される）
     uid: '',
     userName: '',
     userImageUrl: '',
     statement: '', 
-    language: 'en',
+    language: initialLanguageCode,
     country: 'US',
   );
 
