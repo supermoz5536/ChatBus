@@ -529,7 +529,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
 
                     const Spacer(flex: 1),
 
-                    // ■「チャット開始」ボタン 
+                    // ■「戻る」ボタン 
                     SizedBox(
                         // height: 40,
                         // width: 130,
@@ -571,7 +571,7 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                     const Spacer(flex: 1),
 
 
-                    /// ■ DMアイコン
+                    /// ■ 挨拶するアイコン
                     Column(
                       children: [
                         const Spacer(flex: 2),

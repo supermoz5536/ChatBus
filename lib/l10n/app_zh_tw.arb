@@ -61,6 +61,7 @@
 "endChat":	"退出",
 "findNextPartner":	"尋找下一個伙伴",
 "backToHome":	"回到首頁",
+"sayHi":	"你有了一個新的匹配！打個招呼，開始聊天吧！",
 "headerDMRoomPage":	"直接消息",
 "newMessageFromHere":	"從這裡開始的新消息",
 "headerProfilePage":	"個人資料頁",

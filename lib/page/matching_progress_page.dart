@@ -254,10 +254,8 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
               padding: const EdgeInsets.only(bottom: 60.0),
               child: ListView.builder(
                   // ListViewは、スクロール可能なリストを表示するためのウィジェット
-                  physics:
-                      RangeMaintainingScrollPhysics(), // phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
-                  shrinkWrap:
-                      true, // 表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
+                  physics: const RangeMaintainingScrollPhysics(), // phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
+                  shrinkWrap: true, // 表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
                   reverse: false, // スクロールがした始まりで上に滑っていく設定になる
                   itemCount: 2,
                   itemBuilder: (conxtext, index) {
