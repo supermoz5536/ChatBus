@@ -9,6 +9,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/utils/http_functions.dart';
 import '../utils/shared_prefs.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class UserFirestore {
   static final FirebaseFirestore _firebasefirestoreInstance = FirebaseFirestore.instance;
@@ -37,6 +38,11 @@ class UserFirestore {
          /// ■ 端末保存uidが「無い」場合
          if(sharedPrefesMyUid == null || sharedPrefesMyUid.isEmpty){
             print('既存の端末uid = 未登録');
+
+            // 初期化の非同期処理が始まる前に
+            // スプラッシュ画面を解除して
+            // ユーザー情報入力と並行処理させる
+            FlutterNativeSplash.remove();
 
             /// 匿名認証とUidの取得
             String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
@@ -99,7 +105,7 @@ class UserFirestore {
 
                  /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ある」場合
                  if (docIdSnapshot.id == sharedPrefesMyUid ) {                        
-                     print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
+                    print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
 
                      /// Field情報をリフレッシュして、既存の端末Uidをそのまま使用
                     String? deviceCountry = Shared_Prefes.fetchCountry();
@@ -113,6 +119,8 @@ class UserFirestore {
                         'is_lounge': true,                           
                         'created_at': FieldValue.serverTimestamp(),                                                                              
                      }); 
+                       // 非同期の初期化処理が終わった直後にスプラッシュ画面を削除
+                       FlutterNativeSplash.remove();
                        return {
                         'myUid': sharedPrefesMyUid,
                         'userName': docData['user_name'],
@@ -128,6 +136,11 @@ class UserFirestore {
 
                  } else {
                  /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ない」場合
+
+                     // 初期化の非同期処理が始まる前に
+                     // スプラッシュ画面を解除して
+                     // ユーザー情報入力と並行処理させる
+                     FlutterNativeSplash.remove();
 
                      /// 匿名認証とUidの取得
                      String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
