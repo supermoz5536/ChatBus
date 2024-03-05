@@ -812,7 +812,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                               style: TextButton.styleFrom(
                                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
                                                 minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
-                                              child: Text(AppLocalizations.of(context)!.name)),
+                                              child: Text(AppLocalizations.of(context)!.ok)),
                                             TextButton(
                                               onPressed: () {
                                                 if (context.mounted) Navigator.pop(context);                                        
