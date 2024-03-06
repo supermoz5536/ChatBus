@@ -38,6 +38,31 @@ class SelectedLanguage{
   } 
 
 
+  /// MatchingProgressPageへの画面遷移時に
+  /// コンストラクタに渡すListオブジェクトのゲッター関数
+  static List<String?>? getSelectedNativeLanguageTrueItem(SelectedLanguage? selectedLanguage){
+    List<String?>? selectedLanguageTrueItem = [];
+
+    // インスタンス化したselectedLanguageオブジェクトは
+    // 言語フィルターUIの真偽出力結果が格納されている
+    // MatchingProgressPageへのコンストラクタ用に
+    // そのうち、TrueのものだけListの配列に加えて出力する
+    if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en'); 
+    if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
+    if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
+    if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
+    if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
+    if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw');
+
+    if (selectedLanguageTrueItem.isEmpty) {
+      selectedLanguageTrueItem.add('mate');
+    }
+    
+    return selectedLanguageTrueItem;
+  } 
+
+
+
   /// USER型インスタンスの個別プロパティの更新用関数
   SelectedLanguage copyWith({
     bool? en,

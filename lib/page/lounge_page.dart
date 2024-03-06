@@ -1396,7 +1396,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                     if (context.mounted) {
                                       /// 画面遷移に必要なコンストラクタ
                                       List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
-                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedNativeLanguage);
+                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedNativeLanguageTrueItem(selectedNativeLanguage);
                                       String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                                       matchingProgress = MatchingProgress(

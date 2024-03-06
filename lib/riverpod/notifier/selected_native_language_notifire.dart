@@ -125,7 +125,7 @@ class SelectedNativeLanguageNotifier extends StateNotifier<SelectedLanguage?> {
     // off(false) の場合: 　　　　　　　　　 1以上なら
     bool withinRange = newValue
                       ? newValidSelectionCount <= 3
-                      : newValidSelectionCount >= 1;
+                      : newValidSelectionCount >= 0;
     return withinRange;
 
   }

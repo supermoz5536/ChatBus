@@ -312,14 +312,30 @@ class UserFirestore {
       // print('selectedLanguage[0] == $selectedLanguage');
       // print('meNativeLanguage[0] == ${meNativeLanguage![0]}'); 
       // print('meNativeLanguage[1] == ${meNativeLanguage[1]}');      
+      if (meNativeLanguage!.isNotEmpty) print(meNativeLanguage![0]);
 
       // 基本クエリの構築
       var query = _userCollection
                   .where('matched_status', isEqualTo: false)
                   .where('progress_marker', isEqualTo: false)
-                  .where(FieldPath.documentId, isNotEqualTo: myUid)
-                  .where("native_language", arrayContains: selectedLanguage)
-                  .where("queried_language", whereIn: meNativeLanguage);
+                  .where(FieldPath.documentId, isNotEqualTo: myUid);
+
+
+      // 言語フィルター選択パターンに基づくクエリ条件分岐        
+        if (meNativeLanguage![0] == 'mate') {
+        print('mateのパターン');
+          // mateのパターン
+          query = query.where("native_language", arrayContains: 'mate')
+                       .where("queried_language", whereIn: [selectedLanguage]);
+        } else {
+        print('クロスマッチングのパターン');
+          // クロスマッチングのパターン
+          query = query.where("native_language", arrayContains: selectedLanguage)
+                       .where("queried_language", whereIn: meNativeLanguage);
+
+        }
+
+
 
       // selectedGender の要素数に基づくクエリの条件分岐
         // ジェンター指定がある場合: 指定に合致するドキュメントのみ参照 (male, female)
