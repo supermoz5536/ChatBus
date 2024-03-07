@@ -107,6 +107,8 @@ class SelectedLanguageNotifier extends StateNotifier<SelectedLanguage?> {
       case 'zh_TW': 
         newState = newState.copyWith(zhTw: true);
         break;
+      case 'none': 
+        break;
     } 
     state = newState;
     }

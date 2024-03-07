@@ -327,12 +327,17 @@ class UserFirestore {
           // mateのパターン
           query = query.where("native_language", arrayContains: 'mate')
                        .where("queried_language", whereIn: [selectedLanguage]);
+
+        } else  if (selectedLanguage == 'teach') {
+        print('teachのパターン');
+          // teachのパターン
+          query = query.where("queried_language", whereIn: meNativeLanguage);
+
         } else {
-        print('クロスマッチングのパターン');
-          // クロスマッチングのパターン
+        print('クロスのパターン');
+          // クロスのパターン & sameのパターン
           query = query.where("native_language", arrayContains: selectedLanguage)
                        .where("queried_language", whereIn: meNativeLanguage);
-
         }
 
 

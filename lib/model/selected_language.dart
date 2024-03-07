@@ -34,6 +34,11 @@ class SelectedLanguage{
     if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
     if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
     if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw'); 
+
+    if (selectedLanguageTrueItem.isEmpty) {
+      selectedLanguageTrueItem.add('teach');
+    }
+
     return selectedLanguageTrueItem;
   } 
 

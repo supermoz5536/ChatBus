@@ -199,8 +199,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
                       onChanged: (bool newValue) {
-                          // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
+                        // 現在の言語と同じかどうかのチェック
+                        // 同じ場合：switchメソッドでTrueに更新しないので none
+                        // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
+                        selectedLanguage.en! == true
+                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
                       },
                     ),
 
@@ -213,8 +217,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
                       onChanged: (bool newValue) {
-                          // Providerの状態を最新に更新。
-                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
+                        selectedLanguage.ja! == true
+                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
                       },
                     ),
               
@@ -227,9 +232,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.es!,
                       onChanged: (bool newValue) {
-                          // 最新値に状態変数のプロパティに代入して
-                          // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
+                        selectedLanguage.es! == true
+                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
                       },
                     ),
 
@@ -242,9 +247,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ko!,
                       onChanged: (bool newValue) {
-                          // 最新値に状態変数のプロパティに代入して
-                          // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
+                        selectedLanguage.ko! == true
+                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
                       },
                     ),
 
@@ -257,9 +262,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.zh!,
                       onChanged: (bool newValue) {
-                          // 最新値に状態変数のプロパティに代入して
-                          // Providerの状態を最新に更新
-                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
+                        selectedLanguage.zh! == true
+                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
                       },
                     ),
                     
