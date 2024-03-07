@@ -18,6 +18,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   bool? withinRange;
   bool? withinTotalRange;
+  List<bool> isExpanded = [false, false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,152 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     fontWeight: FontWeight.bold)),
               ),
             ),
+
+            Align(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (_) {
+                      return StatefulBuilder(
+                        builder: (context, setState) {
+                          return ListView(
+                            shrinkWrap: true,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(
+                                  top: 30,
+                                  bottom: 30),
+                                child: Text(
+                                  '4 SETTING OPTIONS',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 30
+                                  ),),
+                              ),
+                              ExpansionPanelList(   
+                                expansionCallback: (int index, newIsExpanded) {
+                                  setState(() {
+                                    isExpanded[index] = newIsExpanded;
+                                  });
+                                },                    
+                                children: [
+                                                            
+                                  ExpansionPanel(
+                                    isExpanded: isExpanded[0],
+                                    headerBuilder:(context, isExpanded){
+                                      return const Center(
+                                        child: Text(
+                                          'Search with Native Pattern',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          ),
+                                      );
+                                    },
+                                    body: Padding(
+                                      padding: const EdgeInsets.only(bottom: 20),
+                                      child: Text(
+                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
+                                        // textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        ),
+                                    ),
+                                  ),
+                              
+                                  ExpansionPanel(
+                                    isExpanded: isExpanded[1],
+                                    headerBuilder:(context, isExpanded){
+                                      return const Center(
+                                        child: Text(
+                                          'Search with Native Pattern',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          ),
+                                      );
+                                    },
+                                    body: Padding(
+                                      padding: const EdgeInsets.only(bottom: 20),
+                                      child: Text(
+                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
+                                        // textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        ),
+                                    ),
+                                  ),
+                                            
+                                  ExpansionPanel(
+                                    isExpanded: isExpanded[2],
+                                    headerBuilder:(context, isExpanded){
+                                      return const Center(
+                                        child: Text(
+                                          'Search with Native Pattern',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          ),
+                                      );
+                                    },
+                                    body: Padding(
+                                      padding: const EdgeInsets.only(bottom: 20),
+                                      child: Text(
+                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
+                                        // textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        ),
+                                    ),
+                                  ),
+                                            
+                                  ExpansionPanel(
+                                    isExpanded: isExpanded[3],
+                                    headerBuilder:(context, isExpanded){
+                                      return const Center(
+                                        child: Text(
+                                          'Search with Native Pattern',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          ),
+                                      );
+                                    },
+                                    body: Padding(
+                                      padding: const EdgeInsets.only(bottom: 20),
+                                      child: Text(
+                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
+                                        // textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                        ),
+                                        ),
+                                    ),
+                                  ),
+                                            
+                                ],
+                              ),
+                            ],
+                          );
+                        }
+                      ); 
+                    }
+                  );
+                },
+                child: const Text('Read How to Search')
+                ),
+            ),
+
+            const SizedBox(height: 25),
 
             const Divider(
                     color: Color.fromARGB(255, 150, 150, 150),
