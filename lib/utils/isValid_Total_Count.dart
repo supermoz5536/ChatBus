@@ -7,15 +7,6 @@ static bool isValidTotalCount(
   SelectedLanguage? selectedLanguage,
   SelectedLanguage? selectedNativeLanguage
   ) {
-    // 言語フィルターで現在選択(True)してる数を取得する
-    int currentValidSelectedLanguageCount = [
-      if (selectedLanguage!.en ?? false) 1,
-      if (selectedLanguage.ja ?? false) 1,
-      if (selectedLanguage.es ?? false) 1,
-      if (selectedLanguage.ko ?? false) 1,
-      if (selectedLanguage.zh ?? false) 1,
-      if (selectedLanguage.zhTw ?? false) 1,
-    ].length;
 
     // 母国語フィルターで現在選択(True)してる数を取得する
     int currentValidSelectedNativeLanguageCount = [
@@ -27,8 +18,17 @@ static bool isValidTotalCount(
       if (selectedNativeLanguage.zhTw ?? false) 1,
     ].length;
 
+    // 言語フィルターで現在選択(True)してる数を取得する
+    int currentValidSelectedLanguageCount = [
+      if (selectedLanguage!.en ?? false) 1,
+      if (selectedLanguage.ja ?? false) 1,
+      if (selectedLanguage.es ?? false) 1,
+      if (selectedLanguage.ko ?? false) 1,
+      if (selectedLanguage.zh ?? false) 1,
+      if (selectedLanguage.zhTw ?? false) 1,
+    ].length;
+
     int totalSelectedCount = currentValidSelectedLanguageCount + currentValidSelectedNativeLanguageCount;
-    print(totalSelectedCount);
 
     // タップした際の処理を反映して
     // タップ後の状況に更新

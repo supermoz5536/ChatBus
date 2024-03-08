@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
+import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:udemy_copy/utils/isValidTotalCount.dart';
+import 'package:udemy_copy/utils/isValid_Total_Count.dart';
+import 'package:udemy_copy/utils/isValid_search_mode.dart';
 
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -16,6 +18,7 @@ class SearchPage extends ConsumerStatefulWidget {
   ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
+  String? currentMode;
   bool? withinRange;
   bool? withinTotalRange;
   List<bool> isExpanded = [false, false, false, false];
@@ -25,6 +28,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
+    currentMode = ref.watch(modeNameProvider);
     
 
     
@@ -60,23 +64,32 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             
             const SizedBox(height: 25),
 
+            // ■ Current Mode Display
             Center(
               child: IntrinsicWidth(
                 child: Card(
-                  child: const ListTile(
-leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
+                  child: ListTile(
+                    leading: const Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
                     title: Text(
-                      'Current Search Mode',
-                      style: TextStyle(
+                      // 'Current Search Mode',
+                      AppLocalizations.of(context)!.currentSearchModeTitle,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold
                       ),
                       ),
                     subtitle: Padding(
-                      padding: EdgeInsets.only(top: 4),
+                      padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        'Native Matching',
+                        // 現在有効なモード名を管理する状態変数の値によって表示名を切り替え
+                        currentMode == 'mate'
+                          ? AppLocalizations.of(context)!.modeNameMate
+                          : currentMode == 'teachable'
+                            ? AppLocalizations.of(context)!.modeNameTeachable
+                            : currentMode == 'native'
+                              ? AppLocalizations.of(context)!.modeNameNative
+                              : AppLocalizations.of(context)!.modeNameExchange,
                          textAlign: TextAlign.center,
-                         style: TextStyle(
+                         style: const TextStyle(
                           fontSize: 15,
                           color: Colors.grey
                          ),
@@ -86,8 +99,6 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                 ),
               ),
             ),
-
-            // const SizedBox(height: 25),
 
             Padding(
               padding: const EdgeInsets.only(
@@ -124,7 +135,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                       onChanged: (bool newValue) {
                         // 母国語フィルターの選択数がレンジ内かを確認
                         // 言語フィルターの選択数と総計した時もレンジないかを確認
-                        // 両方レンジ内の場合のみ、状態変数を更新
+                        // 両方レンジ内の場合のみ、
+                        // 「選択管理の状態変数」と「モード表示管理の状態変数」を更新
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           withinTotalRange = IsValidTotalCount.isValidTotalCount(
                             newValue,
@@ -133,6 +145,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
+                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -154,6 +168,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
+                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }      
                       },
                     ),
@@ -175,6 +191,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
+                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -196,6 +214,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateKo(newValue);
+                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -217,6 +237,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateZh(newValue);
+                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -249,7 +271,7 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
                     
-                    // ■ 英語
+                    // ■ 英語.
                     SwitchListTile(
                       title: Text(
                         AppLocalizations.of(context)!.english,
@@ -265,12 +287,16 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                           selectedNativeLanguage
                         );
                         if (withinTotalRange == true) {
-                        // レンジ内の場合は、現在選択してる言語と同じかをチェック
-                        // 同じ場合：switchメソッドでTrueに更新しないので none
-                        // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
-                        selectedLanguage.en! == true
-                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
+                          // レンジ内の場合は、現在選択してる言語と同じかをチェック
+                          // 同じ場合：switchメソッドでTrueに更新しないので none
+                          // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
+                          print('Before ${selectedLanguage.en}');
+                          selectedLanguage.en! == true
+                            ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
+                            : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
+                          currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                          print('After ${selectedLanguage.en}');
+                          ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -293,6 +319,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                         selectedLanguage.ja! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
+                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -315,6 +343,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                         selectedLanguage.es! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
+                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -337,6 +367,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                         selectedLanguage.ko! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
+                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -359,6 +391,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                         selectedLanguage.zh! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
+                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
+                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -494,14 +528,15 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                         return ListView(
                           shrinkWrap: true,
                           children: [
-                            const Padding(
-                              padding: EdgeInsets.only(
+                             Padding(
+                              padding: const EdgeInsets.only(
                                 top: 30,
                                 bottom: 30),
                               child: Text(
-                                '4つの検索設定オプション',
+                                // "4つの検索設定オプション",
+                                AppLocalizations.of(context)!.fourSearchOption,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 30
                                 ),),
                             ),
@@ -517,15 +552,16 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                 ExpansionPanel(
                                   isExpanded: isExpanded[0],
                                   headerBuilder:(context, isExpanded){
-                                    return const Center(
+                                    return Center(
                                       child: ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
+                                        contentPadding: const EdgeInsets.symmetric(
                                           horizontal: 30.0), // 左側のパディングを調整
-                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        leading: const Icon(Icons.search_outlined, size: 20,),
                                         title: Text(
-                                          'ネイティブマッチング',
+                                          //'ネイティブモード',
+                                          AppLocalizations.of(context)!.nativeMatchingTitle,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 15,
                                           ),
                                         ),
@@ -534,15 +570,14 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                   },
                                   body: Column(
                                     children: [
-
                                       // ■ ネイティブマッチング 1行目
                                       Padding(
                                         padding: const EdgeInsets.only(right: 8, bottom: 8),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -550,8 +585,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語が同じユーザーを優先してマッチング',
-                                                style: TextStyle(
+                                                //'母国語が同じユーザーを優先してマッチング',
+                                                AppLocalizations.of(context)!.nativeMatchingSub1,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -566,8 +602,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -575,8 +611,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語設定と言語フィルターで "母国語" を選択',
-                                                style: TextStyle(
+                                                //'母国語設定と言語フィルターで "母国語" を選択',
+                                                AppLocalizations.of(context)!.nativeMatchingSub2,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -591,8 +628,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding:  EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -600,8 +637,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語が英語の場合：英語 / 英語',
-                                                style: TextStyle(
+                                                //'母国語が英語の場合：英語 / 英語',
+                                                AppLocalizations.of(context)!.nativeMatchingSub3,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -617,15 +655,16 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                 ExpansionPanel(
                                   isExpanded: isExpanded[1],
                                   headerBuilder:(context, isExpanded){
-                                    return const Center(
+                                    return Center(
                                       child: ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
+                                        contentPadding: const EdgeInsets.symmetric(
                                           horizontal: 30.0), // 左側のパディングを調整
-                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        leading: const Icon(Icons.search_outlined, size: 20,),
                                         title: Text(
-                                          'エクスチェンジマッチング',
+                                          // 'エクスチェンジモード',
+                                          AppLocalizations.of(context)!.exchangeMatchingTitle,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 15,
                                           ),
                                         ),
@@ -641,8 +680,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -650,8 +689,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '「あなたの母国語に興味があり、かつ、あなたの学びたい言語が母国語の人」とマッチング',
-                                                style: TextStyle(
+                                                // '「あなたの母国語に興味があり、かつ、あなたの学びたい言語が母国語の人」とマッチング',
+                                                AppLocalizations.of(context)!.exchangeMatchingSub1,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -666,8 +706,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding:  EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -675,8 +715,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
-                                                style: TextStyle(
+                                                // '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
+                                                AppLocalizations.of(context)!.exchangeMatchingSub2,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -691,8 +732,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -700,8 +741,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語が英語の場合：英語 / 中国語',
-                                                style: TextStyle(
+                                                // '母国語が英語の場合：英語 / 中国語',
+                                                AppLocalizations.of(context)!.exchangeMatchingSub3,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -717,15 +759,16 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                 ExpansionPanel(
                                   isExpanded: isExpanded[2],
                                   headerBuilder:(context, isExpanded){
-                                    return const Center(
+                                    return  Center(
                                       child: ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
+                                        contentPadding: const EdgeInsets.symmetric(
                                           horizontal: 30.0), // 左側のパディングを調整
-                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        leading: const Icon(Icons.search_outlined, size: 20,),
                                         title: Text(
-                                          'ティーチマッチング',
+                                          // 'ティーチャブルモード',
+                                          AppLocalizations.of(context)!.teachableMatchingTitle,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 15,
                                           ),
                                         ),
@@ -741,8 +784,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding:  EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -750,8 +793,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                'あなたの母国語に興味がある全ての人とマッチング',
-                                                style: TextStyle(
+                                                // 'あなたの母国語に興味がある全ての人とマッチング',
+                                                AppLocalizations.of(context)!.teachableMatchingSub1,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -766,8 +810,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -775,8 +819,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
-                                                style: TextStyle(
+                                                // '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
+                                                AppLocalizations.of(context)!.teachableMatchingSub2,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -791,8 +836,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -800,8 +845,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                'あなたの母国語が英語の場合：英語 / 選択なし',
-                                                style: TextStyle(
+                                                // 'あなたの母国語が英語の場合：英語 / 選択なし',
+                                                AppLocalizations.of(context)!.teachableMatchingSub3,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -813,19 +859,20 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                   ),
                                 ),
                                           
-                                // ■ ティーチマッチング
+                                // ■ メイトマッチング
                                 ExpansionPanel(
                                   isExpanded: isExpanded[3],
                                   headerBuilder:(context, isExpanded){
-                                    return const Center(
+                                    return  Center(
                                       child: ListTile(
-                                        contentPadding: EdgeInsets.symmetric(
+                                        contentPadding: const EdgeInsets.symmetric(
                                           horizontal: 30.0), // 左側のパディングを調整
-                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        leading: const Icon(Icons.search_outlined, size: 20,),
                                         title: Text(
-                                          'メイトマッチング',
+                                          // 'メイトマッチング',
+                                          AppLocalizations.of(context)!.mateMatchingTitle,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 15,
                                           ),
                                         ),
@@ -841,8 +888,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -850,8 +897,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                'あなたと同じ言語を学習してる仲間と優先的にマッチング',
-                                                style: TextStyle(
+                                                // 'あなたと同じ言語を学習してる仲間と優先的にマッチング',
+                                                AppLocalizations.of(context)!.mateMatchingSub1,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -866,8 +914,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -875,8 +923,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
-                                                style: TextStyle(
+                                                // '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
+                                                AppLocalizations.of(context)!.mateMatchingSub2,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -891,8 +940,8 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
+                                            const Padding(
+                                              padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
                                                 ),
@@ -900,8 +949,9 @@ leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されて�
                                             ),
                                             Flexible(
                                               child: Text(
-                                                'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
-                                                style: TextStyle(
+                                                // 'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
+                                                AppLocalizations.of(context)!.mateMatchingSub3,
+                                                style: const TextStyle(
                                                   fontSize: 15,
                                                 ),
                                                 ),

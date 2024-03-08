@@ -36,7 +36,7 @@ class SelectedLanguage{
     if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw'); 
 
     if (selectedLanguageTrueItem.isEmpty) {
-      selectedLanguageTrueItem.add('teach');
+      selectedLanguageTrueItem.add('teachable');
     }
 
     return selectedLanguageTrueItem;
@@ -45,25 +45,25 @@ class SelectedLanguage{
 
   /// MatchingProgressPageへの画面遷移時に
   /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedNativeLanguageTrueItem(SelectedLanguage? selectedLanguage){
-    List<String?>? selectedLanguageTrueItem = [];
+  static List<String?>? getSelectedNativeLanguageTrueItem(SelectedLanguage? selectedNativeLanguage){
+    List<String?>? selectedNativeLanguageTrueItem = [];
 
     // インスタンス化したselectedLanguageオブジェクトは
     // 言語フィルターUIの真偽出力結果が格納されている
     // MatchingProgressPageへのコンストラクタ用に
     // そのうち、TrueのものだけListの配列に加えて出力する
-    if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en'); 
-    if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
-    if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
-    if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
-    if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
-    if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw');
+    if (selectedNativeLanguage!.en == true) selectedNativeLanguageTrueItem.add('en'); 
+    if (selectedNativeLanguage.ja == true) selectedNativeLanguageTrueItem.add('ja'); 
+    if (selectedNativeLanguage.es == true) selectedNativeLanguageTrueItem.add('es'); 
+    if (selectedNativeLanguage.ko == true) selectedNativeLanguageTrueItem.add('ko'); 
+    if (selectedNativeLanguage.zh == true) selectedNativeLanguageTrueItem.add('zh'); 
+    if (selectedNativeLanguage.zhTw == true) selectedNativeLanguageTrueItem.add('zhTw');
 
-    if (selectedLanguageTrueItem.isEmpty) {
-      selectedLanguageTrueItem.add('mate');
+    if (selectedNativeLanguageTrueItem.isEmpty) {
+      selectedNativeLanguageTrueItem.add('mate');
     }
     
-    return selectedLanguageTrueItem;
+    return selectedNativeLanguageTrueItem;
   } 
 
 

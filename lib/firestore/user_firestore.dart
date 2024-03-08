@@ -328,9 +328,9 @@ class UserFirestore {
           query = query.where("native_language", arrayContains: 'mate')
                        .where("queried_language", whereIn: [selectedLanguage]);
 
-        } else  if (selectedLanguage == 'teach') {
-        print('teachのパターン');
-          // teachのパターン
+        } else  if (selectedLanguage == 'teachable') {
+        print('teachableのパターン');
+          // teachableのパターン
           query = query.where("queried_language", whereIn: meNativeLanguage);
 
         } else {
