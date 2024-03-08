@@ -46,149 +46,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             ),
 
-            Align(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (_) {
-                      return StatefulBuilder(
-                        builder: (context, setState) {
-                          return ListView(
-                            shrinkWrap: true,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(
-                                  top: 30,
-                                  bottom: 30),
-                                child: Text(
-                                  '4 SETTING OPTIONS',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 30
-                                  ),),
-                              ),
-                              ExpansionPanelList(   
-                                expansionCallback: (int index, newIsExpanded) {
-                                  setState(() {
-                                    isExpanded[index] = newIsExpanded;
-                                  });
-                                },                    
-                                children: [
-                                                            
-                                  ExpansionPanel(
-                                    isExpanded: isExpanded[0],
-                                    headerBuilder:(context, isExpanded){
-                                      return const Center(
-                                        child: Text(
-                                          'Search with Native Pattern',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                          ),
-                                      );
-                                    },
-                                    body: Padding(
-                                      padding: const EdgeInsets.only(bottom: 20),
-                                      child: Text(
-                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
-                                        // textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                        ),
-                                    ),
-                                  ),
-                              
-                                  ExpansionPanel(
-                                    isExpanded: isExpanded[1],
-                                    headerBuilder:(context, isExpanded){
-                                      return const Center(
-                                        child: Text(
-                                          'Search with Native Pattern',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                          ),
-                                      );
-                                    },
-                                    body: Padding(
-                                      padding: const EdgeInsets.only(bottom: 20),
-                                      child: Text(
-                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
-                                        // textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                        ),
-                                    ),
-                                  ),
-                                            
-                                  ExpansionPanel(
-                                    isExpanded: isExpanded[2],
-                                    headerBuilder:(context, isExpanded){
-                                      return const Center(
-                                        child: Text(
-                                          'Search with Native Pattern',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                          ),
-                                      );
-                                    },
-                                    body: Padding(
-                                      padding: const EdgeInsets.only(bottom: 20),
-                                      child: Text(
-                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
-                                        // textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                        ),
-                                    ),
-                                  ),
-                                            
-                                  ExpansionPanel(
-                                    isExpanded: isExpanded[3],
-                                    headerBuilder:(context, isExpanded){
-                                      return const Center(
-                                        child: Text(
-                                          'Search with Native Pattern',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                          ),
-                                      );
-                                    },
-                                    body: Padding(
-                                      padding: const EdgeInsets.only(bottom: 20),
-                                      child: Text(
-                                        '・同じ母国語のユーザーとマッチ\n・両フィルターに同じ言語を設定\n・例：英語 / 英語',
-                                        // textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                        ),
-                                        ),
-                                    ),
-                                  ),
-                                            
-                                ],
-                              ),
-                            ],
-                          );
-                        }
-                      ); 
-                    }
-                  );
-                },
-                child: const Text('Read How to Search')
-                ),
-            ),
+            ReadHowToUse(context),
 
             const SizedBox(height: 25),
 
@@ -201,6 +59,35 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   ),
             
             const SizedBox(height: 25),
+
+            Center(
+              child: IntrinsicWidth(
+                child: Card(
+                  child: const ListTile(
+leading: Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
+                    title: Text(
+                      'Current Search Mode',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                      ),
+                    subtitle: Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Native Matching',
+                         textAlign: TextAlign.center,
+                         style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey
+                         ),
+                        ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // const SizedBox(height: 25),
 
             Padding(
               padding: const EdgeInsets.only(
@@ -338,7 +225,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             ),
 
-            const SizedBox(height: 50),
+            const SizedBox(height: 25),
 
             Padding(
               padding: const EdgeInsets.only(
@@ -482,7 +369,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
 
 
-            const SizedBox(height: 50),
+            const SizedBox(height: 25),
 
 
             Padding(
@@ -593,4 +480,450 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       ),
       );
     }
+
+  Align ReadHowToUse(BuildContext context) {
+    return Align(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return ListView(
+                          shrinkWrap: true,
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                top: 30,
+                                bottom: 30),
+                              child: Text(
+                                '4つの検索設定オプション',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 30
+                                ),),
+                            ),
+                            ExpansionPanelList(   
+                              expansionCallback: (int index, newIsExpanded) {
+                                setState(() {
+                                  isExpanded[index] = newIsExpanded;
+                                });
+                              },                    
+                              children: [
+                                                          
+                                // ■ ネイティブマッチング
+                                ExpansionPanel(
+                                  isExpanded: isExpanded[0],
+                                  headerBuilder:(context, isExpanded){
+                                    return const Center(
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 30.0), // 左側のパディングを調整
+                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        title: Text(
+                                          'ネイティブマッチング',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      )     
+                                    );
+                                  },
+                                  body: Column(
+                                    children: [
+
+                                      // ■ ネイティブマッチング 1行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語が同じユーザーを優先してマッチング',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ ネイティブマッチング 2行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語設定と言語フィルターで "母国語" を選択',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ ネイティブマッチング 3行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語が英語の場合：英語 / 英語',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            
+                                // ■ クロスマッチング
+                                ExpansionPanel(
+                                  isExpanded: isExpanded[1],
+                                  headerBuilder:(context, isExpanded){
+                                    return const Center(
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 30.0), // 左側のパディングを調整
+                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        title: Text(
+                                          'エクスチェンジマッチング',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      )     
+                                    );
+                                  },
+                                  body: Column(
+                                    children: [
+
+                                      // ■ クロスマッチング 1行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '「あなたの母国語に興味があり、かつ、あなたの学びたい言語が母国語の人」とマッチング',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ クロスマッチング 2行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ クロスマッチング 3行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語が英語の場合：英語 / 中国語',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                          
+                                // ■ ティーチマッチング
+                                ExpansionPanel(
+                                  isExpanded: isExpanded[2],
+                                  headerBuilder:(context, isExpanded){
+                                    return const Center(
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 30.0), // 左側のパディングを調整
+                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        title: Text(
+                                          'ティーチマッチング',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      )     
+                                    );
+                                  },
+                                  body: Column(
+                                    children: [
+
+                                      // ■ ティーチマッチング 1行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                'あなたの母国語に興味がある全ての人とマッチング',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ ティーチマッチング 2行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ ティーチマッチング 3行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                'あなたの母国語が英語の場合：英語 / 選択なし',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                          
+                                // ■ ティーチマッチング
+                                ExpansionPanel(
+                                  isExpanded: isExpanded[3],
+                                  headerBuilder:(context, isExpanded){
+                                    return const Center(
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 30.0), // 左側のパディングを調整
+                                        leading: Icon(Icons.search_outlined, size: 20,),
+                                        title: Text(
+                                          'メイトマッチング',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                      )     
+                                    );
+                                  },
+                                  body: Column(
+                                    children: [
+
+                                      // ■ メイトマッチング 1行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                'あなたと同じ言語を学習してる仲間と優先的にマッチング',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ メイトマッチング 2行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+
+                                      // ■ メイトマッチング 3行目
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                right: 10,
+                                                ),
+                                              child: Icon(Icons.done, size: 15,),
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                ),
+                                                ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                          
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                    ); 
+                  }
+                );
+              },
+              child: const Text('Read How to Search')
+              ),
+          );
+  }
   }
