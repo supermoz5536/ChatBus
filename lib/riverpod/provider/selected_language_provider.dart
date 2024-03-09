@@ -11,7 +11,7 @@ import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 /// （notifier.dart > MeUserNotifierクラスで User型のuser変数の状態に設定している）
 
 /// ■ 初期化について
-/// ここで定義している meUserProvider は、
+/// ここで定義している meUserProvider は
 /// MeUserNotifier のインスタンスを生成していますが
 /// これは StateNotifierProvider が初めて参照された時にのみ行われます。
 /// この時点で initialUser を MeUserNotifier に渡して初期化していますが、
@@ -23,7 +23,7 @@ import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 /// 初期値の設定は必要ない
 final selectedLanguageProvider = StateNotifierProvider<SelectedLanguageNotifier, SelectedLanguage?>((ref) {
   SelectedLanguage? initialSelectedLanguage = SelectedLanguage(
-  en: true,
+  en: false,
   ja: false,
   es: false,
   ko: false,
