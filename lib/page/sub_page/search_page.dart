@@ -290,6 +290,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           // レンジ内の場合は、現在選択してる言語と同じかをチェック
                           // 同じ場合：switchメソッドでTrueに更新しないので none
                           // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
+                          print('newValue ${newValue}');
                           print('Before ${selectedLanguage.en}');
                           selectedLanguage.en! == true
                             ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
