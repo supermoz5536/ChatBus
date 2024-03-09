@@ -29,6 +29,31 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     currentMode = ref.watch(modeNameProvider);
+
+    // 各フェーダーのonChange内における.
+    // selectedNativeLanguage の更新完了を監視して
+    // 最新の有効なmode名を取得し
+    // modeNameの状態変数を更新する
+    ref.listen(selectedNativeLanguageProvider, (previous, next) {
+      print('previous1 == ${previous!.en}');
+      print('next1 == ${next!.en}');
+      currentMode = IsValidSearchMode.isValidSearchMode(
+                      selectedLanguage,
+                      next,
+                    );
+      ref.read(modeNameProvider.notifier).updateModeName(currentMode);
+    });
+
+    // 上記と同様、監視対象が selectedNativeLanguage
+    ref.listen(selectedLanguageProvider, (previous, next) {
+      print('previous2 == ${previous!.en}');
+      print('next2 == ${next!.en}');
+      currentMode = IsValidSearchMode.isValidSearchMode(
+                      next,
+                      selectedNativeLanguage
+                    );
+      ref.read(modeNameProvider.notifier).updateModeName(currentMode);
+    });
     
 
     
@@ -145,8 +170,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
-                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -168,8 +191,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
-                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }      
                       },
                     ),
@@ -191,8 +212,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
-                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -214,8 +233,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateKo(newValue);
-                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -237,8 +254,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           );
                           if (withinRange == true && withinTotalRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateZh(newValue);
-                            currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                            ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                           }
                       },
                     ),
@@ -290,14 +305,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           // レンジ内の場合は、現在選択してる言語と同じかをチェック
                           // 同じ場合：switchメソッドでTrueに更新しないので none
                           // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
-                          print('newValue ${newValue}');
-                          print('Before ${selectedLanguage.en}');
                           selectedLanguage.en! == true
                             ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                             : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
-                          currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                          print('After ${selectedLanguage.en}');
-                          ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -320,8 +330,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         selectedLanguage.ja! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
-                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -344,8 +352,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         selectedLanguage.es! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
-                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -368,8 +374,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         selectedLanguage.ko! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
-                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
@@ -392,8 +396,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         selectedLanguage.zh! == true
                           ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
                           : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
-                        currentMode = IsValidSearchMode.isValidSearchMode(selectedLanguage, selectedNativeLanguage);
-                        ref.read(modeNameProvider.notifier).updateModeName(currentMode);
                         }
                       },
                     ),
