@@ -543,7 +543,10 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                   fontSize: 30
                                 ),),
                             ),
-                            ExpansionPanelList(   
+                            ExpansionPanelList(
+                              elevation: 2,
+                              animationDuration: const Duration(milliseconds: 500),
+                              expandedHeaderPadding: const EdgeInsets.all(8),
                               expansionCallback: (int index, newIsExpanded) {
                                 setState(() {
                                   isExpanded[index] = newIsExpanded;
@@ -553,6 +556,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                           
                                 // ■ ネイティブマッチング
                                 ExpansionPanel(
+                                  canTapOnHeader: true,
                                   isExpanded: isExpanded[0],
                                   headerBuilder:(context, isExpanded){
                                     return Center(
@@ -565,7 +569,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           AppLocalizations.of(context)!.nativeMatchingTitle,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 20,
                                           ),
                                         ),
                                       )     
@@ -583,14 +587,19 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                               padding: EdgeInsets.only(
                                                 left: 20,
                                                 right: 10,
-                                                ),
-                                              child: Icon(Icons.done, size: 15,),
+                                                ),                                  
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 //'母国語が同じユーザーを優先してマッチング',
                                                 AppLocalizations.of(context)!.nativeMatchingSub1,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -610,13 +619,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 //'母国語設定と言語フィルターで "母国語" を選択',
                                                 AppLocalizations.of(context)!.nativeMatchingSub2,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -627,7 +641,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                                       // ■ ネイティブマッチング 3行目
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -636,13 +650,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 //'母国語が英語の場合：英語 / 英語',
                                                 AppLocalizations.of(context)!.nativeMatchingSub3,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -656,6 +675,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             
                                 // ■ クロスマッチング
                                 ExpansionPanel(
+                                  canTapOnHeader: true,
                                   isExpanded: isExpanded[1],
                                   headerBuilder:(context, isExpanded){
                                     return Center(
@@ -668,7 +688,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           AppLocalizations.of(context)!.exchangeMatchingTitle,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 20,
                                           ),
                                         ),
                                       )     
@@ -688,13 +708,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.done,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // '「あなたの母国語に興味があり、かつ、あなたの学びたい言語が母国語の人」とマッチング',
                                                 AppLocalizations.of(context)!.exchangeMatchingSub1,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -714,13 +739,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.done,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
                                                 AppLocalizations.of(context)!.exchangeMatchingSub2,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -731,7 +761,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                                       // ■ クロスマッチング 3行目
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -740,13 +770,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.done,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // '母国語が英語の場合：英語 / 中国語',
                                                 AppLocalizations.of(context)!.exchangeMatchingSub3,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -760,6 +795,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           
                                 // ■ ティーチマッチング
                                 ExpansionPanel(
+                                  canTapOnHeader: true,
                                   isExpanded: isExpanded[2],
                                   headerBuilder:(context, isExpanded){
                                     return  Center(
@@ -772,7 +808,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           AppLocalizations.of(context)!.teachableMatchingTitle,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 20,
                                           ),
                                         ),
                                       )     
@@ -792,13 +828,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // 'あなたの母国語に興味がある全ての人とマッチング',
                                                 AppLocalizations.of(context)!.teachableMatchingSub1,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -818,13 +859,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
                                                 AppLocalizations.of(context)!.teachableMatchingSub2,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -835,7 +881,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                                       // ■ ティーチマッチング 3行目
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -844,13 +890,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // 'あなたの母国語が英語の場合：英語 / 選択なし',
                                                 AppLocalizations.of(context)!.teachableMatchingSub3,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -864,6 +915,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           
                                 // ■ メイトマッチング
                                 ExpansionPanel(
+                                  canTapOnHeader: true,
                                   isExpanded: isExpanded[3],
                                   headerBuilder:(context, isExpanded){
                                     return  Center(
@@ -876,7 +928,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                           AppLocalizations.of(context)!.mateMatchingTitle,
                                           textAlign: TextAlign.center,
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 20,
                                           ),
                                         ),
                                       )     
@@ -896,13 +948,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // 'あなたと同じ言語を学習してる仲間と優先的にマッチング',
                                                 AppLocalizations.of(context)!.mateMatchingSub1,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -922,13 +979,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
                                                 AppLocalizations.of(context)!.mateMatchingSub2,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
@@ -939,7 +1001,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
                                       // ■ メイトマッチング 3行目
                                       Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
                                         child: Row(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
@@ -948,13 +1010,18 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                                 left: 20,
                                                 right: 10,
                                                 ),
-                                              child: Icon(Icons.done, size: 15,),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 15,
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                              ),
                                             ),
                                             Flexible(
                                               child: Text(
                                                 // 'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
                                                 AppLocalizations.of(context)!.mateMatchingSub3,
                                                 style: const TextStyle(
+                                                  color: Color.fromARGB(255, 144, 144, 144),
                                                   fontSize: 15,
                                                 ),
                                                 ),
