@@ -268,22 +268,20 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
                         child: Container(
                             // [0]の吹き出し部分を、コンテナで表示
                             constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width *
-                                    0.6), //この書き方で今表示可能な画面幅を取得できる
+                                maxWidth: MediaQuery.of(context).size.width * 0.6), //この書き方で今表示可能な画面幅を取得できる
                             decoration: BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(15)),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 6),
                             child: ListTile(
-                              title: // コンテナのchild部分に、[0]のメッセージを表示
-                                  Text(
-                                      style: const TextStyle(
-                                        fontSize: 17,
-                                        color: Colors.white,
-                                      ),
-                                      AppLocalizations.of(context)!.termsOfUse
-                                      ),
+                              title: Text(
+                                AppLocalizations.of(context)!.termsOfUse,
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                ),
+                              ),
                             )),
                       );
                     }
@@ -294,16 +292,20 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
                         child: Container(
                             // [0]の吹き出し部分を、コンテナで表示
                             constraints: BoxConstraints(
-                                maxWidth: MediaQuery.of(context).size.width *
-                                    0.6), //この書き方で今表示可能な画面幅を取得できる
+                                maxWidth: MediaQuery.of(context).size.width * 0.6), //この書き方で今表示可能な画面幅を取得できる
                             decoration: BoxDecoration(
                                 color: Colors.green,
                                 borderRadius: BorderRadius.circular(15)),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18, vertical: 6),
                             child: ListTile(
-                              title: // コンテナのchild部分に、[1]のメッセージを表示
-                                  Text(AppLocalizations.of(context)!.searchingYourPartner),
+                              title: Text(
+                                AppLocalizations.of(context)!.searchingYourPartner,
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                ),
+                                ),
                             )),
                       );
                     }
