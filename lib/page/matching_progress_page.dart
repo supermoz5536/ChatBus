@@ -238,7 +238,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 188, 234, 255),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 3,

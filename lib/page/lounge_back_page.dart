@@ -687,8 +687,10 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
                                   // 状態変数の更新
                                   // ウィジェット再描画.
                                   String? newUserImageUrl = await UserFirebaseStorage.pickAndUploadProfImage(meUser!.uid);
+                                  if (newUserImageUrl != null) {
                                   UserFirestore.updateUserImageUrl(meUser!.uid, newUserImageUrl);
                                   ref.read(meUserProvider.notifier).updateUserImageUrl(newUserImageUrl);
+                                  }
                                 },
                                 child: const SizedBox(width: 110, height: 110),
                                 // InkWellの有効範囲はchildのWidgetの範囲に相当するので
