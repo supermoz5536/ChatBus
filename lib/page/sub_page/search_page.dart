@@ -975,7 +975,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   }
                 );
               },
-              child: const Text('Read How to Search')
+              child: Text(AppLocalizations.of(context)!.readHowToSearch)
               ),
           );
   }
