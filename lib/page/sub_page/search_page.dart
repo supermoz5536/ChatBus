@@ -19,9 +19,11 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 class _SearchPageState extends ConsumerState<SearchPage> {
   String? currentMode;
+  int? isButtonOn;
   bool? withinRange;
   bool? withinTotalRange;
   List<bool> isExpanded = [false, false, false, false];
+
 
   @override
   Widget build(BuildContext context) {
@@ -34,26 +36,26 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     // selectedNativeLanguage の更新完了を監視して
     // 最新の有効なmode名を取得し
     // modeNameの状態変数を更新する
-    ref.listen(selectedNativeLanguageProvider, (previous, next) {
-      print('previous1 == ${previous!.en}');
-      print('next1 == ${next!.en}');
-      currentMode = IsValidSearchMode.isValidSearchMode(
-                      selectedLanguage,
-                      next,
-                    );
-      ref.read(modeNameProvider.notifier).updateModeName(currentMode);
-    });
+    // ref.listen(selectedNativeLanguageProvider, (previous, next) {
+    //   print('previous1 == ${previous!.en}');
+    //   print('next1 == ${next!.en}');
+    //   currentMode = IsValidSearchMode.isValidSearchMode(
+    //                   selectedLanguage,
+    //                   next,
+    //                 );
+    //   ref.read(modeNameProvider.notifier).updateModeName(currentMode);
+    // });
 
-    // 上記と同様、監視対象が selectedNativeLanguage
-    ref.listen(selectedLanguageProvider, (previous, next) {
-      print('previous2 == ${previous!.en}');
-      print('next2 == ${next!.en}');
-      currentMode = IsValidSearchMode.isValidSearchMode(
-                      next,
-                      selectedNativeLanguage
-                    );
-      ref.read(modeNameProvider.notifier).updateModeName(currentMode);
-    });
+    // // 上記と同様、監視対象が selectedNativeLanguage
+    // ref.listen(selectedLanguageProvider, (previous, next) {
+    //   print('previous2 == ${previous!.en}');
+    //   print('next2 == ${next!.en}');
+    //   currentMode = IsValidSearchMode.isValidSearchMode(
+    //                   next,
+    //                   selectedNativeLanguage
+    //                 );
+    //   ref.read(modeNameProvider.notifier).updateModeName(currentMode);
+    // });
     
 
     
@@ -89,41 +91,118 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             
             const SizedBox(height: 25),
 
-            // ■ Current Mode Display
-            Center(
-              child: IntrinsicWidth(
-                child: Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
-                    title: Text(
-                      // 'Current Search Mode',
-                      AppLocalizations.of(context)!.currentSearchModeTitle,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold
-                      ),
-                      ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        // 現在有効なモード名を管理する状態変数の値によって表示名を切り替え
-                        currentMode == 'mate'
-                          ? AppLocalizations.of(context)!.modeNameMate
-                          : currentMode == 'teachable'
-                            ? AppLocalizations.of(context)!.modeNameTeachable
-                            : currentMode == 'native'
-                              ? AppLocalizations.of(context)!.modeNameNative
-                              : AppLocalizations.of(context)!.modeNameExchange,
-                         textAlign: TextAlign.center,
-                         style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey
-                         ),
-                        ),
+
+            // ■ Mode Switch Buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+
+                Column(
+                  children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: isButtonOn == 0 
+                        ? MaterialStateProperty.all(Colors.red)
+                        : MaterialStateProperty.all(Colors.blue)
                     ),
-                  ),
+                    onPressed: () {
+                      ref.read(modeNameProvider.notifier).updateModeName('native');
+                      setState(() {
+                        isButtonOn = 0;
+                      });
+                      },
+                    child: const Text('Native Mode')),
+
+                  const SizedBox(height: 20),
+
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: isButtonOn == 1
+                        ? MaterialStateProperty.all(Colors.red)
+                        : MaterialStateProperty.all(Colors.blue)
+                    ),
+                    onPressed: () {
+                      ref.read(modeNameProvider.notifier).updateModeName('exchange');
+                      setState(() {
+                        isButtonOn = 1;
+                      });
+                      },
+                    child: const Text('Exchange Mode')),
+                  ],
                 ),
-              ),
+
+                Column(
+                  children: [
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: isButtonOn == 2
+                        ? MaterialStateProperty.all(Colors.red)
+                        : MaterialStateProperty.all(Colors.blue)
+                    ),
+                    onPressed: () {
+                      ref.read(modeNameProvider.notifier).updateModeName('teachable');
+                      setState(() {
+                        isButtonOn = 2;
+                      });
+                    },
+                    child: const Text('Teachable Mode')),
+
+                  const SizedBox(height: 20),
+
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: isButtonOn == 3
+                        ? MaterialStateProperty.all(Colors.red)
+                        : MaterialStateProperty.all(Colors.blue)
+                    ),
+                    onPressed: () {
+                      ref.read(modeNameProvider.notifier).updateModeName('mate');
+                      setState(() {
+                        isButtonOn = 3;
+                      });
+                    },
+                    child: const Text('Mate Mode')),
+                  ],
+                ),
+              ],
             ),
+
+
+            // ■ Current Mode Display
+            // Center(
+            //   child: IntrinsicWidth(
+            //     child: Card(
+            //       child: ListTile(
+            //         leading: const Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
+            //         title: Text(
+            //           // 'Current Search Mode',
+            //           AppLocalizations.of(context)!.currentSearchModeTitle,
+            //           style: const TextStyle(
+            //             fontWeight: FontWeight.bold
+            //           ),
+            //           ),
+            //         subtitle: Padding(
+            //           padding: const EdgeInsets.only(top: 4),
+            //           child: Text(
+            //             // 現在有効なモード名を管理する状態変数の値によって表示名を切り替え
+            //             currentMode == 'mate'
+            //               ? AppLocalizations.of(context)!.modeNameMate
+            //               : currentMode == 'teachable'
+            //                 ? AppLocalizations.of(context)!.modeNameTeachable
+            //                 : currentMode == 'native'
+            //                   ? AppLocalizations.of(context)!.modeNameNative
+            //                   : AppLocalizations.of(context)!.modeNameExchange,
+            //              textAlign: TextAlign.center,
+            //              style: const TextStyle(
+            //               fontSize: 15,
+            //               color: Colors.grey
+            //              ),
+            //             ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             Padding(
               padding: const EdgeInsets.only(
