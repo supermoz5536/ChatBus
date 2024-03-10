@@ -240,6 +240,10 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 188, 234, 255),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 3,
+        shadowColor: Colors.black.withOpacity(0.7),
+        surfaceTintColor: Colors.transparent,
         title: Text(AppLocalizations.of(context)!.headerMatchingProgressPage),
       ),
       body: Stack(
@@ -318,11 +322,18 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
           // ■フッター部分
           Column(
             // column()の縦移動で、画面1番下に配置
-            mainAxisAlignment: MainAxisAlignment
-                .end, // https://zenn.dev/wm3/articles/7332788c626b39
+            mainAxisAlignment: MainAxisAlignment.end, // https://zenn.dev/wm3/articles/7332788c626b39
             children: [
               Container(
-                color: Colors.white,
+                decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 250, 250, 250),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 4.5), // 上方向への影
+                        blurRadius: 7, // ぼかしの量
+                      )
+                    ]),
                 height: 68, // フッター領域の縦幅
                 child: Row(
                   children: [
