@@ -242,12 +242,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         // 両方レンジ内の場合のみ、
                         // 「選択管理の状態変数」と「モード表示管理の状態変数」を更新
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                          withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                            newValue,
-                            selectedLanguage,
-                            selectedNativeLanguage
-                          );
-                          if (withinRange == true && withinTotalRange == true) {
+                          if (withinRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
                           }
                       },
@@ -263,12 +258,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.ja!,
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                          withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                            newValue,
-                            selectedLanguage,
-                            selectedNativeLanguage
-                          );
-                          if (withinRange == true && withinTotalRange == true) {
+                          if (withinRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
                           }      
                       },
@@ -284,12 +274,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.es!,
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                          withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                            newValue,
-                            selectedLanguage,
-                            selectedNativeLanguage
-                          );
-                          if (withinRange == true && withinTotalRange == true) {
+                          if (withinRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
                           }
                       },
@@ -305,12 +290,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.ko!,
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                          withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                            newValue,
-                            selectedLanguage,
-                            selectedNativeLanguage
-                          );
-                          if (withinRange == true && withinTotalRange == true) {
+                          if (withinRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateKo(newValue);
                           }
                       },
@@ -326,12 +306,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       value: selectedNativeLanguage.zh!,
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
-                          withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                            newValue,
-                            selectedLanguage,
-                            selectedNativeLanguage
-                          );
-                          if (withinRange == true && withinTotalRange == true) {
+                          if (withinRange == true) {
                             ref.read(selectedNativeLanguageProvider.notifier).updateZh(newValue);
                           }
                       },
@@ -374,20 +349,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
                       onChanged: (bool newValue) {
-                        // まず母国語フィルターの選択数と総計した時のレンジ内かを確認
-                        withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                          newValue,
-                          selectedLanguage,
-                          selectedNativeLanguage
-                        );
-                        if (withinTotalRange == true) {
-                          // レンジ内の場合は、現在選択してる言語と同じかをチェック
-                          // 同じ場合：switchメソッドでTrueに更新しないので none
-                          // 違う場合：switchメソッドでTrueに更新するので、該当の言語コード
-                          selectedLanguage.en! == true
-                            ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                            : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
-                        }
+                         ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
                       },
                     ),
 
@@ -400,16 +362,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
                       onChanged: (bool newValue) {
-                        withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                          newValue,
-                          selectedLanguage,
-                          selectedNativeLanguage
-                        );
-                        if (withinTotalRange == true) {
-                        selectedLanguage.ja! == true
-                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
-                        }
+                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
                       },
                     ),
               
@@ -422,16 +375,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.es!,
                       onChanged: (bool newValue) {
-                        withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                          newValue,
-                          selectedLanguage,
-                          selectedNativeLanguage
-                        );
-                        if (withinTotalRange == true) {
-                        selectedLanguage.es! == true
-                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
-                        }
+                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
                       },
                     ),
 
@@ -444,16 +388,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ko!,
                       onChanged: (bool newValue) {
-                        withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                          newValue,
-                          selectedLanguage,
-                          selectedNativeLanguage
-                        );
-                        if (withinTotalRange == true) {
-                        selectedLanguage.ko! == true
-                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
-                        }
+                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
                       },
                     ),
 
@@ -466,16 +401,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.zh!,
                       onChanged: (bool newValue) {
-                        withinTotalRange = IsValidTotalCount.isValidTotalCount(
-                          newValue,
-                          selectedLanguage,
-                          selectedNativeLanguage
-                        );
-                        if (withinTotalRange == true) {
-                        selectedLanguage.zh! == true
-                          ? ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('none')
-                          : ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
-                        }
+                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
                       },
                     ),
                     
