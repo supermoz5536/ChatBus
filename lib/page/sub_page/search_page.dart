@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
@@ -24,6 +26,41 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   bool? withinTotalRange;
   List<bool> isExpanded = [false, false, false, false];
 
+  
+  SnackBar customSnackBar() {
+    return const SnackBar(
+      duration: Duration(milliseconds: 2500),
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.all(30),
+      content: SizedBox(
+        height: 70,
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 5, right: 20),
+                child: Icon(
+                  Icons.error_outline_outlined,
+                  color: Colors.white,),
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Text(
+                  '母国語設定と言語フィルターで、同じ言語を同時に選択することはできません。',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),),
+              ),
+            ),
+          ],
+        ),
+      ),
+      backgroundColor:Color.fromARGB(255, 94, 94, 94),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,32 +68,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     currentMode = ref.watch(modeNameProvider);
-
-    // 各フェーダーのonChange内における.
-    // selectedNativeLanguage の更新完了を監視して
-    // 最新の有効なmode名を取得し
-    // modeNameの状態変数を更新する
-    // ref.listen(selectedNativeLanguageProvider, (previous, next) {
-    //   print('previous1 == ${previous!.en}');
-    //   print('next1 == ${next!.en}');
-    //   currentMode = IsValidSearchMode.isValidSearchMode(
-    //                   selectedLanguage,
-    //                   next,
-    //                 );
-    //   ref.read(modeNameProvider.notifier).updateModeName(currentMode);
-    // });
-
-    // // 上記と同様、監視対象が selectedNativeLanguage
-    // ref.listen(selectedLanguageProvider, (previous, next) {
-    //   print('previous2 == ${previous!.en}');
-    //   print('next2 == ${next!.en}');
-    //   currentMode = IsValidSearchMode.isValidSearchMode(
-    //                   next,
-    //                   selectedNativeLanguage
-    //                 );
-    //   ref.read(modeNameProvider.notifier).updateModeName(currentMode);
-    // });
-    
 
     
     return Scaffold(
@@ -243,7 +254,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         // 「選択管理の状態変数」と「モード表示管理の状態変数」を更新
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) {
+                            if(newValue == true && selectedLanguage!.en == true ) {
+                              ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                            } else {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEn(newValue);
+                            }
                           }
                       },
                     ),
@@ -259,8 +274,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) {
+                            if(newValue == true && selectedLanguage!.ja == true ) {
+                              ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                            } else {
                             ref.read(selectedNativeLanguageProvider.notifier).updateJa(newValue);
-                          }      
+                            }
+                          }
                       },
                     ),
 
@@ -275,7 +294,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) {
+                            if(newValue == true && selectedLanguage!.es == true ) {
+                              ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                            } else {
                             ref.read(selectedNativeLanguageProvider.notifier).updateEs(newValue);
+                            }
                           }
                       },
                     ),
@@ -291,7 +314,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) {
+                            if(newValue == true && selectedLanguage!.ko == true ) {
+                              ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                            } else {
                             ref.read(selectedNativeLanguageProvider.notifier).updateKo(newValue);
+                            }
                           }
                       },
                     ),
@@ -307,7 +334,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       onChanged: (bool newValue) {
                           withinRange = ref.read(selectedNativeLanguageProvider.notifier).isValidSelectionCount(newValue);
                           if (withinRange == true) {
+                            if(newValue == true && selectedLanguage!.zh == true ) {
+                              ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                            } else {
                             ref.read(selectedNativeLanguageProvider.notifier).updateZh(newValue);
+                            }
                           }
                       },
                     ),
@@ -349,7 +380,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage!.en!,
                       onChanged: (bool newValue) {
-                         ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
+                        if(newValue == true && selectedNativeLanguage.en == true ) {
+                          ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                        } else {
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('en');
+                        }
                       },
                     ),
 
@@ -362,7 +397,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ja!,
                       onChanged: (bool newValue) {
-                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
+                       if(newValue == true && selectedNativeLanguage.ja == true ) {
+                          ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                        } else {
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ja');
+                        }
                       },
                     ),
               
@@ -375,7 +414,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.es!,
                       onChanged: (bool newValue) {
-                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
+                       if(newValue == true && selectedNativeLanguage.es == true ) {
+                          ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                        } else {
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('es');
+                        }
                       },
                     ),
 
@@ -388,7 +431,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.ko!,
                       onChanged: (bool newValue) {
-                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
+                       if(newValue == true && selectedNativeLanguage.ko == true ) {
+                          ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                        } else {
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('ko');
+                        }
                       },
                     ),
 
@@ -401,7 +448,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                           fontSize: 15)),
                       value: selectedLanguage.zh!,
                       onChanged: (bool newValue) {
-                        ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
+                       if(newValue == true && selectedNativeLanguage.zh == true ) {
+                          ScaffoldMessenger.of(context).showSnackBar(customSnackBar());
+                        } else {
+                          ref.read(selectedLanguageProvider.notifier).switchSelectedLanguage('zh');
+                        }
                       },
                     ),
                     
