@@ -21,6 +21,7 @@ import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
+import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
@@ -50,6 +51,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Future<User?>? futureTalkuserProfile;
   String? currentLanguageCode;
   String? currentTargetLanguageCode;
+  String? currentMode;
   User? talkuserProfile;
   bool? isDisabled = false;
   bool? isDisabledRequest = false;
@@ -1581,6 +1583,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
+    currentMode = ref.watch(modeNameProvider);
+
     return Row(
       children: [
         // ■ 「次の相手を探す」ボタン
@@ -1605,8 +1609,14 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
                   if (context.mounted) {
                     /// 画面遷移に必要なコンストラクタ
-                    List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
-                    List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedNativeLanguage);
+                    List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(
+                                                            selectedLanguage,
+                                                            currentMode
+                                                          );
+                    List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(
+                                                                  selectedNativeLanguage,
+                                                                  currentMode
+                                                                );
                     String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                     matchingProgress = MatchingProgress(
@@ -1614,7 +1624,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                           selectedGener: selectedGenderTrueItem,
                                           selectedLanguage: selectedLanguageList, 
                                           selectedNativeLanguage: selectedNativeLanguageList, 
-                                        ); 
+                                       ); 
                     Navigator.pushAndRemoveUntil(
                         context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                         SlideRightRoute(

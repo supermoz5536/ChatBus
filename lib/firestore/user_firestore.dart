@@ -328,14 +328,20 @@ class UserFirestore {
           query = query.where("native_language", arrayContains: 'mate')
                        .where("queried_language", whereIn: [selectedLanguage]);
 
-        } else  if (selectedLanguage == 'teachable') {
+        } else if (selectedLanguage == 'teachable') {
         print('teachableのパターン');
           // teachableのパターン
           query = query.where("queried_language", whereIn: meNativeLanguage);
 
+        } else if (selectedLanguage == 'native') {
+        print('nativeのパターン');
+          // nativeのパターン ■■■■■■■　未確定 ■■■■■■■■
+          query = query.where("native_language", arrayContainsAny: meNativeLanguage)
+                       .where("queried_language", whereIn: ['native']);
+
         } else {
-        print('クロスのパターン');
-          // クロスのパターン & sameのパターン
+        print('exchangeのパターン');
+          // exchangeのパターン & sameのパターン
           query = query.where("native_language", arrayContains: selectedLanguage)
                        .where("queried_language", whereIn: meNativeLanguage);
         }

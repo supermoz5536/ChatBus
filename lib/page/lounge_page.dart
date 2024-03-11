@@ -16,6 +16,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
+import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -46,6 +47,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   String? currentSelectedLanguageCode;
   String? currentTargetLanguageCode;
   String? showDialogGender;
+  String? currentMode;
   bool isDisabled = false;
   bool isMydataFutureDone = false;
   bool isGenderSelected = false;
@@ -397,7 +399,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     friendRequestNotifierservice = FriendRequestNotifierService(ref);
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
-    
+    currentMode = ref.watch(modeNameProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1395,8 +1397,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                                     if (context.mounted) {
                                       /// 画面遷移に必要なコンストラクタ
-                                      List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(selectedLanguage);
-                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedNativeLanguageTrueItem(selectedNativeLanguage);
+                                      List<String?>? selectedLanguageList = SelectedLanguage.getSelectedLanguageTrueItem(
+                                                                              selectedLanguage,
+                                                                              currentMode
+                                                                            );
+                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedNativeLanguageTrueItem(
+                                                                                    selectedNativeLanguage,
+                                                                                    currentMode
+                                                                                  );
                                       String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                                       matchingProgress = MatchingProgress(

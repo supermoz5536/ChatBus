@@ -21,18 +21,11 @@ import 'package:udemy_copy/utils/isValid_search_mode.dart';
 /// その後の consumer によるアクセスでは、MeUserNotifier が管理する現在の状態が返されます。
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
 final modeNameProvider = StateNotifierProvider<ModeNameNotifier, String?>((ref) {
-  
-  // 依存するプロバイダーの値を読み取り
-  final selectedLanguage = ref.read(selectedLanguageProvider);
-  final selectedNativeLanguage = ref.read(selectedNativeLanguageProvider);
 
-  String? initialModeNameMode = IsValidSearchMode.isValidSearchMode(
-                                  selectedLanguage,
-                                  selectedNativeLanguage,
-                                );
+  String? initialModeName = 'exchange';
 
   // 生成したインスタンスの保持する状態を consumer が読み取る。
-  return ModeNameNotifier(initialModeNameMode);
+  return ModeNameNotifier(initialModeName);
 });
 
 

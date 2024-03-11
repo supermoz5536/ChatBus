@@ -21,31 +21,10 @@ class SelectedLanguage{
 
   /// MatchingProgressPageへの画面遷移時に
   /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedLanguageTrueItem(SelectedLanguage? selectedLanguage){
-    List<String?>? selectedLanguageTrueItem = [];
-
-    // インスタンス化したselectedLanguageオブジェクトは
-    // 言語フィルターUIの真偽出力結果が格納されている
-    // MatchingProgressPageへのコンストラクタ用に
-    // そのうち、TrueのものだけListの配列に加えて出力する
-    if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en'); 
-    if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
-    if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
-    if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
-    if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
-    if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw'); 
-
-    if (selectedLanguageTrueItem.isEmpty) {
-      selectedLanguageTrueItem.add('teachable');
-    }
-
-    return selectedLanguageTrueItem;
-  } 
-
-
-  /// MatchingProgressPageへの画面遷移時に
-  /// コンストラクタに渡すListオブジェクトのゲッター関数
-  static List<String?>? getSelectedNativeLanguageTrueItem(SelectedLanguage? selectedNativeLanguage){
+  static List<String?>? getSelectedNativeLanguageTrueItem(
+    SelectedLanguage? selectedNativeLanguage,
+    String? currentMode
+  ) {
     List<String?>? selectedNativeLanguageTrueItem = [];
 
     // インスタンス化したselectedLanguageオブジェクトは
@@ -59,13 +38,46 @@ class SelectedLanguage{
     if (selectedNativeLanguage.zh == true) selectedNativeLanguageTrueItem.add('zh'); 
     if (selectedNativeLanguage.zhTw == true) selectedNativeLanguageTrueItem.add('zhTw');
 
-    if (selectedNativeLanguageTrueItem.isEmpty) {
+    if (currentMode == 'mate') {
+      selectedNativeLanguageTrueItem.clear();
       selectedNativeLanguageTrueItem.add('mate');
     }
     
     return selectedNativeLanguageTrueItem;
   } 
 
+
+
+  /// MatchingProgressPageへの画面遷移時に
+  /// コンストラクタに渡すListオブジェクトのゲッター関数
+  static List<String?>? getSelectedLanguageTrueItem(
+    SelectedLanguage? selectedLanguage,
+    String? currentMode
+  ) {
+    List<String?>? selectedLanguageTrueItem = [];
+
+    // インスタンス化したselectedLanguageオブジェクトは
+    // 言語フィルターUIの真偽出力結果が格納されている
+    // MatchingProgressPageへのコンストラクタ用に
+    // そのうち、TrueのものだけListの配列に加えて出力する
+    if (selectedLanguage!.en == true) selectedLanguageTrueItem.add('en');
+    if (selectedLanguage.ja == true) selectedLanguageTrueItem.add('ja'); 
+    if (selectedLanguage.es == true) selectedLanguageTrueItem.add('es'); 
+    if (selectedLanguage.ko == true) selectedLanguageTrueItem.add('ko'); 
+    if (selectedLanguage.zh == true) selectedLanguageTrueItem.add('zh'); 
+    if (selectedLanguage.zhTw == true) selectedLanguageTrueItem.add('zhTw'); 
+
+    if (currentMode == 'teachable') {
+      selectedLanguageTrueItem.clear();
+      selectedLanguageTrueItem.add('teachable');
+      
+    } else if (currentMode == 'native') {
+      selectedLanguageTrueItem.clear();
+      selectedLanguageTrueItem.add('native');
+    }
+
+    return selectedLanguageTrueItem;
+  } 
 
 
   /// USER型インスタンスの個別プロパティの更新用関数
