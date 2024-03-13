@@ -99,122 +99,205 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     indent: 30,
                     endIndent: 30,
                   ),
+
+
+            // ■ current Mode Display
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 20,
+                left: 15,
+                right: 15,
+              ),
+              child: Card(
+                child: ExpansionTile(
+                  leading: const Icon(
+                    Icons.check_circle,
+                    color: Colors.lightGreen),
+                  // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(0.0))),                    
+                  title: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 3.5),
+                      child: Text(
+                        AppLocalizations.of(context)!.currentSearchModeTitle,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Color.fromARGB(255, 75, 75, 75),
+                          fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 7),
+                    child: Text(
+                      // 現在有効なモード名を管理する状態変数の値によって表示名を切り替え
+                      currentMode == 'mate'
+                        ? AppLocalizations.of(context)!.modeNameMate
+                        : currentMode == 'teachable'
+                          ? AppLocalizations.of(context)!.modeNameTeachable
+                          : currentMode == 'native'
+                            ? AppLocalizations.of(context)!.modeNameNative
+                            : AppLocalizations.of(context)!.modeNameExchange,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey
+                      ),
+                      ),
+                  ),
+                  collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
+                  backgroundColor: const Color.fromARGB(255, 247, 241, 254),
+                  children: [
+                    const Divider(
+                      color: Color.fromARGB(255, 214, 214, 214),
+                      height: 0,
+                      thickness: 0.1,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
+                    // ■ Mode Switch Buttons
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        bottom: 10
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                      
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 5,
+                              right: 5
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: currentMode == 'native'
+                                    ? MaterialStateProperty.all(Colors.redAccent)
+                                    : MaterialStateProperty.all(Colors.lightBlueAccent),
+                                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  )),
+                                  minimumSize: MaterialStateProperty.all(
+                                    const Size(32, 16),)
+                                ),
+                                onPressed: () {
+                                  ref.read(modeNameProvider.notifier).updateModeName('native');
+                                  setState(() {
+                                    currentMode == 'native';
+                                  });
+                                  },
+                                child: Text(
+                                  AppLocalizations.of(context)!.modeNameNative,
+                                style: const TextStyle(
+                                  color: Colors.white
+                                ))),
+                                        
+                              const SizedBox(height: 20),
+                              
+                                        
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: currentMode == 'exchange'
+                                    ? MaterialStateProperty.all(Colors.redAccent)
+                                    : MaterialStateProperty.all(Colors.lightBlueAccent),
+                                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  )),
+                                  minimumSize: MaterialStateProperty.all(
+                                    const Size(32, 16),)
+                                ),
+                                onPressed: () {
+                                  ref.read(modeNameProvider.notifier).updateModeName('exchange');
+                                  setState(() {
+                                    currentMode == 'exchange';
+                                  });
+                                  },
+                                child: Text(
+                                  AppLocalizations.of(context)!.modeNameExchange,
+                                  style: const TextStyle(
+                                    color: Colors.white
+                                  ))),
+                              ],
+                            ),
+                          ),
             
-            const SizedBox(height: 25),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 5,
+                              right: 5
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                        
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: currentMode == 'mate'
+                                    ? MaterialStateProperty.all(Colors.redAccent)
+                                    : MaterialStateProperty.all(Colors.lightBlueAccent),
+                                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  )),
+                                  minimumSize: MaterialStateProperty.all(
+                                    const Size(32, 16),)
+                                ),
+                                onPressed: () {
+                                  ref.read(modeNameProvider.notifier).updateModeName('mate');
+                                  setState(() {
+                                    currentMode == 'mate';
+                                  });
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.modeNameMate,
+                                  style: const TextStyle(
+                                    color: Colors.white
+                                  ))),
 
+                              const SizedBox(height: 20),
 
-            // ■ Mode Switch Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-
-                Column(
-                  children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: isButtonOn == 0 
-                        ? MaterialStateProperty.all(Colors.red)
-                        : MaterialStateProperty.all(Colors.blue)
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  backgroundColor: currentMode == 'teachable'
+                                    ? MaterialStateProperty.all(Colors.redAccent)
+                                    : MaterialStateProperty.all(Colors.lightBlueAccent),
+                                  padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  )),
+                                  minimumSize: MaterialStateProperty.all(
+                                    const Size(32, 16),)
+                                ),
+                                onPressed: () {
+                                  ref.read(modeNameProvider.notifier).updateModeName('teachable');
+                                  setState(() {
+                                    currentMode == 'teachable';
+                                  });
+                                },
+                                child: Text(
+                                  AppLocalizations.of(context)!.modeNameTeachable,
+                                  style: const TextStyle(
+                                    color: Colors.white
+                                  ))),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    onPressed: () {
-                      ref.read(modeNameProvider.notifier).updateModeName('native');
-                      setState(() {
-                        isButtonOn = 0;
-                      });
-                      },
-                    child: const Text('Native Mode')),
-
-                  const SizedBox(height: 20),
-
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: isButtonOn == 1
-                        ? MaterialStateProperty.all(Colors.red)
-                        : MaterialStateProperty.all(Colors.blue)
-                    ),
-                    onPressed: () {
-                      ref.read(modeNameProvider.notifier).updateModeName('exchange');
-                      setState(() {
-                        isButtonOn = 1;
-                      });
-                      },
-                    child: const Text('Exchange Mode')),
                   ],
                 ),
-
-                Column(
-                  children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: isButtonOn == 2
-                        ? MaterialStateProperty.all(Colors.red)
-                        : MaterialStateProperty.all(Colors.blue)
-                    ),
-                    onPressed: () {
-                      ref.read(modeNameProvider.notifier).updateModeName('teachable');
-                      setState(() {
-                        isButtonOn = 2;
-                      });
-                    },
-                    child: const Text('Teachable Mode')),
-
-                  const SizedBox(height: 20),
-
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: isButtonOn == 3
-                        ? MaterialStateProperty.all(Colors.red)
-                        : MaterialStateProperty.all(Colors.blue)
-                    ),
-                    onPressed: () {
-                      ref.read(modeNameProvider.notifier).updateModeName('mate');
-                      setState(() {
-                        isButtonOn = 3;
-                      });
-                    },
-                    child: const Text('Mate Mode')),
-                  ],
-                ),
-              ],
+              ),
             ),
 
-
-            // ■ Current Mode Display
-            // Center(
-            //   child: IntrinsicWidth(
-            //     child: Card(
-            //       child: ListTile(
-            //         leading: const Icon(Icons.check_circle, color: Colors.lightGreen), // 選択されていることを示すアイコン
-            //         title: Text(
-            //           // 'Current Search Mode',
-            //           AppLocalizations.of(context)!.currentSearchModeTitle,
-            //           style: const TextStyle(
-            //             fontWeight: FontWeight.bold
-            //           ),
-            //           ),
-            //         subtitle: Padding(
-            //           padding: const EdgeInsets.only(top: 4),
-            //           child: Text(
-            //             // 現在有効なモード名を管理する状態変数の値によって表示名を切り替え
-            //             currentMode == 'mate'
-            //               ? AppLocalizations.of(context)!.modeNameMate
-            //               : currentMode == 'teachable'
-            //                 ? AppLocalizations.of(context)!.modeNameTeachable
-            //                 : currentMode == 'native'
-            //                   ? AppLocalizations.of(context)!.modeNameNative
-            //                   : AppLocalizations.of(context)!.modeNameExchange,
-            //              textAlign: TextAlign.center,
-            //              style: const TextStyle(
-            //               fontSize: 15,
-            //               color: Colors.grey
-            //              ),
-            //             ),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-
+            // ■ 母国語設定
             Padding(
               padding: const EdgeInsets.only(
                 top: 20,
@@ -223,6 +306,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               child: Card(
                 child: ExpansionTile(
+                  leading: const Icon(
+                    Icons.record_voice_over_outlined,
+                    color: Colors.grey,
+                    size: 30,
+                  ),
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
@@ -234,10 +322,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
                   // "自分が流暢に話せる言語を3つまで選択できます！",
-                  subtitle: Text(AppLocalizations.of(context)!.subTitleSelectNativeLanguage),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.subTitleSelectNativeLanguage,
+                    style: const TextStyle(
+                    color: Colors.grey,
+                    )),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
+                    const Divider(
+                      color: Color.fromARGB(255, 214, 214, 214),
+                      height: 0,
+                      thickness: 0.1,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
               
                     // ■ 英語
                     SwitchListTile(
@@ -349,6 +448,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
             const SizedBox(height: 25),
 
+            // ■ 言語フィルター
             Padding(
               padding: const EdgeInsets.only(
                 left: 50,
@@ -356,6 +456,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               child: Card(
                 child: ExpansionTile(
+                  leading: const Icon(
+                    Icons.transcribe_outlined,
+                    color: Colors.grey,
+                    size: 30,
+                  ),
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
@@ -366,10 +471,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: Text(AppLocalizations.of(context)!.subTitleLanguageFilter),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.subTitleLanguageFilter,
+                    style: const TextStyle(
+                      color: Colors.grey
+                    ),),
                   collapsedBackgroundColor:const Color.fromARGB(255, 247, 241, 254),
                   backgroundColor: const Color.fromARGB(255, 247, 241, 254),
                   children: [
+                    const Divider(
+                      color: Color.fromARGB(255, 214, 214, 214),
+                      height: 0,
+                      thickness: 0.1,
+                      indent: 10,
+                      endIndent: 10,
+                    ),
                     
                     // ■ 英語.
                     SwitchListTile(
@@ -455,7 +571,6 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         }
                       },
                     ),
-                    
                   ],
                 ),
               ),
@@ -464,7 +579,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
             const SizedBox(height: 25),
 
-
+            // ■ ジェンダーフィルター
             Padding(
               padding: const EdgeInsets.only(
                 left: 50,
@@ -472,6 +587,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
               child: Card(
                 child: ExpansionTile(
+                  leading: const Icon(
+                    Icons.wc_outlined,
+                    color: Colors.grey,
+                    size: 30,
+                  ),
                   // shapeプロパティを設定するとデフォルトの境界線UIの描画を避けることができる
                   shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(0.0))),
@@ -481,7 +601,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                       fontSize: 20,
                       color: Color.fromARGB(255, 75, 75, 75),
                       fontWeight: FontWeight.bold)),
-                  subtitle: Text(AppLocalizations.of(context)!.subTitleGenderFilter),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.subTitleGenderFilter,
+                    style: const TextStyle(
+                      color: Colors.grey
+                    ),),
                   children: [
                               
                     const Divider(
@@ -664,67 +788,67 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                         ),
                                       ),
 
-                                      // ■ ネイティブマッチング 2行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                //'母国語設定と言語フィルターで "母国語" を選択',
-                                                AppLocalizations.of(context)!.nativeMatchingSub2,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ ネイティブマッチング 2行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           //'母国語設定と言語フィルターで "母国語" を選択',
+                                      //           AppLocalizations.of(context)!.nativeMatchingSub2,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
 
-                                      // ■ ネイティブマッチング 3行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding:  EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                //'母国語が英語の場合：英語 / 英語',
-                                                AppLocalizations.of(context)!.nativeMatchingSub3,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ ネイティブマッチング 3行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 25),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding:  EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           //'母国語が英語の場合：英語 / 英語',
+                                      //           AppLocalizations.of(context)!.nativeMatchingSub3,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -784,67 +908,67 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                         ),
                                       ),
 
-                                      // ■ クロスマッチング 2行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding:  EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.done,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
-                                                AppLocalizations.of(context)!.exchangeMatchingSub2,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ クロスマッチング 2行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding:  EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.done,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // '母国語設定で母国語を選択し、言語フィルターであなたの学びたい言語を選択',
+                                      //           AppLocalizations.of(context)!.exchangeMatchingSub2,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
 
-                                      // ■ クロスマッチング 3行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.done,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // '母国語が英語の場合：英語 / 中国語',
-                                                AppLocalizations.of(context)!.exchangeMatchingSub3,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ クロスマッチング 3行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 25),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.done,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // '母国語が英語の場合：英語 / 中国語',
+                                      //           AppLocalizations.of(context)!.exchangeMatchingSub3,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -904,67 +1028,67 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                         ),
                                       ),
 
-                                      // ■ ティーチマッチング 2行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
-                                                AppLocalizations.of(context)!.teachableMatchingSub2,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ ティーチマッチング 2行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // '母国語設定で母国語を選択し、言語フィルターは何も選択しない',
+                                      //           AppLocalizations.of(context)!.teachableMatchingSub2,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
 
-                                      // ■ ティーチマッチング 3行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // 'あなたの母国語が英語の場合：英語 / 選択なし',
-                                                AppLocalizations.of(context)!.teachableMatchingSub3,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ ティーチマッチング 3行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 25),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // 'あなたの母国語が英語の場合：英語 / 選択なし',
+                                      //           AppLocalizations.of(context)!.teachableMatchingSub3,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),
@@ -1024,67 +1148,67 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                                         ),
                                       ),
 
-                                      // ■ メイトマッチング 2行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 8),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
-                                                AppLocalizations.of(context)!.mateMatchingSub2,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ メイトマッチング 2行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 8),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // '母国語設定は何も選択せず、言語フィルターであなたの学びたい言語を選択',
+                                      //           AppLocalizations.of(context)!.mateMatchingSub2,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
 
-                                      // ■ メイトマッチング 3行目
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 8, bottom: 25),
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Padding(
-                                              padding: EdgeInsets.only(
-                                                left: 20,
-                                                right: 10,
-                                                ),
-                                              child: Icon(
-                                                Icons.check,
-                                                size: 15,
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                              ),
-                                            ),
-                                            Flexible(
-                                              child: Text(
-                                                // 'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
-                                                AppLocalizations.of(context)!.mateMatchingSub3,
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                ),
-                                                ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      // // ■ メイトマッチング 3行目
+                                      // Padding(
+                                      //   padding: const EdgeInsets.only(right: 8, bottom: 25),
+                                      //   child: Row(
+                                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                                      //     children: [
+                                      //       const Padding(
+                                      //         padding: EdgeInsets.only(
+                                      //           left: 20,
+                                      //           right: 10,
+                                      //           ),
+                                      //         child: Icon(
+                                      //           Icons.check,
+                                      //           size: 15,
+                                      //           color: Color.fromARGB(255, 144, 144, 144),
+                                      //         ),
+                                      //       ),
+                                      //       Flexible(
+                                      //         child: Text(
+                                      //           // 'あなたの学びたい言語が中国語の場合：選択なし/ 中国語',
+                                      //           AppLocalizations.of(context)!.mateMatchingSub3,
+                                      //           style: const TextStyle(
+                                      //             color: Color.fromARGB(255, 144, 144, 144),
+                                      //             fontSize: 15,
+                                      //           ),
+                                      //           ),
+                                      //       ),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ),

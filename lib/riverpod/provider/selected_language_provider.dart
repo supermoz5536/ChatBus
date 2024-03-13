@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
+import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 
 /// ■ StateNotifierProviderの基本的な説明
 /// meUserProvider は
@@ -22,15 +23,31 @@ import 'package:udemy_copy/riverpod/notifier/selected_language_notifier.dart';
 /// SelectedLanguageのインスタンスは全てのメンバ変数の初期値がfalseなので
 /// 初期値の設定は必要ない
 final selectedLanguageProvider = StateNotifierProvider<SelectedLanguageNotifier, SelectedLanguage?>((ref) {
-  SelectedLanguage? initialSelectedLanguage = SelectedLanguage(
-  en: false,
-  ja: false,
-  es: false,
-  ko: false,
-  zh: false,
-  zhTw: false,
-  );
-    return SelectedLanguageNotifier(initialSelectedLanguage);
+  SelectedLanguage? initialSelectedLanguage;
+  SelectedLanguage? initialSelectedNativeLanguage = ref.read(selectedNativeLanguageProvider);
+
+  if (initialSelectedNativeLanguage != null) {
+    if (initialSelectedNativeLanguage.en == true) {
+      initialSelectedLanguage = SelectedLanguage(
+        en: false,
+        ja: true,
+        es: false,
+        ko: false,
+        zh: false,
+        zhTw: false,
+      );
+    } else {
+      initialSelectedLanguage = SelectedLanguage(
+        en: true,
+        ja: false,
+        es: false,
+        ko: false,
+        zh: false,
+        zhTw: false,
+      );
+    }
+  }
+  return SelectedLanguageNotifier(initialSelectedLanguage);
 });
 
 

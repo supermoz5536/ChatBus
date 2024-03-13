@@ -22,7 +22,7 @@ import 'package:udemy_copy/utils/isValid_search_mode.dart';
 /// つまり、状態が更新されれば、その更新された状態が consumer によって読み取られます
 final modeNameProvider = StateNotifierProvider<ModeNameNotifier, String?>((ref) {
 
-  String? initialModeName = 'exchange';
+  String? initialModeName = 'teachable';
 
   // 生成したインスタンスの保持する状態を consumer が読み取る。
   return ModeNameNotifier(initialModeName);

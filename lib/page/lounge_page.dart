@@ -189,16 +189,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       fontWeight: FontWeight.bold
                                     ),),
                                   const SizedBox(height: 20),
-                                  Center(
-                                    child: Text(
-                                      AppLocalizations.of(context)!.learningLanguage,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold
-                                      ),),
-                                  ),
-                                  const SizedBox(height: 20),
+                                  // Center(
+                                  //   child: Text(
+                                  //     AppLocalizations.of(context)!.learningLanguage,
+                                  //     textAlign: TextAlign.center,
+                                  //     style: const TextStyle(
+                                  //       fontSize: 15,
+                                  //       fontWeight: FontWeight.bold
+                                  //     ),),
+                                  // ),
+                                  // const SizedBox(height: 20),
                                   Text(
                                     AppLocalizations.of(context)!.name,
                                     style: const TextStyle(
@@ -249,8 +249,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   // const SizedBox(height: 20),  
                                   // dropdownButtonAppLanguage(setState),
                                   const SizedBox(height: 10),  
-                                  dropdownButtonSelectedLanguage(setState),
-                                  const SizedBox(height: 30),  
+                                  // dropdownButtonSelectedLanguage(setState),
+                                  // const SizedBox(height: 30),  
                                   SizedBox(
                                     height: 20,
                                     width: 150,
@@ -289,7 +289,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       onPressed: () async{
                                     if (isMydataFutureDone == true
                                     && isGenderSelected == true
-                                    && isSelectedLanguage == true
+                                    // && isSelectedLanguage == true
                                     && showDialogNameController.text.isNotEmpty) {
                                       await UserFirestore.updateGender(meUser!.uid, showDialogGender);
                                       await UserFirestore.updateUserName(meUser!.uid, showDialogNameController.text);
@@ -301,7 +301,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         style: TextStyle(
                           color: isMydataFutureDone == true
                               && isGenderSelected == true
-                              && isSelectedLanguage == true
+                              // && isSelectedLanguage == true
                               && showDialogNameController.text.isNotEmpty
                                   ? Colors.blueAccent
                                   : Colors.grey
