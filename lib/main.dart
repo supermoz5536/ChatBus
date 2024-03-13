@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/analytics/custom_analytics_web.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/l10n/l10n.dart';
 import 'package:udemy_copy/model/user.dart';
@@ -20,10 +22,9 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
-  await Shared_Prefes.setPrefsInstance(); //端末へのユーザーデータ保存メソッドを使うため、それを定義してるクラス「Shared_Prefes」のインスタンスをまず生成
-  // String? uid = Shared_Prefes.fetchUid(); //fetchuid()で端末にユーザー情報が保存されてるかどうか、戻り値を確認して
-  // if(uid == null) await UserFirestore.createUser();  //戻り値が空、つまり保存データがなければ、createUserを実行して、DBへのアカウント情報のプッシュ、トークルーム作成、端末へのuidの保存を行う
-  // // await RoomFirestore.fetchJoinedRooms();
+  await Shared_Prefes.setPrefsInstance();
+  CustomAnalytics.logMyApp;
+  CustomAnalyticsWeb.logMyAppWeb;
   runApp(DevicePreview(
     enabled: !kReleaseMode,
     builder: (context) => const ProviderScope(child: MyApp()),
