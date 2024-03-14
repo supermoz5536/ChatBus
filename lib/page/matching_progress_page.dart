@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -76,6 +77,8 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
     selectedLanguage = widget.matchingProgress.selectedLanguage;
     selectedNativeLanguage = widget.matchingProgress.selectedNativeLanguage;
     selectedGender = widget.matchingProgress.selectedGener;
+
+    CustomAnalytics.logLoungePageIn();
 
     // 起動時に1度行うmyUidを確認する処理
     UserFirestore.initForMatching(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -90,32 +91,23 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
     // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
     // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
+    CustomAnalytics.logLoungePageIn();
+
     currentIndex = widget.loungeBack!.currentIndex;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
     /// MatchedHistoryPage用のコンストラクタなので
     /// myUidはnullでも問題が起きてない.
   
-    // ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
-    // riverpodが利用できるまでの待機が目的なら
-    // Future.delayedの記述の方が適切かもしれない
-    // でもWidgetsBindingの方が確実に安全
-    // Future.delayed(Duration.zero, () async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
-    print('dMNotifierservice == $dMNotifierservice');        
-    print('dMNotifierservice == ${meUser!.uid}');        
       // DMの通知リスナー起動
       if (dMNotifierservice != null) {
-        print('LoungeBackPage: setupUnreadDMNotification開始');
         dMSubscription = dMNotifierservice!.setupUnreadDMNotification(meUser!.uid);
       }
       // フレンドリクエストの通知リスナー起動
       if (friendRequestNotifierservice != null) {
-        print('LoungeBackPage: setupFriendRequestNotification');
         friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(meUser!.uid);
       }
     });
-    // });
   }
 
 

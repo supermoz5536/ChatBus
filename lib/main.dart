@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
-import 'package:udemy_copy/analytics/custom_analytics_web.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/l10n/l10n.dart';
 import 'package:udemy_copy/model/user.dart';
@@ -23,8 +22,7 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
   await Shared_Prefes.setPrefsInstance();
-  CustomAnalytics.logMyApp;
-  CustomAnalyticsWeb.logMyAppWeb;
+  CustomAnalytics.logMainIn();
   runApp(DevicePreview(
     enabled: !kReleaseMode,
     builder: (context) => const ProviderScope(child: MyApp()),

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -81,6 +82,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // 追加機能の記述部分であることの明示
     // 関数の呼び出し（initStateはFlutter標準メソッド）
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
+
+    CustomAnalytics.logLoungePageIn();
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {

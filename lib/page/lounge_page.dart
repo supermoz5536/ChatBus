@@ -79,12 +79,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   void initState() {
     super.initState();
     // 追加機能の記述部分であることの明示　
-    // 関数の呼び出し（initStateはFlutter標準メソッド）
     // 親クラスの初期化処理
     //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
-    // initState()は、Widget作成時にflutterから自動的に一度だけ呼び出されます。
-    // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
-    // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
+    
+    CustomAnalytics.logLoungePageIn();
 
     /// MatchedHistoryPage用のコンストラクタなので
     /// myUidはnullでも問題が起きてない
@@ -1448,7 +1446,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 ? const Color.fromARGB(255, 79, 155, 255)
                                 : const Color.fromARGB(255, 176, 176, 176),
                             padding: EdgeInsets.zero,
-                            onPressed: () {                              
+                            onPressed: () {
                               setState(() {
                                 currentIndex = 0;
                                 selectedBottomIconIndex = 0;
