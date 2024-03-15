@@ -91,7 +91,7 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
     // このメソッド内で、widgetが必要とする初期設定やデータの初期化を行うことが一般的
     // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
-    CustomAnalytics.logLoungePageIn();
+    CustomAnalytics.logLoungeBackPageIn();
 
     currentIndex = widget.loungeBack!.currentIndex;
     talkRoom = TalkRoom(myUid: myUid, roomId: '');
