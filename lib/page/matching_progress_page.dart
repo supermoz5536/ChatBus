@@ -78,7 +78,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
     selectedNativeLanguage = widget.matchingProgress.selectedNativeLanguage;
     selectedGender = widget.matchingProgress.selectedGener;
 
-    CustomAnalytics.logLoungePageIn();
+    CustomAnalytics.logMatchingProgressPageIn();
 
     // 起動時に1度行うmyUidを確認する処理
     UserFirestore.initForMatching(

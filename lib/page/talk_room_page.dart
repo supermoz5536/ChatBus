@@ -83,7 +83,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // 関数の呼び出し（initStateはFlutter標準メソッド）
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
-    CustomAnalytics.logLoungePageIn();
+    CustomAnalytics.logTalkRoomPageIn();
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
