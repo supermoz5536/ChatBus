@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
@@ -9,11 +10,13 @@ import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm_notification.dart';
 import 'package:udemy_copy/model/friend_request_notification.dart';
+import 'package:udemy_copy/model/lounge.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
+import 'package:udemy_copy/page/log_in_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
@@ -35,7 +38,8 @@ import 'dart:ui' as ui;
 
 
 class LoungePage extends ConsumerStatefulWidget {
-  const LoungePage({super.key});
+  final Lounge lounge;
+  const LoungePage(this.lounge, {super.key});
 
   @override
   ConsumerState<LoungePage> createState() => _LoungePageState();
@@ -91,6 +95,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     
     String? sharedPrefesInitMyUid = Shared_Prefes.fetchUid();
     if (sharedPrefesInitMyUid == null) showDialogWhenReady();
+    if (sharedPrefesInitMyUid != null 
+     && widget.lounge.showDialogAble == true) showDialogWhenReady();
 
     myDataFuture = UserFirestore.getAccount(); 
     /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
@@ -160,7 +166,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             builder: (context, setState) {
               showDialogNameController.addListener(() {setState((){});});
                 return AlertDialog(
-                  title: Center(child: Text(AppLocalizations.of(context)!.beforeStart)),
+                  title: Center(
+                    child: Text(AppLocalizations.of(context)!.beforeStart,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold
+                      ),
+                    )),
                     content: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -272,12 +283,43 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           
                           ]),
                           const SizedBox(height: 25),
-                          Text(
-                            AppLocalizations.of(context)!.alreadyRegistered,
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
+
+                          // ■■■■■■■■■■■■　開発中 ■■■■■■■■■■■■
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.alreadyRegistered,
+                                  style: const TextStyle(
+                                    color: Color.fromARGB(255, 27, 26, 26)
+                                  )),
+                                const WidgetSpan(child: SizedBox(width: 4)),
+                                // カスケード記法（..）を使用
+                                // = が挟まっているのは
+                                // TapGestureRecognizerクラスに onTap プロパティがあるので
+                                // その値として応答関数を代入してる
+                                TextSpan(
+                                  text: AppLocalizations.of(context)!.login,
+                                  style: const TextStyle(
+                                    color: Colors.deepPurple
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      if (context.mounted) {
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                              const LogInPage()
+                                          ),
+                                          (_) => false);
+                                      }
+                                    }
+                                ),
+                              ]
                             )
+                          ),
+
                         ],
                       ),
                     ),

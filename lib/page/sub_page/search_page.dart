@@ -73,8 +73,13 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         child: ListView(
           children: [
 
+            Image.asset('assets/header.png'),
+
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.only(
+                top: 10,
+                bottom: 25
+              ),
               child: Center(
                 child: Text(
                   AppLocalizations.of(context)!.headerSearchPage,
@@ -86,7 +91,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             ),        
 
-            const SizedBox(height: 25),
+            // const SizedBox(height: 25),
 
             const Divider(
                     color: Color.fromARGB(255, 150, 150, 150),

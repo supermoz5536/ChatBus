@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/firebase_options.dart';
 import 'package:udemy_copy/l10n/l10n.dart';
+import 'package:udemy_copy/model/lounge.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
@@ -49,6 +50,8 @@ class MyApp extends ConsumerWidget {
   User? user = ref.watch(meUserProvider);
   List<String> splittedArgument = user!.language!.split('_');
   Locale appLocale;
+  Lounge? lounge = Lounge(showDialogAble: true);
+  
 
   if (splittedArgument.length == 1){
     appLocale = Locale(splittedArgument[0]);
@@ -77,7 +80,7 @@ class MyApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const LoungePage(),
+      home: LoungePage(lounge),
     );
   }
 }

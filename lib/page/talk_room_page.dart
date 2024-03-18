@@ -1540,8 +1540,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
           padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
           child: TextField(
-            controller:
-                footerTextController, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+            controller: footerTextController, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
             onChanged: (value) {
               // TextFiledのテキストが変更されるたびに呼び出される応答関数を指定
               setState(() {
