@@ -76,9 +76,9 @@ class _LogInPageState extends State<LogInPage> {
           child: Column(
             children: [
 
-              const Text(
-                'Welcome Back!',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.welcomeBack,
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                 ),

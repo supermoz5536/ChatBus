@@ -18,7 +18,6 @@ static Future<String?> getAuthAnonymousUid() async{
 
 /// E-Main & PassWord認証 のメソッドです
 static Future<String?>? logInWithEmailAndPassword(String? email, String? password) async{
-  print('logInWithEmailAndPasswordが実行されました');
   try {
       final UserCredential result = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email!,
@@ -59,4 +58,7 @@ static Future<String?>? logInWithEmailAndPassword(String? email, String? passwor
 }
 
 
+
+
 }
+

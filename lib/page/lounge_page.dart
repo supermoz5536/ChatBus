@@ -53,6 +53,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   String? currentTargetLanguageCode;
   String? showDialogGender;
   String? currentMode;
+  String email = '';
+  String password = '';
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool hidePassword = true;
   bool isDisabled = false;
   bool isMydataFutureDone = false;
   bool isGenderSelected = false;
@@ -335,7 +339,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       await UserFirestore.updateGender(meUser!.uid, showDialogGender);
                                       await UserFirestore.updateUserName(meUser!.uid, showDialogNameController.text);
                                       ref.read(meUserProvider.notifier).updateUserName(showDialogNameController.text);
-                                      if (mounted) Navigator.pop(context);
+                                      if (context.mounted) Navigator.pop(context);
                                     }  
                                 },
                       child: Text(AppLocalizations.of(context)!.ok,
@@ -1223,9 +1227,131 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: Row(children: [
-                  Text(AppLocalizations.of(context)!.subscription),
-                ])),
+                child: Row(
+                  children: [
+
+                  const Expanded(
+                    child: ListTile(
+                      title: Text('subscription'),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // showDialongでとりあえず
+                        // email & password の入力フォームと
+                        // 作成 いいえ のアクションボタン
+                        showDialog(                          
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (_) {
+                            return  AlertDialog(
+                              title: const Center(
+                                child: Text('アカウントを作成',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                              ),
+                              content: SingleChildScrollView(
+                               child: Form(
+                                // バリデーションの一括管理用のグローバルキー
+                                key: formKey,
+                                 child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                 
+                                    // ■ Subtitle
+                                    const Text('プレミアムの登録には、アカウントの作成が必要です。',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                 
+                                    // ■ E-Mailアドレス入力欄
+                                    TextFormField(
+                                      decoration: InputDecoration(
+                                        icon: const Icon(Icons.mail),
+                                        hintText: 'sample@chatbus.net',
+                                        labelText: AppLocalizations.of(context)!.emailAdress,
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          email = value;
+                                        });
+                                      },
+                                    ),
+                                 
+                                    // ■ パスワード入力欄
+                                    TextFormField(
+                                      obscureText: hidePassword,
+                                      decoration: InputDecoration(
+                                        icon: const Icon(Icons.lock),
+                                        labelText: AppLocalizations.of(context)!.password,
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            hidePassword ? Icons.visibility_off : Icons.visibility,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              hidePassword = !hidePassword;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      onChanged: (String value) {
+                                        setState(() {
+                                          password = value;
+                                        });
+                                      },
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty || value.length < 6) {
+                                          return 'Password must be at least 6 characters';
+                                        }
+                                        return null; // null means there is no error
+                                      },
+                                    ),
+                                  ],
+                                 ),
+                               ), 
+                              ),
+
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    // validateメソッドは
+                                    // フォーム内のすべてのFormFieldのvalidatorを実行し、
+                                    // 全てがパスすればtrueを、一つでも失敗すればfalseを返します。 
+                                    if (formKey.currentState!.validate()) {
+                                      // アカウントのクリエイトメソッドの実行
+                                      
+                                    }
+                                  },
+                                  child: const Text('作成する')
+                                ),
+
+                                TextButton(
+                                  onPressed: () {
+                                    if (context.mounted) Navigator.pop(context);
+                                  },
+                                  child: const Text('キャンセル')
+                                )
+                              ],
+                            );
+
+                          }
+                        );
+
+                        
+                      },
+                      child: const Text('プラン名'),
+                  )
+                )]
+                )
+                ),
 
 
             Container(
@@ -1236,8 +1362,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: Row(children: [
-                  Text(AppLocalizations.of(context)!.environmentalSetting),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('プラン名')
                 ]))
           ],
         ),
