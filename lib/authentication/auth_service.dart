@@ -80,6 +80,7 @@ static Future<String?>? upgradeAccountToPermanent(String? email, String? passwor
             return 'e0';
           default:
             print("upgradeAccountToPermanent: デバッグプリントに設定していないエラーコード $e");
+            break;
         }
       }
 
