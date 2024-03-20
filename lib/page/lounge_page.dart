@@ -1204,7 +1204,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               ),
             ),
 
-
+            // ■ サブスクリプション
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
@@ -1222,6 +1222,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     ),
                   ),
 
+                  // ■ プラン選択 
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
                     child: ElevatedButton(
@@ -1233,7 +1234,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           context: context,
                           builder: (_) {
                             return FractionallySizedBox(
-                              heightFactor: 0.95, // ボトムシートを画面の高さいっぱいにする
+                              heightFactor: 0.9, // ボトムシートを画面の高さいっぱいにする
                               widthFactor: 1,
                               child: SingleChildScrollView(
                                 child: Column(
@@ -1336,7 +1337,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ),
                                                 Flexible(
                                                   child: Text(
-                                                    //'母国語が同じユーザーを優先してマッチング',
                                                     'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
                                                     style: const TextStyle(
                                                       color: Color.fromARGB(255, 144, 144, 144),
@@ -1371,7 +1371,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ),
                                                 Flexible(
                                                   child: Text(
-                                                    //'母国語が同じユーザーを優先してマッチング',
                                                     'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
                                                     style: const TextStyle(
                                                       color: Color.fromARGB(255, 144, 144, 144),
@@ -1406,7 +1405,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ),
                                                 Flexible(
                                                   child: Text(
-                                                    //'母国語が同じユーザーを優先してマッチング',
                                                     'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
                                                     style: const TextStyle(
                                                       color: Color.fromARGB(255, 144, 144, 144),
@@ -1426,8 +1424,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   endIndent: 30,
                                                 ),
 
-                                          // 有料プラン会員の場合
-                                          // ボタンを有効にスイッチする
+                                          // ■■■■■■■■■■■■ 無料プラン会員の場合: ボタンを無効にスイッチする ■■■■■■■■■■■■
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               top: 10,
@@ -1450,8 +1447,195 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
                                         ],
                                       ),
-                                    )
+                                    ),
 
+                                    const SizedBox(height: 20),
+
+                                    // ■ Premiumプラン説明
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.9,
+                                      decoration: const BoxDecoration(
+                                          color: Color.fromARGB(255, 196, 196, 196),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black,
+                                              offset: Offset(0, 1.5), // 上方向への影
+                                              blurRadius: 7, // ぼかしの量
+                                            )
+                                          ]),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+
+                                          const SizedBox(height: 5),
+
+                                          // ■ プラン名
+                                          Text('プレミアム',
+                                            style: const TextStyle(
+                                              color: Color.fromARGB(255, 144, 144, 144),
+                                              fontSize: 13,
+                                            ),
+                                          ),
+
+                                          const SizedBox(height: 5),
+
+                                          // ■ 価格表示
+                                          Text('0\$/月',
+                                            style: const TextStyle(
+                                              color: Color.fromARGB(255, 144, 144, 144),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+
+                                          const Divider(
+                                                  color: Color.fromARGB(255, 150, 150, 150),
+                                                  height: 0,
+                                                  thickness: 1,
+                                                  indent: 30,
+                                                  endIndent: 30,
+                                                ),
+
+                                          // ■ １段落目
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 10,
+                                              right: 8, 
+                                              bottom: 8
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                    left: 20,
+                                                    right: 10,
+                                                    ),                                  
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    size: 15,
+                                                    color: Color.fromARGB(255, 144, 144, 144),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                    style: const TextStyle(
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                      fontSize: 13,
+                                                    ),
+                                                    ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // ■ ２段落目
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 10,
+                                              right: 8, 
+                                              bottom: 8
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                    left: 20,
+                                                    right: 10,
+                                                    ),                                  
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    size: 15,
+                                                    color: Color.fromARGB(255, 144, 144, 144),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                    style: const TextStyle(
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                      fontSize: 13,
+                                                    ),
+                                                    ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // ■ ３段落目
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 10,
+                                              right: 8, 
+                                              bottom: 8
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                    left: 20,
+                                                    right: 10,
+                                                    ),                                  
+                                                  child: Icon(
+                                                    Icons.check,
+                                                    size: 15,
+                                                    color: Color.fromARGB(255, 144, 144, 144),
+                                                  ),
+                                                ),
+                                                Flexible(
+                                                  child: Text(
+                                                    'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                    style: const TextStyle(
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                      fontSize: 13,
+                                                    ),
+                                                    ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+
+                                          const Divider(
+                                                  color: Color.fromARGB(255, 150, 150, 150),
+                                                  height: 0,
+                                                  thickness: 1,
+                                                  indent: 30,
+                                                  endIndent: 30,
+                                                ),
+
+                                          // ■■■■■■■■■■■■ 有料プラン会員の場合: ボタンを無効にスイッチする ■■■■■■■■■■■■
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 10,
+                                              bottom: 10
+                                            ),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                // プレミアム登録処理を記述
+                                                // ①永久アカウント作成
+                                                makePermanentAccountShowDialog(context);
+
+                                                // ② ■■■■■■■■■■■■■■ 決済画面への処理をここに記述　■■■■■■■■■■■■■■
+                                              },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blue, // ボタンの背景色
+                                              foregroundColor: Colors.white, // ボタンのテキスト色
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                              ),
+                                            ),
+                                              child: const Text('プランを選択')
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                          const SizedBox(height: 20),
                                   ],
                                 )
                               ),
@@ -1462,151 +1646,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       child: const Text('現在のプラン名'),
                     )
                   ),
-
-                  // // ■ 永久アカウント作成用 showDialog
-                  // Padding(
-                  //   padding: const EdgeInsets.only(right: 20),
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       // プラン選択後に永久アカウントの作成画面
-                  //       showDialog(                          
-                  //         barrierDismissible: false,
-                  //         context: context,
-                  //         builder: (_) {
-                  //           return  Scaffold(
-                  //             backgroundColor: Colors.transparent,
-                  //             body: AlertDialog(
-                  //               title: const Center(
-                  //                 child: Text('アカウントを作成',
-                  //                   style: TextStyle(
-                  //                     fontWeight: FontWeight.bold
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //               content: SingleChildScrollView(
-                  //                child: Form(
-                  //                 // バリデーションの一括管理用のグローバルキー
-                  //                 key: formKey,
-                  //                  child: Column(
-                  //                   mainAxisAlignment: MainAxisAlignment.start,
-                  //                   mainAxisSize: MainAxisSize.min,
-                  //                   children: [
-                                   
-                  //                     // ■ Subtitle
-                  //                     const Text('プレミアムの登録には、アカウントの作成が必要です。',
-                  //                       style: TextStyle(
-                  //                         fontSize: 15,
-                  //                       ),
-                  //                     ),
-                                   
-                  //                     // ■ E-Mailアドレス入力欄
-                  //                     TextFormField(
-                  //                       decoration: InputDecoration(
-                  //                         icon: const Icon(Icons.mail),
-                  //                         hintText: 'sample@chatbus.net',
-                  //                         labelText: AppLocalizations.of(context)!.emailAdress,
-                  //                       ),
-                  //                       onChanged: (String value) {
-                  //                         setState(() {
-                  //                           email = value;
-                  //                         });
-                  //                       },
-                  //                       validator: (value) {
-                  //                         if (value == null || value.isEmpty) {
-                  //                           // 以下のエラー文がTextFieldの直下に表示されます
-                  //                           return 'enter your e-mail address';
-                  //                         }
-                  //                           // null means there is no error
-                  //                           return null; 
-                  //                       }                                      
-                  //                     ),
-                                   
-                  //                     // ■ パスワード入力欄
-                  //                     TextFormField(
-                  //                       obscureText: hidePassword,
-                  //                       decoration: InputDecoration(
-                  //                         icon: const Icon(Icons.lock),
-                  //                         labelText: AppLocalizations.of(context)!.password,
-                  //                         suffixIcon: IconButton(
-                  //                           icon: Icon(
-                  //                             hidePassword ? Icons.visibility_off : Icons.visibility,
-                  //                           ),
-                  //                           onPressed: () {
-                  //                             setState(() {
-                  //                               hidePassword = !hidePassword;
-                  //                             });
-                  //                           },
-                  //                         ),
-                  //                       ),
-                  //                       onChanged: (String value) {
-                  //                         setState(() {
-                  //                           password = value;
-                  //                         });
-                  //                       },
-                  //                       validator: (value) {
-                  //                         if (value == null || value.isEmpty || value.length < 6) {
-                  //                           // 以下のエラー文がTextFieldの直下に表示されます
-                  //                           return 'Password must be at least 6 characters';
-                  //                         }
-                  //                         // null means there is no error
-                  //                         return null; 
-                  //                       },
-                  //                     ),
-                  //                   ],
-                  //                  ),
-                  //                ), 
-                  //               ),
-                              
-                  //               actions: [
-                  //                 TextButton(
-                  //                   onPressed: () async{
-                  //                     // validateメソッドは
-                  //                     // フォーム内のすべてのFormFieldのvalidatorを実行し、
-                  //                     // 全てがパスすればtrueを、一つでも失敗すればfalseを返します。 
-                  //                     if (formKey.currentState!.validate()) {
-                  //                       // アカウントのクリエイトメソッドの実行
-                  //                       String? result = await FirebaseAuthentication.createWithEmailAndPassword(
-                  //                         email,
-                  //                         password,
-                  //                       );
-                              
-                  //                       if (result == 'success') {
-                  //                         // アカウント作成できた場合は、
-                  //                         // showDialogを閉じて
-                  //                         // stripeの決済画面へ遷移
-                  //                         if (context.mounted) Navigator.pop(context);
-                              
-                  //                       } else {
-                  //                         if (context.mounted){
-                  //                         ScaffoldMessenger.of(context).showSnackBar(createSnackBar(result));
-                  //                         }
-                  //                       }
-                  //                     }
-                  //                   },
-                  //                   child: const Text('作成する')
-                  //                 ),
-                              
-                  //                 TextButton(
-                  //                   onPressed: () {
-                  //                     if (context.mounted) Navigator.pop(context);
-                  //                   },
-                  //                   child: const Text('キャンセル')
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           );
-                  //         }
-                  //       );
-                  //     },
-                  //     child: const Text('プラン名'),
-                  //   )
-                  // )
-
                 ]
               )
             ),
 
-
+            // ■ 最下部の環境設定部分
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
@@ -1618,8 +1662,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('プラン名')
-                ]))
+                    Text('環境設定部分')
+                ])
+            ),               
           ],
         ),
       ),
@@ -1987,6 +2032,137 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     );
   }
 
+  Future<dynamic> makePermanentAccountShowDialog(BuildContext context) {
+    return showDialog(                          
+      barrierDismissible: false,
+      context: context,
+      builder: (_) {
+        return  Scaffold(
+          backgroundColor: Colors.transparent,
+          body: AlertDialog(
+            title: const Center(
+              child: Text('アカウントを作成',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            content: SingleChildScrollView(
+            child: Form(
+              // バリデーションの一括管理用のグローバルキー
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              
+                  // ■ Subtitle
+                  const Text('プレミアムの登録には、アカウントの作成が必要です。',
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+              
+                  // ■ E-Mailアドレス入力欄
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.mail),
+                      hintText: 'sample@chatbus.net',
+                      labelText: AppLocalizations.of(context)!.emailAdress,
+                    ),
+                    onChanged: (String value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        // 以下のエラー文がTextFieldの直下に表示されます
+                        return 'enter your e-mail address';
+                      }
+                        // null means there is no error
+                        return null; 
+                    }                                      
+                  ),
+              
+                  // ■ パスワード入力欄
+                  TextFormField(
+                    obscureText: hidePassword,
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.lock),
+                      labelText: AppLocalizations.of(context)!.password,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          hidePassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            hidePassword = !hidePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    onChanged: (String value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty || value.length < 6) {
+                        // 以下のエラー文がTextFieldの直下に表示されます
+                        return 'Password must be at least 6 characters';
+                      }
+                      // null means there is no error
+                      return null; 
+                    },
+                  ),
+                ],
+              ),
+            ), 
+            ),
+          
+            actions: [
+              TextButton(
+                onPressed: () async{
+                  // validateメソッドは
+                  // フォーム内のすべてのFormFieldのvalidatorを実行し、
+                  // 全てがパスすればtrueを、一つでも失敗すればfalseを返します。 
+                  if (formKey.currentState!.validate()) {
+                    // アカウントのクリエイトメソッドの実行
+                    String? result = await FirebaseAuthentication.upgradeAccountToPermanent(
+                      email,
+                      password,
+                    );
+          
+                    if (result == 'success') {
+                      // アカウント作成できた場合は、
+                      // showDialogを閉じて
+                      // stripeの決済画面へ遷移
+                      if (context.mounted) Navigator.pop(context);
+          
+                    } else {
+                      if (context.mounted){
+                      ScaffoldMessenger.of(context).showSnackBar(upgradeSnackBar(result));
+                      }
+                    }
+                  }
+                },
+                child: const Text('作成する')
+              ),
+          
+              TextButton(
+                onPressed: () {
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: const Text('キャンセル')
+              )
+            ],
+          ),
+        );
+      }
+    );
+  }
+
   DropdownButton<String> dropdownButtonTranslateTargetLanguage(String? targetLanguageCode) {
     return DropdownButton(
                     isDense: true,
@@ -2014,16 +2190,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   }
 
 
-  SnackBar createSnackBar(String? errorResult) {
-    return SnackBar(
-      duration: const Duration(milliseconds: 2500),
+  SnackBar upgradeSnackBar(String? errorResult) {
+    return const SnackBar(
+      duration:  Duration(milliseconds: 2500),
       behavior: SnackBarBehavior.floating,
-      margin: const EdgeInsets.all(30),
+      margin:  EdgeInsets.all(30),
       content: SizedBox(
         height: 100,
         child: Row(
           children: [
-            const Padding(
+             Padding(
               padding: EdgeInsets.only(left: 5, right: 20),
                 child: Icon(
                   Icons.error_outline_outlined,
@@ -2031,13 +2207,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             ),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.only(right: 10),
+                padding: EdgeInsets.only(right: 10),
                 child:
-                  Text(
-                    errorResult == 'e0'
-                      ? '無効なメールアドレスです'
-                      : 'パスワードが間違っています',
-                  style: const TextStyle(
+                  Text('Emailの形式が正しくありません。',
+                  style:  TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     color: Colors.white,
