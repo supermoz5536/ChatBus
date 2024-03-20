@@ -53,7 +53,7 @@ static Future<String?>? logInWithEmailAndPassword(String? email, String? passwor
 }
 
 
-/// E-Main & PassWord認証 のメソッドです
+/// 永久アカウントへのアップグレードメソッドです
 static Future<String?>? createWithEmailAndPassword(String? email, String? password) async{
   try {
       final UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
