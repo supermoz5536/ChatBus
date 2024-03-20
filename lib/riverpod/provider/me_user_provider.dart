@@ -28,6 +28,8 @@ final meUserProvider = StateNotifierProvider<MeUserNotifier, User?>((ref) {
     statement: '', 
     language: initialLanguageCode,
     country: 'US',
+    accountStatus: 'anonymous',
+    subscriptionPlan: 'free'
   );
 
     // 初期Userオブジェクト使って MeUserNotifier() を初期化してインスタンスを生成
