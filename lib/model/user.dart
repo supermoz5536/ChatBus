@@ -12,6 +12,10 @@ class User {
  final String? country;
  final List<String?>? nativeLanguage;
  final String? gender;
+ final String? accountStatus;
+ final String? subscriptionPlan;
+ 
+
 
 
   /// コンストラクタの設定
@@ -24,6 +28,8 @@ class User {
      this.country,
      this.nativeLanguage,
      this.gender,
+     this.accountStatus,
+     this.subscriptionPlan
   });
 
   /// USER型インスタンスの個別プロパティの更新用関数
