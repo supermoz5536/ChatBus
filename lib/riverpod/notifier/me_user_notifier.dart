@@ -74,12 +74,17 @@ class MeUserNotifier extends StateNotifier<User?> {
     }
   }
 
-  void updateUserCountry(String? country) {
+  void updateUserCountry(String? accountStatus) {
     if (state != null) {
-      state = state!.copyWith(country: country);
+      state = state!.copyWith(accountStatus: accountStatus);
     }
   }
 
+  void updateUserSubscriptionPlan(String? subscriptionPlan) {
+    if (state != null) {
+      state = state!.copyWith(subscriptionPlan: subscriptionPlan);
+    }
+  }
 
 }
 

@@ -130,6 +130,8 @@ class UserFirestore {
                         'country': deviceCountry,
                         'native_language': '',
                         'gender': docData['gender'],
+                        'account_status': docData['account_status'],
+                        'subscription_plan': docData['subscription_plan'],
                        };
 
 
@@ -266,6 +268,8 @@ class UserFirestore {
       'gender': '',
       'queried_language': '',
       'queried_gender': '',
+      'account_status': 'anonymous',
+      'subscription_plan': 'free',
       'created_at': FieldValue.serverTimestamp(),
     };
   }  

@@ -118,7 +118,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     language: result['language'],
                     country: result['country'],
                     nativeLanguage: [result['native_language']],
-                    gender: result['gender']
+                    gender: result['gender'],
+                    accountStatus: result['account_status'],
+                    subscriptionPlan: result['subscription_plan'],
                   );
 
         // MeUserProvider の状態変数を更新
