@@ -86,7 +86,9 @@ class UserFirestore {
                         'country': deviceCountry, 
                         'native_language': '',
                         'gender': 'male',
-                        'isNewUser': 'isNewUser'                   
+                        'isNewUser': 'isNewUser',
+                        'account_status': 'anonymous',
+                        'subscription_plan': 'free',                 
                       };                      
          }
 
@@ -185,7 +187,9 @@ class UserFirestore {
                         'country': deviceCountry,
                         'native_language': '',
                         'gender': 'male',
-                        'isNewUser': 'isNewUser'
+                        'isNewUser': 'isNewUser',
+                        'account_status': 'anonymous',
+                        'subscription_plan': 'free',
                         };      
                     }
 
@@ -638,15 +642,25 @@ static checkMyProgressMarker(String? myUid,) async{
       return docMyUid['progress_marker'];
 }
 
+/// db上のaccount_statusフィールドを更新する関数です
+static Future<void> updateAccountStatusFiled(String? myUid, String? newAccountStatus) async{
+  try {
+    await _userCollection
+    .doc(myUid)
+    .set({'account_status': newAccountStatus}, SetOptions(merge: true));     
+  } catch (e){
+    print ('updateAccountStatusFiled(): db上のFieldの更新に失敗');
+  }
+}
+
+
+
 static Future<void> initForMatching (
   String? myUid,
   String? selectedLanguage,
   List<String?>? selectedNativeLanguageList,
   String? selectedGender,
-
-
   ) async{
-
       await _userCollection.doc(myUid).update({
          'matched_status': false,
          'room_id': 'none',
@@ -658,8 +672,8 @@ static Future<void> initForMatching (
          'queried_gender': selectedGender
         }); 
       return ;    
-  
 }
+
 
 /// MatchingHistoryPageのUI描画部分のリストで表示するための情報の書き込み関数
 static Future<void> updateHistory (String? myUid, String? talkuserUid, String? roomId) async{

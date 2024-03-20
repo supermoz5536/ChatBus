@@ -122,6 +122,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     accountStatus: result['account_status'],
                     subscriptionPlan: result['subscription_plan'],
                   );
+        print(result['account_status']);          
+        print(result['subscription_plan'],);
 
         // MeUserProvider の状態変数を更新
         ref.read(meUserProvider.notifier).setUser(user);
@@ -1158,7 +1160,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               ),
             ),
             
-
+            // ■ Display Language
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -1182,7 +1184,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               ),
             ),
 
-
+            // ■ Target Language
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -1315,7 +1317,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   endIndent: 30,
                                                 ),
 
-
                                           // ■ １段落目
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -1426,27 +1427,50 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   endIndent: 30,
                                                 ),
 
-                                          // ■■■■■■■■■■■■ 無料プラン会員の場合: ボタンを無効にスイッチする ■■■■■■■■■■■■
+                                          // ■ プラン選択ボタン: free
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               top: 10,
                                               bottom: 10
                                             ),
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                // 無料会員へのスイッチ処理を記述
-                                              },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue, // ボタンの背景色
-                                              foregroundColor: Colors.white, // ボタンのテキスト色
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                            child: meUser!.subscriptionPlan == 'free'
+                                              // freeプランを契約中の場合
+                                              // ボタンを無効化
+                                              ? IgnorePointer(
+                                                ignoring: true,
+                                                child: Opacity(
+                                                  opacity: 0.3,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.blue ,
+                                                        foregroundColor: Colors.white, // ボタンのテキスト色
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                        ),
+                                                      ),
+                                                        child: const Text('プランを選択')
+                                                    ),
+                                                ),
+                                              )
+                                              // freeプランを契約してない場合
+                                              // ボタンを有効化
+                                              : ElevatedButton(
+                                                  onPressed: () {
+                                                      // premium → free のプランの切り替え処理を行う
+                                                      // freeボタンが有効なのですでに「永久アカウント」
+                                                      // ■■■■■■■■■■■■■■■■■■　Stripeの決済画面へ遷移 ■■■■■■■■■■■■■■■■■■
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.blue, // ボタンの背景色
+                                                    foregroundColor: Colors.white, // ボタンのテキスト色
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                    ),
+                                                  ),
+                                                    child: const Text('プランを選択')
                                               ),
-                                            ),
-                                              child: const Text('プランを選択')
-                                            ),
                                           )
-
                                         ],
                                       ),
                                     ),
@@ -1610,29 +1634,61 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   endIndent: 30,
                                                 ),
 
-                                          // ■■■■■■■■■■■■ 有料プラン会員の場合: ボタンを無効にスイッチする ■■■■■■■■■■■■
+                                          // ■ プラン選択ボタン: premium
                                           Padding(
                                             padding: const EdgeInsets.only(
                                               top: 10,
                                               bottom: 10
                                             ),
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                // プレミアム登録処理を記述
-                                                // ①永久アカウント作成
-                                                makePermanentAccountShowDialog(context);
+                                            child: meUser!.subscriptionPlan == 'premium'
+                                              // premiumプランを契約中の場合
+                                              // ボタンを無効化
+                                              ? IgnorePointer(
+                                                ignoring: true,
+                                                child: Opacity(
+                                                  opacity: 0.3,
+                                                  child: ElevatedButton(
+                                                      onPressed: () {},
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.blue ,
+                                                        foregroundColor: Colors.white, // ボタンのテキスト色
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                        ),
+                                                      ),
+                                                        child: const Text('プランを選択')
+                                                    ),
+                                                ),
+                                              )
+                                              // premiumプランを契約してない場合
+                                              // ボタンを有効化
+                                              : ElevatedButton(
+                                                  onPressed: () {
+                                                    switch (meUser!.accountStatus) {
+                                                      // 匿名アカウントの場合: 
+                                                      // ① 永久アカウント作成用のshowDialogを表示
+                                                      // ② showDialog内でStripeの決済画面へ遷移
+                                                      case 'anonymous': 
+                                                        makePermanentAccountShowDialog(context);
+                                                        break;
 
-                                                // ② ■■■■■■■■■■■■■■ 決済画面への処理をここに記述　■■■■■■■■■■■■■■
-                                              },
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Colors.blue, // ボタンの背景色
-                                              foregroundColor: Colors.white, // ボタンのテキスト色
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      // 永久アカウントの場合: 
+                                                      // ①Stripeの決済画面へ遷移
+                                                      case 'permanent': 
+                                                        // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
+                                                        print('case: permanent');
+                                                        break;
+                                                    }
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor: Colors.blue, // ボタンの背景色
+                                                    foregroundColor: Colors.white, // ボタンのテキスト色
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                    ),
+                                                  ),
+                                                    child: const Text('プランを選択')
                                               ),
-                                            ),
-                                              child: const Text('プランを選択')
-                                            ),
                                           )
                                         ],
                                       ),
@@ -2138,10 +2194,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           
                     if (result == 'success') {
                       // アカウント作成できた場合は、
-                      // showDialogを閉じて
-                      // stripeの決済画面へ遷移
+                      // ① 状態変数を永久アカウントである permanent 更新して
+                      ref.read(meUserProvider.notifier).updateUserAccountStatus('permanent');
+                      // ② db上のFieldを更新して
+                      UserFirestore.updateAccountStatusFiled(
+                        meUser!.uid,
+                        'permanent',
+                        );
+                      // ③ showDialogを閉じて
                       if (context.mounted) Navigator.pop(context);
-          
+                      // ④ stripeの決済画面へ遷移
+                      // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
                     } else {
                       if (context.mounted){
                       ScaffoldMessenger.of(context).showSnackBar(upgradeSnackBar(result));
