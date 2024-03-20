@@ -42,6 +42,8 @@ class User {
     String? country,
     List<String?>? nativeLanguage,
     String? gender,
+    String? accountStatus,
+    String? subscriptionPlan
   }) {
     /// 「a ?? b」 「a != null」なら a の値を代入
     /// 「a ?? b」 「a == null」なら b の値を代入
@@ -65,6 +67,8 @@ class User {
       country: country ?? this.country,
       nativeLanguage: nativeLanguage ?? this.nativeLanguage,
       gender: gender ?? this.gender,
+      accountStatus: accountStatus ?? this.accountStatus,
+      subscriptionPlan: subscriptionPlan ?? this.subscriptionPlan,
     );
   }
 
