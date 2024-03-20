@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:udemy_copy/utils/shared_prefs.dart';
 
 
 class FirebaseAuthentication {
@@ -19,13 +20,18 @@ static Future<String?> getAuthAnonymousUid() async{
 /// E-Main & PassWord認証 のメソッドです
 static Future<String?>? logInWithEmailAndPassword(String? email, String? password) async{
   try {
+
+      // サインインの処理
       final UserCredential result = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email!,
         password: password!,
       );
-
-      // reslut.user にサインインしたアカウントの情報が含まれてるので
-      // これをプロバイダーに渡す処理をここに記述できる
+      // 取得した永久アカウントのuidに端末保存uidを更新
+      if(result.user != null) {
+      await Shared_Prefes.setData({
+          'myUid': result.user!.uid,           
+        });
+      }  
 
         print('logInWithEmailAndPassword( ): サインイン成功');
         return 'success';
