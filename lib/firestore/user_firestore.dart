@@ -101,12 +101,9 @@ class UserFirestore {
                                                     .doc(sharedPrefesMyUid)
                                                     .get();            /// SharedPrefesUidと一致するドキュメントIDを取得
                                                                        /// docIdSnapshot = 「ドキュメントのid」「fieldの各data」が格納                 
-             /// ■ .getでデータに取得に「成功」した場合
-             if (docIdSnapshot.exists) {
 
-
-                 /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ある」場合
-                 if (docIdSnapshot.id == sharedPrefesMyUid ) {                        
+                 /// ■ .getで端末保存uidと同じuidを、db上に見つけた場合
+                 if (docIdSnapshot.exists) {                        
                     print('DB上に端末保存uidと一致するuid確認 ${docIdSnapshot.id}');
 
                      /// Field情報をリフレッシュして、既存の端末Uidをそのまま使用
@@ -136,15 +133,10 @@ class UserFirestore {
                         'subscription_plan': docData['subscription_plan'],
                        };
 
-
-
                  } else {
-                 /// ■ .getでデータに取得に「成功」した上で、DB上に端末保存idと同じidが「ない」場合
-
-                     // 初期化の非同期処理が始まる前に
-                     // スプラッシュ画面を解除して
-                     // ユーザー情報入力と並行処理させる
-                     FlutterNativeSplash.remove();
+                 // ■ .getで端末保存uidと同じuidが、db上に見つからない場合
+                 // db上のuidがシステム都合で削除されてるので
+                 // アカウント新規作成
 
                      /// 匿名認証とUidの取得
                      String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
@@ -178,6 +170,12 @@ class UserFirestore {
                            print('端末のuid更新完了');
                            print('最新の端末保存uid $authUid');    
 
+                        // showDialogが表示されてないタスクなので
+                        // 初期化処理中の意図しないuser操作を防ぐ必要がある
+                        // スプラッシュ画面は非同期の初期化処理後に解除して
+                        // LougePageに戻った直後のshowDialog表示までの時間的空白を排除する
+                        FlutterNativeSplash.remove();
+
                         return {
                         'myUid': authUid,
                         'userName': 'user_name',
@@ -192,54 +190,6 @@ class UserFirestore {
                         'subscription_plan': 'free',
                         };      
                     }
-
-
-                  
-            //  } else { // ■■■■■■■■■■■■■■■ この条件分岐は catch error で処理されるので、そちらに記述するべき ■■■■■■■■■■■■■■■
-            //  /// ■ .getでデータに取得に「失敗」した場合
-            //  /// つまり、既存の端末Uidはあるが、db上にUidが既に削除されてる場合
-            //  /// 新規アカウント作成 ＆ 端末Uid更新
-
-            //     /// 匿名認証とUidの取得
-            //     String? authUid = await FirebaseAuthentication.getAuthAnonymousUid();
-
-            //     /// 画像 言語コード 国コード(IPから) の取得
-            //     String? userImageUrl = await UserFirebaseStorage.getProfImage();
-            //     String? deviceLanguage = ui.window.locale.languageCode;
-            //     String? ip = await Http.getPublicIPAddress();
-            //     String? deviceCountry = await CloudFunctions.getCountryFromIP(ip);
-
-            //       /// 新規アカウントを追加
-            //       /// supportInitFields()で、全Fieldは初期値に設定
-            //       await _userCollection
-            //       .doc(authUid)
-            //       .set(UserFirestore.supportInitFields(
-            //           userImageUrl: userImageUrl,
-            //           deviceLanguage: deviceLanguage,
-            //           deviceCountry: deviceCountry,
-            //        )
-            //       );        
-            //       await Shared_Prefes.setData({
-            //         'myUid': authUid!,
-            //         'language': deviceLanguage,
-            //         'country': deviceCountry,                           
-            //       });
-            //           print('アカウント作成完了3');
-            //           print('端末のuid更新完了');
-            //           print('最新の端末保存uid $authUid');          
-                      
-            //       return {
-            //             'myUid': authUid,
-            //             'userName': 'user_name',
-            //             'userImageUrl': userImageUrl,
-            //             'statement': 'statement',
-            //             'language': deviceLanguage,
-            //             'country': deviceCountry,
-            //             'native_language': '',
-            //             'gender': 'male',
-            //             'isNewUser': 'isNewUser'
-            //       };
-          }
          }
          return null;
          
