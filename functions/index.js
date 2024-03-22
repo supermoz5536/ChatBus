@@ -21,6 +21,51 @@ initializeApp(); //
 // Firestoreのインスタンスが作成され
 // メモリにロード（格納）される
 
+exports.cancelPremium = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onCall(async (data, context) => {
+  try {
+  // Stripeオブジェクトを新規作成し、Stripe APIを利用するためのシークレットキーとAPIのバージョンを指定します。
+    const stripe = new Stripe(
+        process.env.STRIPE_API_KEY,
+        {apiVersion: "2023-10-16"},
+    );
+    const firebaseUid = data.firebaseUid;
+
+    // StripeのCustomerをメタデータのFirebase UIDで検索
+    const customers = await stripe.customers.list({
+      limit: 1,
+      metadata: {firebaseUid: firebaseUid},
+    });
+
+    if (customers.data.length === 0) {
+      throw new functions.https.HttpsError("not-found", "customer not found");
+    }
+
+    const customerId = customers.data[0].id;
+
+    // 顧客に紐づくアクティブなサブスクリプションを取得し、指定された価格IDに一致するものを探す
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+    });
+
+    if (subscriptions.data.length > 0) {
+    // 顧客に紐づく最初のアクティブなサブスクリプションをキャンセル
+      const cancelResult =
+      await stripe.subscriptions.del(subscriptions.data[0].id);
+      return {
+        success: true,
+        subscriptionId: cancelResult.id,
+        status: cancelResult.status,
+        message: "Subscription canceled successfully.",
+      };
+    }
+  } catch (error) {
+    throw new functions.https.HttpsError("internal", error.message);
+  }
+});
+
 exports.createCheckoutSession = functions.runWith({
   memory: "512MB", // メモリの割り当てを増やす
 }).https.onCall(async (data) => {
