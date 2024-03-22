@@ -7,6 +7,8 @@ const geoip = require("geoip-lite");
 // IPアドレスから国名を推測するライブラリ
 const functions = require("firebase-functions");
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
+const Stripe = require("stripe");
+// 決済ページの用意とリダイレクトを行うStripeのライブラリ
 
 const {initializeApp} = require("firebase-admin/app");
 const {getFirestore: getFirestoreRef} = require("firebase-admin/firestore");
@@ -18,6 +20,56 @@ initializeApp(); //
 // Firebase Admin SDKの初期化がされた時に
 // Firestoreのインスタンスが作成され
 // メモリにロード（格納）される
+
+exports.createCheckoutSession = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onCall(async (data) => {
+  try {
+  // Stripeオブジェクトを新規作成し、Stripe APIを利用するためのシークレットキーとAPIのバージョンを指定します。
+    const stripe = new Stripe(
+        process.env.STRIPE_API_KEY,
+        {apiVersion: "2023-10-16"},
+    );
+    // Stripeの顧客を新規作成し、その結果をcustomer変数に格納します。
+    const customer = await stripe.customers.create();
+    // StripeのCheckoutセッションを新規作成し、その設定を行います。
+    const session = await stripe.checkout.sessions.create({
+      // 作成した顧客のIDをセッションに紐付けます。
+      customer: customer.id,
+      // 支払い方法として「カード」と「顧客の残高」を指定します。
+      payment_method_types: ["card"],
+      // 支払い方法のオプションを指定します。
+      payment_method_options: {
+        // 顧客の残高に関する設定を行います。
+        customer_balance: {
+          // 資金の種類として「銀行振込」を指定します。
+          funding_type: "bank_transfer",
+          // 銀行振込に関する設定を行います。
+          bank_transfer: {
+            // 日本の銀行振込を指定します。
+            type: "jp_bank_transfer",
+          },
+        },
+      },
+      // 請求項目の設定を開始します。
+      line_items: [{
+        // Stripeで事前に設定したプライスIDを指定します。
+        price: "price_1Owjhu02YGIp0FEBowcQVeQy",
+        // 購入数量を1に設定します。
+        quantity: 1,
+      }],
+      // このセッションのモードを「支払い」に設定します。
+      mode: "subscription",
+      // 支払いが成功した際にリダイレクトするURLを指定します。
+      success_url: "https://udemy-882f1.web.app/",
+      // 支払いがキャンセルされた際にリダイレクトするURLを指定します。
+      cancel_url: "https://udemy-882f1.web.app/",
+    });
+    return session.id;
+  } catch (error) {
+    throw new functions.https.HttpsError("internal", error.message);
+  }
+});
 
 exports.getCountryFromIP = functions.runWith({
   memory: "512MB", // メモリの割り当てを増やす
@@ -47,7 +99,7 @@ exports.translateDeepL = functions.runWith({
   // DeepL APIのエンドポイントURL
   const endpoint = "https://api-free.deepl.com/v2/translate";
   // あなたのDeepL APIキーを設定
-  const apiKey = "037b0c58-a777-75e2-d53d-8e4d47f983a4:fx";
+  const apiKey = process.env.DEEPL_API_KEY;
 
   // DeepL APIに送信するパラメータを設定
   const params = new URLSearchParams();

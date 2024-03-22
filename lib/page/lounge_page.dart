@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
+import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -26,6 +27,7 @@ import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
+import 'package:udemy_copy/stripe/stripe_checkout.dart';
 import 'package:udemy_copy/utils/custom_length_text_Input_formatter.dart';
 import 'package:udemy_copy/utils/screen_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -1459,7 +1461,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   onPressed: () {
                                                       // premium → free のプランの切り替え処理を行う
                                                       // freeボタンが有効なのですでに「永久アカウント」
-                                                      // ■■■■■■■■■■■■■■■■■■　Stripeの決済画面へ遷移 ■■■■■■■■■■■■■■■■■■
+                                                      // ■■■■■■■■■■■■■■■■■■　Stripeの解約画面へ遷移 ■■■■■■■■■■■■■■■■■■
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: Colors.blue, // ボタンの背景色
@@ -1663,7 +1665,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               // premiumプランを契約してない場合
                                               // ボタンを有効化
                                               : ElevatedButton(
-                                                  onPressed: () {
+                                                  onPressed: () async{
                                                     switch (meUser!.accountStatus) {
                                                       // 匿名アカウントの場合: 
                                                       // ① 永久アカウント作成用のshowDialogを表示
@@ -1676,7 +1678,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                       // ①Stripeの決済画面へ遷移
                                                       case 'permanent': 
                                                         // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
-                                                        print('case: permanent');
+                                                        String? result = await CloudFunctions.callCreateCheckoutSession();
+                                                        if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
                                                         break;
                                                     }
                                                   },
@@ -2205,6 +2208,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       if (context.mounted) Navigator.pop(context);
                       // ④ stripeの決済画面へ遷移
                       // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
+                      print('1 callCreateCheckoutSession実行前');
+                      String? result = await CloudFunctions.callCreateCheckoutSession();
+                      print('2 callCreateCheckoutSession実行後');
+                      if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
+                      print('3 redirectToCheckout実行後');
                     } else {
                       if (context.mounted){
                       ScaffoldMessenger.of(context).showSnackBar(upgradeSnackBar(result));
