@@ -5,5 +5,10 @@
 
 import 'package:flutter/material.dart';
 
-void redirectToCheckout(BuildContext context, String sessionId) =>
+class StripeCheckoutWebStub{
+  static void redirectToCheckout(BuildContext context, String sessionId) {
+    print('3 redirectToCheckout');
     throw UnsupportedError('ERROR: Web用のredirectToCheckout関数が、Webでない環境で使用されようとしてます');
+  }
+}
+

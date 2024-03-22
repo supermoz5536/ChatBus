@@ -24,18 +24,20 @@ import 'package:js/js.dart';
 // jsの匿名オブジェクトと同じように扱えるようになり
 // js と Dart 間のやりとりがスムーズになる
 
-
+class StripeCheckoutWebStub{
 /// jsファイルで定義された、決済画面へのリダイレクト関数を呼び出す関数の定義
 /// APIを叩いて決済画面の受け入れ準備ができると、
 /// sessionIdを受け取るので
 /// それをリダイレクト関数に渡して画面遷移します
 /// 記述場所は、UIロジックの画面遷移をトリガーする部分です
-void redirectToCheckout(BuildContext _, String sessionId) async {
-  // 公開鍵なので、ハードコードで記述しても安全
-  final stripe = Stripe('プライマリキー');
-  stripe.redirectToCheckout(CheckoutOptions(
-      sessionId: sessionId,
-  ));
+  static void redirectToCheckout(BuildContext _, String sessionId) {
+    print('2 redirectToCheckout');
+    // 公開鍵なので、ハードコードで記述しても安全
+    final stripe = Stripe('pk_test_51OwiwF02YGIp0FEBuakiQxnKE4QAXQoGSJpknDA5yYgB3q3uPCoP4V6a3XmBExB11V0Ap5AnW2oirFZK6Y4DKckZ00nAQ4xL7s');
+    stripe.redirectToCheckout(CheckoutOptions(
+        sessionId: sessionId,
+    ));
+  }
 }
 
 // このクラスは、JavaScriptのStripeオブジェクトを

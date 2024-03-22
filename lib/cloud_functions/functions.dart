@@ -3,7 +3,19 @@ import 'package:cloud_functions/cloud_functions.dart';
 
 class CloudFunctions{
 
+/// Stripe APIを叩いてセッションの作成とそのセッションIDの取得を行うCloud Funtions関数の呼び出し関数
+static Future<String> callCreateCheckoutSession() async {
+  print('1 関数内');
+  final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('createCheckoutSession');
+  print('2 関数内');
+  final HttpsCallableResult result = await callable.call({});
+  print('3 関数内');
+  return result.data;
+}
 
+
+
+/// 国名を取得するCloud Functions関数の呼び出し関数です
 static Future<String> getCountryFromIP(String? ip) async {
   HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('getCountryFromIP');
   final result = await callable.call(<String, dynamic>{
@@ -15,7 +27,7 @@ static Future<String> getCountryFromIP(String? ip) async {
 
 
 
-// 翻訳処理
+/// DeepL APIを叩くCloud Functions関数の呼び出し関数です
 static  Future<String>? translateDeepL(String? message, String? targetLang) async {
   print('API呼び出し開始: $message');
   final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('translateDeepL');
