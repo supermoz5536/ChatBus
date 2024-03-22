@@ -30,8 +30,13 @@ exports.createCheckoutSession = functions.runWith({
         process.env.STRIPE_API_KEY,
         {apiVersion: "2023-10-16"},
     );
+    // dataからmyUidを取得
+    const firebaseUid = data.uid;
     // Stripeの顧客を新規作成し、その結果をcustomer変数に格納します。
-    const customer = await stripe.customers.create();
+    const customer = await stripe.customers.create({
+      // myUidをメタデータとして設定
+      metadata: {firebaseUid: firebaseUid},
+    });
     // StripeのCheckoutセッションを新規作成し、その設定を行います。
     const session = await stripe.checkout.sessions.create({
       // 作成した顧客のIDをセッションに紐付けます。
