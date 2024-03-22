@@ -1678,7 +1678,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                       // ①Stripeの決済画面へ遷移
                                                       case 'permanent': 
                                                         // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
-                                                        String? result = await CloudFunctions.callCreateCheckoutSession();
+                                                        String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
                                                         if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
                                                         break;
                                                     }
@@ -2209,7 +2209,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       // ④ stripeの決済画面へ遷移
                       // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
                       print('1 callCreateCheckoutSession実行前');
-                      String? result = await CloudFunctions.callCreateCheckoutSession();
+                      String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
                       print('2 callCreateCheckoutSession実行後');
                       if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
                       print('3 redirectToCheckout実行後');

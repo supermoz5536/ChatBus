@@ -4,11 +4,13 @@ import 'package:cloud_functions/cloud_functions.dart';
 class CloudFunctions{
 
 /// Stripe APIを叩いてセッションの作成とそのセッションIDの取得を行うCloud Funtions関数の呼び出し関数
-static Future<String> callCreateCheckoutSession() async {
+static Future<String> callCreateCheckoutSession(String? myUid) async {
   print('1 関数内');
   final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('createCheckoutSession');
   print('2 関数内');
-  final HttpsCallableResult result = await callable.call({});
+  final HttpsCallableResult result = await callable.call({
+    'uid': myUid,
+  });
   print('3 関数内');
   return result.data;
 }
