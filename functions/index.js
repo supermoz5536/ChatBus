@@ -21,6 +21,59 @@ initializeApp(); //
 // Firestoreのインスタンスが作成され
 // メモリにロード（格納）される
 
+
+// StripeからのWebhookリクエストを受け取る関数です
+exports.stripeWebhook = functions.runWith({
+  memory: "512MB", // メモリの割り当てを増やす
+}).https.onRequest(async (request, response) => {
+  try{
+  // Stripeオブジェクトを新規作成し、Stripe APIを利用するためのシークレットキーとAPIのバージョンを指定します。
+  const stripe = new Stripe(
+    process.env.STRIPE_API_KEY,
+    {apiVersion: "2023-10-16"},
+  );
+  const db = getFirestoreRef();
+  // リクエストボディからイベントデータを取得し、
+  const event = request.body;
+  // StripeのCustomer ID
+  const customerId = event.data.object.customer; 
+  // StripeからCustomerオブジェクトを取得
+  const customer = await stripe.customers.retrieve(customerId);
+  // CustomerのmetadataからFirebase UIDを取得
+  const firebaseUid = customer.metadata.firebaseUid;
+
+    switch (event.type) {
+        // premiumプラン契約時の処理
+        case "customer.subscription.created": {
+            await db.collection('user').doc(firebaseUid).update({
+                'subscription_plan': 'premium'
+            });
+            response.json({ received: true });
+            break;
+        }
+        // premiumプラン解約時の処理
+        case "customer.subscription.deleted": {
+            await db.collection('user').doc(firebaseUid).update({
+                'subscription_plan': 'free'
+            });
+            response.json({ received: true });
+            break;
+        }
+        default: {
+            response.status(400).end();
+            break;
+        }
+    }
+  } catch (error) {
+    // Cloud Functionsへのコンソール表示用ログ
+    console.error("Error handling webhook:", error);
+    // クライアントへのレスポンス:
+    // StripeのWebhookを送信してきたシステムや、
+    // APIを叩いている他のクライアント
+    response.status(500).send("Internal Server Error");
+  }
+});
+
 exports.cancelPremium = functions.runWith({
   memory: "512MB", // メモリの割り当てを増やす
 }).https.onCall(async (data, context) => {
