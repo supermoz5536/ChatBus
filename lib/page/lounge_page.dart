@@ -1459,9 +1459,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               // ボタンを有効化
                                               : ElevatedButton(
                                                   onPressed: () {
-                                                      // premium → free のプランの切り替え処理を行う
-                                                      // freeボタンが有効なのですでに「永久アカウント」
-                                                      // ■■■■■■■■■■■■■■■■■■　Stripeの解約画面へ遷移 ■■■■■■■■■■■■■■■■■■
+                                                    // premium → free のプランの切り替え処理を行う
+                                                    // freeボタンが有効なのですでに「永久アカウント」
+                                                    // ■■■■■■■■■■■■■■■■■■　Stripeの解約画面へ遷移 ■■■■■■■■■■■■■■■■■■
+                                                    CloudFunctions.callCancelPremium(meUser!.uid);
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: Colors.blue, // ボタンの背景色
@@ -1677,7 +1678,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                       // 永久アカウントの場合: 
                                                       // ①Stripeの決済画面へ遷移
                                                       case 'permanent': 
-                                                        // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
                                                         String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
                                                         if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
                                                         break;
@@ -2207,12 +2207,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       // ③ showDialogを閉じて
                       if (context.mounted) Navigator.pop(context);
                       // ④ stripeの決済画面へ遷移
-                      // ■■■■■■■■ stripeの画面遷移処理の記述 ■■■■■■■■
-                      print('1 callCreateCheckoutSession実行前');
                       String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
-                      print('2 callCreateCheckoutSession実行後');
                       if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
-                      print('3 redirectToCheckout実行後');
                     } else {
                       if (context.mounted){
                       ScaffoldMessenger.of(context).showSnackBar(upgradeSnackBar(result));
