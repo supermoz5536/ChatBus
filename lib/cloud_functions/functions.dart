@@ -13,12 +13,28 @@ static Future<String> callCreateCheckoutSession(String? myUid) async {
 }
 
 /// Stripe APIを叩いてPremiumプランを解約を行うCloud Funtions関数の呼び出し関数
-static Future<String> callCancelPremium(String? myUid) async {
-  final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('cancelPremium');
-  final HttpsCallableResult result = await callable.call({
-    'uid': myUid,
-  });
-  return result.data;
+static Future<String?> callUpdateCancelAtPeriodEnd(String? myUid) async {
+  print('2 callCancelPremium');
+  print('myUid == $myUid');
+  try { 
+    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('updateCancelAtPeriodEnd');
+    final HttpsCallableResult result = await callable.call({
+      'uid': myUid,
+    });
+    // レスポンスデータから'message'キーに対応する値を取得
+    String message = result.data["message"];
+    print("Function response message: $message");
+    return message; // 'message'の値を返す
+
+  } on FirebaseFunctionsException catch (e) {
+    // Firebase Functions からのエラーをキャッチ
+    print("callCancelPremium エラーコード: ${e.code}");
+    print("callCancelPremium エラーメッセージ: ${e.message}");
+    print("callCancelPremium 詳細: ${e.details}");
+  } catch (e) {
+    // その他のエラーをキャッチ
+    print("callCancelPremium 予期せぬエラーが発生しました: $e");
+  }
 }
 
 

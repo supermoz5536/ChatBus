@@ -1458,11 +1458,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               // freeプランを契約してない場合
                                               // ボタンを有効化
                                               : ElevatedButton(
-                                                  onPressed: () {
+                                                  onPressed: () async{
                                                     // premium → free のプランの切り替え処理を行う
                                                     // freeボタンが有効なのですでに「永久アカウント」
                                                     // ■■■■■■■■■■■■■■■■■■　Stripeの解約画面へ遷移 ■■■■■■■■■■■■■■■■■■
-                                                    CloudFunctions.callCancelPremium(meUser!.uid);
+                                                    print('1 callCancelPremium');
+                                                    String? result = await CloudFunctions.callUpdateCancelAtPeriodEnd(meUser!.uid);
+                                                    print('4 callCancelPremium');
+                                                    print('5 $result');
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: Colors.blue, // ボタンの背景色

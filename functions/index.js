@@ -26,43 +26,43 @@ initializeApp(); //
 exports.stripeWebhook = functions.runWith({
   memory: "512MB", // メモリの割り当てを増やす
 }).https.onRequest(async (request, response) => {
-  try{
+  try {
   // Stripeオブジェクトを新規作成し、Stripe APIを利用するためのシークレットキーとAPIのバージョンを指定します。
-  const stripe = new Stripe(
-    process.env.STRIPE_API_KEY,
-    {apiVersion: "2023-10-16"},
-  );
-  const db = getFirestoreRef();
-  // リクエストボディからイベントデータを取得し、
-  const event = request.body;
-  // StripeのCustomer ID
-  const customerId = event.data.object.customer; 
-  // StripeからCustomerオブジェクトを取得
-  const customer = await stripe.customers.retrieve(customerId);
-  // CustomerのmetadataからFirebase UIDを取得
-  const firebaseUid = customer.metadata.firebaseUid;
+    const stripe = new Stripe(
+        process.env.STRIPE_API_KEY,
+        {apiVersion: "2023-10-16"},
+    );
+    const db = getFirestoreRef();
+    // リクエストボディからイベントデータを取得し、
+    const event = request.body;
+    // StripeのCustomer ID
+    const customerId = event.data.object.customer;
+    // StripeからCustomerオブジェクトを取得
+    const customer = await stripe.customers.retrieve(customerId);
+    // CustomerのmetadataからFirebase UIDを取得
+    const firebaseUid = customer.metadata.firebaseUid;
 
     switch (event.type) {
-        // premiumプラン契約時の処理
-        case "customer.subscription.created": {
-            await db.collection('user').doc(firebaseUid).update({
-                'subscription_plan': 'premium'
-            });
-            response.json({ received: true });
-            break;
-        }
-        // premiumプラン解約時の処理
-        case "customer.subscription.deleted": {
-            await db.collection('user').doc(firebaseUid).update({
-                'subscription_plan': 'free'
-            });
-            response.json({ received: true });
-            break;
-        }
-        default: {
-            response.status(400).end();
-            break;
-        }
+      // premiumプラン契約時の処理
+      case "customer.subscription.created": {
+        await db.collection("user").doc(firebaseUid).update({
+          "subscription_plan": "premium",
+        });
+        response.json({received: true});
+        break;
+      }
+      // premiumプラン解約時の処理
+      case "customer.subscription.deleted": {
+        await db.collection("user").doc(firebaseUid).update({
+          "subscription_plan": "free",
+        });
+        response.json({received: true});
+        break;
+      }
+      default: {
+        response.status(400).end();
+        break;
+      }
     }
   } catch (error) {
     // Cloud Functionsへのコンソール表示用ログ
@@ -74,45 +74,44 @@ exports.stripeWebhook = functions.runWith({
   }
 });
 
-exports.cancelPremium = functions.runWith({
+exports.updateCancelAtPeriodEnd = functions.runWith({
   memory: "512MB", // メモリの割り当てを増やす
 }).https.onCall(async (data, context) => {
   try {
-  // Stripeオブジェクトを新規作成し、Stripe APIを利用するためのシークレットキーとAPIのバージョンを指定します。
     const stripe = new Stripe(
         process.env.STRIPE_API_KEY,
         {apiVersion: "2023-10-16"},
     );
-    const firebaseUid = data.firebaseUid;
 
+    const firebaseUid = data.uid;
     // StripeのCustomerをメタデータのFirebase UIDで検索
-    const customers = await stripe.customers.list({
-      limit: 1,
-      metadata: {firebaseUid: firebaseUid},
+    const customers = await stripe.customers.search({
+      query: `metadata['firebaseUid']:'${firebaseUid}'`,
     });
 
     if (customers.data.length === 0) {
-      throw new functions.https.HttpsError("not-found", "customer not found");
+      throw new functions.https.HttpsError("not-found", "not found");
     }
 
     const customerId = customers.data[0].id;
 
-    // 顧客に紐づくアクティブなサブスクリプションを取得し、指定された価格IDに一致するものを探す
+    // 顧客に紐づくアクティブなサブスクリプションリストを取得する
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
       status: "active",
     });
 
-    if (subscriptions.data.length > 0) {
-    // 顧客に紐づく最初のアクティブなサブスクリプションをキャンセル
-      const cancelResult =
-      await stripe.subscriptions.del(subscriptions.data[0].id);
-      return {
-        success: true,
-        subscriptionId: cancelResult.id,
-        status: cancelResult.status,
-        message: "Subscription canceled successfully.",
-      };
+    if (subscriptions.data[0].cancel_at_period_end) {
+      // すでに解約処理がされている場合
+      return {success: false, message: "already_canceled"};
+    } else {
+    // 現在はpremiumプランしかアイテムはなく、
+    // 契約時に重複登録は弾いているので[0]番目を指定
+      await stripe.subscriptions.update(subscriptions.data[0].id, {
+        cancel_at_period_end: true,
+      });
+      // 成功した場合のレスポンス
+      return {success: true, message: "canceled"};
     }
   } catch (error) {
     throw new functions.https.HttpsError("internal", error.message);
