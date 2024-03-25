@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-//
+
 
 void main() async {
   // splashの設定のために変数に格納して、メソッドの引数にしてる 
@@ -50,7 +50,10 @@ class MyApp extends ConsumerWidget {
   User? user = ref.watch(meUserProvider);
   List<String> splittedArgument = user!.language!.split('_');
   Locale appLocale;
-  Lounge? lounge = Lounge(showDialogAble: false);
+  Lounge? lounge = Lounge(
+                     showDialogAble: false,
+                     afterInitialization: false
+                   );
   
 
   if (splittedArgument.length == 1){

@@ -6,12 +6,14 @@ import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
+import 'package:udemy_copy/model/lounge.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
+import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
@@ -488,11 +490,15 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                             .removeDMNotification(widget.dMRoom.dMRoomId);
                     
                           if (context.mounted) {
-                            LoungeBack loungeBack = LoungeBack(currentIndex: 1);
+                            Lounge? loungeConstructor = Lounge(
+                                                          showDialogAble: false,
+                                                          afterInitialization: true,
+                                                          currentIndex: 1
+                                                        );
                             Navigator.pushAndRemoveUntil(
                                 context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                 SlideRightRoute(
-                                    page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
+                                    page: LoungePage(loungeConstructor)), //遷移先の画面を構築する関数を指定
                                 (_) => false);
                           }
                           /// 入力のタップを解除

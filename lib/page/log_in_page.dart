@@ -156,7 +156,10 @@ class _LogInPageState extends State<LogInPage> {
                       );
                       if (result == 'success') {
                         if (context.mounted) {
-                          Lounge? lounge = Lounge(showDialogAble: false);
+                          Lounge? lounge = Lounge(
+                                             showDialogAble: false,
+                                             afterInitialization: false
+                                             );
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
@@ -199,7 +202,10 @@ class _LogInPageState extends State<LogInPage> {
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             if (context.mounted) {
-                              Lounge? lounge = Lounge(showDialogAble: true);
+                              Lounge? lounge = Lounge(
+                                                 showDialogAble: true,
+                                                 afterInitialization: false
+                                               );
                               Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
