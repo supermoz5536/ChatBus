@@ -492,7 +492,8 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           if (context.mounted) {
                             Lounge? loungeConstructor = Lounge(
                                                           showDialogAble: false,
-                                                          afterInitialization: true
+                                                          afterInitialization: true,
+                                                          currentIndex: 1
                                                         );
                             Navigator.pushAndRemoveUntil(
                                 context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し

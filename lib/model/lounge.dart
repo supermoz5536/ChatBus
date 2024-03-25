@@ -9,9 +9,11 @@ class Lounge{
   bool? showDialogAble;
   // LogInPageとmain.dartを除いたLougePageへの遷移を判断するためのフラグ用変数
   bool? afterInitialization;
+  int? currentIndex;
 
 Lounge({
   required this.showDialogAble,
   required this.afterInitialization,
+  this.currentIndex
 });
 }

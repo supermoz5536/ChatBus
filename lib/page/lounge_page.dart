@@ -102,6 +102,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
       // ダミーのFutureで即解決させる
       myDataFuture = Future.value();
       isMydataFutureDone = true;
+
+      // ProfilePage と DMRoomPage から画面遷移した時に
+      // Searchタブが表示されないための固定フラグ
+      currentIndex = widget.lounge.currentIndex;
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // DMの通知リスナー起動
         if (dMNotifierservice != null) {
@@ -879,11 +884,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               title: Text(dMNotifications[index]!.talkuserName!),
                                               subtitle: Text(
                                                 dMNotifications[index]!.lastMessage == null
-                                                 ? ''
-                                                 : dMNotifications[index]!.lastMessage!.length < 10
-                                                   ? dMNotifications[index]!.lastMessage!
-                                                   // ignore: prefer_interpolation_to_compose_strings
-                                                   : dMNotifications[index]!.lastMessage!.substring(0,9) + '...',
+                                                  ? ''
+                                                  : dMNotifications[index]!.lastMessage!.length < 10
+                                                    ? dMNotifications[index]!.lastMessage!
+                                                    // ignore: prefer_interpolation_to_compose_strings
+                                                    : dMNotifications[index]!.lastMessage!.substring(0, 9) + '...',
                                                 style: const TextStyle(
                                                   color: Color.fromARGB(255, 133, 133, 133))),
                                               onTap: () async{

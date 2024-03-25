@@ -550,10 +550,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               );
                     
                               if (context.mounted) {
-                                // LoungeBack loungeBack = LoungeBack(currentIndex: 2);
                                 Lounge? loungeConstructor = Lounge(
                                                               showDialogAble: false,
-                                                              afterInitialization: true
+                                                              afterInitialization: true,
+                                                              currentIndex: 2
                                                             );
                                 Navigator.pushAndRemoveUntil(
                                     context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
@@ -698,10 +698,10 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                                     
                                     /// LoungeBackPage に画面遷移
                                     if (context.mounted) {
-                                      // LoungeBack loungeBack = LoungeBack(currentIndex: 2);
                                       Lounge? loungeConstructor = Lounge(
                                                                     showDialogAble: false,
-                                                                    afterInitialization: true
+                                                                    afterInitialization: true,
+                                                                    currentIndex: 2
                                                                   );
                                       Navigator.pushAndRemoveUntil(
                                           context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
