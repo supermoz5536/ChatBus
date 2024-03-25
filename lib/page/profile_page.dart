@@ -4,6 +4,7 @@ import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
+import 'package:udemy_copy/model/lounge.dart';
 import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
@@ -11,6 +12,7 @@ import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
 import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -548,11 +550,15 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                               );
                     
                               if (context.mounted) {
-                                LoungeBack loungeBack = LoungeBack(currentIndex: 2);
+                                // LoungeBack loungeBack = LoungeBack(currentIndex: 2);
+                                Lounge? loungeConstructor = Lounge(
+                                                              showDialogAble: false,
+                                                              afterInitialization: true
+                                                            );
                                 Navigator.pushAndRemoveUntil(
                                     context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                     SlideRightRoute(
-                                        page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
+                                        page: LoungePage(loungeConstructor)), //遷移先の画面を構築する関数を指定
                                     (_) => false);
                                       }
                               //   setState(() {
@@ -692,11 +698,15 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                                     
                                     /// LoungeBackPage に画面遷移
                                     if (context.mounted) {
-                                      LoungeBack loungeBack = LoungeBack(currentIndex: 2);
+                                      // LoungeBack loungeBack = LoungeBack(currentIndex: 2);
+                                      Lounge? loungeConstructor = Lounge(
+                                                                    showDialogAble: false,
+                                                                    afterInitialization: true
+                                                                  );
                                       Navigator.pushAndRemoveUntil(
                                           context, //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C                                                                        //1回目のcontextは、「Navigator.pushメソッドが呼び出された時点」のビルドコンテキストを参照し
                                           SlideRightRoute(
-                                              page: LoungeBackPage(loungeBack)), //遷移先の画面を構築する関数を指定
+                                              page: LoungePage(loungeConstructor)), //遷移先の画面を構築する関数を指定
                                           (_) => false);
                                     }                             
                                 } else {

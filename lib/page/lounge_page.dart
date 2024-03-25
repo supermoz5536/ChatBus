@@ -98,6 +98,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     // ■ 初期化処理を終えていて、他のページから画面遷移してきている場合の処理
     //（main.dart と LogInPage を除いたクラスからの画面遷移）
     if (widget.lounge.afterInitialization!) {
+      // AppBar > leading の FutureBuilderをトリガーするために
+      // ダミーのFutureで即解決させる
+      myDataFuture = Future.value();
+      isMydataFutureDone = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // DMの通知リスナー起動
         if (dMNotifierservice != null) {
@@ -107,6 +111,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         if (friendRequestNotifierservice != null) {
           friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(meUser!.uid);
         }
+        // ■■■■■　currentIndexをコンストラクタで更新する必要があるかも　■■■■■
+        // そうしないとPrfilePageとDMRoomPageから画面遷移のたびに
+        // SearchPageに戻ってしまう可能性がある
       });
 
     // ■ これから初期化処理を行う場合
@@ -136,8 +143,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       accountStatus: result['account_status'],
                       subscriptionPlan: result['subscription_plan'],
                     );
-          print(result['account_status']);          
-          print(result['subscription_plan'],);
 
           // MeUserProvider の状態変数を更新
           ref.read(meUserProvider.notifier).setUser(user);
@@ -480,7 +485,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 return Text(AppLocalizations.of(context)!.error);
               } else {
                 return StreamBuilder<DocumentSnapshot>(
-                    stream: UserFirestore.streamProfImage(snapshot.data!['myUid']),
+                    stream: UserFirestore.streamProfImage(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.exists) {
@@ -492,8 +497,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                               decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   image: DecorationImage(
-                                      image: NetworkImage(
-                                          snapshot.data!['user_image_url']),
+                                      image: NetworkImage(meUser!.userImageUrl!),
                                       fit: BoxFit.cover)),
                               // BoxFith は画像の表示方法の制御
                               // cover は満遍なく埋める
@@ -1947,11 +1951,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                                               selectedLanguage,
                                                                               currentMode
                                                                             );
-                                      List<String?>? selectedNativeLanguageList = SelectedLanguage.getSelectedNativeLanguageTrueItem(
+                                      List<String?>? selectedNativeLanguageList =SelectedLanguage.getSelectedNativeLanguageTrueItem(
                                                                                     selectedNativeLanguage,
                                                                                     currentMode
                                                                                   );
-                                      String? selectedGenderTrueItem = SelectedGender.getSelectedGenderTrueItem(selectedGender);
+                                      String? selectedGenderTrueItem = 
+                                        SelectedGender.getSelectedGenderTrueItem(selectedGender);
 
                                       matchingProgress = MatchingProgress(
                                                           myUid: meUser!.uid,
