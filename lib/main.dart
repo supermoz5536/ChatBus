@@ -50,7 +50,10 @@ class MyApp extends ConsumerWidget {
   User? user = ref.watch(meUserProvider);
   List<String> splittedArgument = user!.language!.split('_');
   Locale appLocale;
-  Lounge? lounge = Lounge(showDialogAble: false);
+  Lounge? lounge = Lounge(
+                     showDialogAble: false,
+                     afterInitialization: false
+                   );
   
 
   if (splittedArgument.length == 1){

@@ -95,75 +95,87 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     
     CustomAnalytics.logLoungePageIn();
 
-    /// ■■■■■ 問題なければこの行は削除 ■■■■■
-    /// MatchedHistoryPage用のコンストラクタなので
-    /// myUidはnullでも問題が起きてない
-    // talkRoom = TalkRoom(myUid: myUid, roomId: '');
-
-    
-    String? sharedPrefesInitMyUid = Shared_Prefes.fetchUid();
-    if (sharedPrefesInitMyUid == null) showDialogWhenReady();
-    if (sharedPrefesInitMyUid != null 
-     && widget.lounge.showDialogAble == true) showDialogWhenReady();
-
-    myDataFuture = UserFirestore.getAccount(); 
-    /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
-    /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
-
-    myDataFuture!.then((result) { 
-      if (result != null && mounted) {
-          isMydataFutureDone = true;
-          user = User(
-                    uid: result['myUid'],
-                    userName: result['userName'], 
-                    userImageUrl: result['userImageUrl'],
-                    statement: result['statement'],
-                    language: result['language'],
-                    country: result['country'],
-                    nativeLanguage: [result['native_language']],
-                    gender: result['gender'],
-                    accountStatus: result['account_status'],
-                    subscriptionPlan: result['subscription_plan'],
-                  );
-        print(result['account_status']);          
-        print(result['subscription_plan'],);
-
-        // MeUserProvider の状態変数を更新
-        ref.read(meUserProvider.notifier).setUser(user);
-
-        // App表示言語：現在選択中のアイテム名をUIに反映
-        // setState()がなくても他の描画プロセスが関連して
-        // UIが反映されるが、一応setState()を記述しておく。
-        setState(() {
-          currentLanguageCode = result['language'];
-        });     
-
-        // TargetLanguageProvider の状態変数を更新
-        // 起動時に、App表示言語と一致させてあげるユーザーフレンドリー
-        // targetLanguageのdropdownMenuのvalueに
-        // 'zh_TW'はないので
-        // その場合は更新せず、初期値の'en'が設定される        
-        if (result['language'] != 'zh_TW') {
-        ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
-        }   
-
-        // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが
-        // dbに該当するドキュメントがなかった場合なので.
-        // 新規IDするから、Showdialogを表示する
-        // しかし、db側でドキュメントIDを削除した場合のみ発生するケース
-        if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
-
+    // ■ 初期化処理を終えていて、他のページから画面遷移してきている場合の処理
+    //（main.dart と LogInPage を除いたクラスからの画面遷移）
+    if (widget.lounge.afterInitialization!) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         // DMの通知リスナー起動
         if (dMNotifierservice != null) {
-        dMSubscription = dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
+          dMSubscription = dMNotifierservice!.setupUnreadDMNotification(meUser!.uid);
         }
-
         // フレンドリクエストの通知リスナー起動
         if (friendRequestNotifierservice != null) {
-        friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(result['myUid']);
+          friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(meUser!.uid);
         }
-      }
-    });
+      });
+
+    // ■ これから初期化処理を行う場合
+    //（main.dart もしくは LogInPageからの画面遷移）
+    } else {
+      String? sharedPrefesInitMyUid = Shared_Prefes.fetchUid();
+      if (sharedPrefesInitMyUid == null) showDialogWhenReady();
+      if (sharedPrefesInitMyUid != null 
+      && widget.lounge.showDialogAble == true) showDialogWhenReady();
+
+      myDataFuture = UserFirestore.getAccount(); 
+      /// ① initState関数の中は、.then関数で同期化して対応 → すぐ下の行
+      /// ② Build関数の中は、FutureBuilderで同期化して対応 → Drawer内のStream処理
+
+      myDataFuture!.then((result) { 
+        if (result != null && mounted) {
+            isMydataFutureDone = true;
+            user = User(
+                      uid: result['myUid'],
+                      userName: result['userName'], 
+                      userImageUrl: result['userImageUrl'],
+                      statement: result['statement'],
+                      language: result['language'],
+                      country: result['country'],
+                      nativeLanguage: [result['native_language']],
+                      gender: result['gender'],
+                      accountStatus: result['account_status'],
+                      subscriptionPlan: result['subscription_plan'],
+                    );
+          print(result['account_status']);          
+          print(result['subscription_plan'],);
+
+          // MeUserProvider の状態変数を更新
+          ref.read(meUserProvider.notifier).setUser(user);
+
+          // App表示言語：現在選択中のアイテム名をUIに反映
+          // setState()がなくても他の描画プロセスが関連して
+          // UIが反映されるが、一応setState()を記述しておく。
+          setState(() {
+            currentLanguageCode = result['language'];
+          });     
+
+          // TargetLanguageProvider の状態変数を更新
+          // 起動時に、App表示言語と一致させてあげるユーザーフレンドリー
+          // targetLanguageのdropdownMenuのvalueに
+          // 'zh_TW'はないので
+          // その場合は更新せず、初期値の'en'が設定される        
+          if (result['language'] != 'zh_TW') {
+          ref.read(targetLanguageProvider.notifier).setTargetLanguage(result['language']);
+          }   
+
+          // 'isNewUser'のフィールドがある場合：キャッシュにIDはあったが
+          // dbに該当するドキュメントがなかった場合なので.
+          // 新規IDするから、Showdialogを表示する
+          // しかし、db側でドキュメントIDを削除した場合のみ発生するケース
+          if (result['isNewUser'] != null && sharedPrefesInitMyUid != null) showDialogWhenReady();
+
+          // DMの通知リスナー起動
+          if (dMNotifierservice != null) {
+          dMSubscription = dMNotifierservice!.setupUnreadDMNotification(result['myUid']);
+          }
+
+          // フレンドリクエストの通知リスナー起動
+          if (friendRequestNotifierservice != null) {
+          friendRequestSubscription = friendRequestNotifierservice!.setupFriendRequestNotification(result['myUid']);
+          }
+        }
+      });
+    }
   }
 
   void showDialogWhenReady() {

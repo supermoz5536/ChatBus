@@ -92,11 +92,6 @@ class _LoungeBackPageState extends ConsumerState<LoungeBackPage> {
     // initState()とは　https://sl.bing.net/ivIFfFUd6Vo
 
     CustomAnalytics.logLoungeBackPageIn();
-
-    currentIndex = widget.loungeBack!.currentIndex;
-    talkRoom = TalkRoom(myUid: myUid, roomId: '');
-    /// MatchedHistoryPage用のコンストラクタなので
-    /// myUidはnullでも問題が起きてない.
   
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // DMの通知リスナー起動
