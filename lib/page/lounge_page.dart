@@ -67,7 +67,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   User? user;
   User? meUser;
   bool isInputEmpty = true;
-  TalkRoom? talkRoom;
+  TalkRoom? talkRoom = TalkRoom(myUid: '', roomId: '');
   Future<Map<String, dynamic>?>? myDataFuture;
   MatchingProgress? matchingProgress;
   LanguageNotifierService? languageNotifierService;
@@ -95,9 +95,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     
     CustomAnalytics.logLoungePageIn();
 
+    /// ■■■■■ 問題なければこの行は削除 ■■■■■
     /// MatchedHistoryPage用のコンストラクタなので
     /// myUidはnullでも問題が起きてない
-    talkRoom = TalkRoom(myUid: myUid, roomId: '');
+    // talkRoom = TalkRoom(myUid: myUid, roomId: '');
 
     
     String? sharedPrefesInitMyUid = Shared_Prefes.fetchUid();
@@ -1842,6 +1843,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           setState(() {
                                             selectedHistoryIndex = index;
                                             currentIndex = 3;
+                                            talkRoom!.myUid = meUser!.uid;
                                             talkRoom!.talkuserUid = talkuserFields['talkuser_id'];
                                             talkRoom!.roomId = talkuserFields['room_id'];
                                           });
@@ -1861,6 +1863,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                         setState(() {
                                           selectedHistoryIndex = index;
                                           currentIndex = 3;
+                                          talkRoom!.myUid = meUser!.uid;
                                           talkRoom!.talkuserUid = talkuserFields['talkuser_id'];
                                           talkRoom!.roomId = talkuserFields['room_id'];
                                         });
