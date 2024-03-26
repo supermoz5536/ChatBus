@@ -1522,7 +1522,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                       Container(
                                         width: MediaQuery.of(context).size.width * 0.9,
                                         decoration: const BoxDecoration(
-                                            color: Color.fromARGB(255, 196, 196, 196),
+                                            color: Colors.white,
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black,
@@ -1569,33 +1569,41 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check_circle,
+                                                          size: 20,
+                                                          color: Colors.lightGreen)
                                                       ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          '制限なく全ての機能を利用することができるプランです。',
+                                                          style: const TextStyle(
+                                                            color: Color.fromARGB(255, 144, 144, 144),
+                                                            fontSize: 13,
+                                                          ),
+                                                          ),
                                                       ),
+                                                  
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
@@ -1603,33 +1611,41 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check_circle,
+                                                          size: 20,
+                                                          color: Colors.lightGreen)
                                                       ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          'ジェンダーフィルターと無制限の翻訳機能を利用できます',
+                                                          style: const TextStyle(
+                                                            color: Color.fromARGB(255, 144, 144, 144),
+                                                            fontSize: 13,
+                                                          ),
+                                                          ),
                                                       ),
+                                                  
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
@@ -1637,33 +1653,42 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: Container(
+                                                color: Colors.greenAccent,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check_circle,
+                                                          size: 20,
+                                                          color: Colors.lightGreen)
                                                       ),
+
+                                                      Flexible(
+                                                        child: Text(
+                                                          '全てのプランで利用可能\nフレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
+                                                          style: const TextStyle(
+                                                            color: Color.fromARGB(255, 144, 144, 144),
+                                                            fontSize: 13,
+                                                          ),
+                                                          ),
                                                       ),
+
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
