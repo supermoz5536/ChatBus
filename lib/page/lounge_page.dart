@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
@@ -1268,465 +1270,477 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             return ScaffoldMessenger(
                               key: scaffoldMessengerKey,
                               child: Scaffold(
-                                body: FractionallySizedBox(
-                                  heightFactor: 0.9, // ボトムシートを画面の高さいっぱいにする
-                                  widthFactor: 1,
-                                  child: SingleChildScrollView(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                
-                                        // ■ ヘッダー部分
-                                        Container(
-                                          height: 75,
-                                          width: MediaQuery.of(context).size.width,
-                                          decoration: const BoxDecoration(
-                                            color: Color.fromARGB(255, 105, 105, 105),
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(20),
-                                              topRight: Radius.circular(20),
-                                            )
-                                          ),
-                                          child: const Center(
-                                            child: Text('ChatBus 料金プラン',
-                                              style: TextStyle(
-                                                fontSize: 25,
+                                body: SingleChildScrollView(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+
+                                      // ■ ヘッダー部分
+                                      Container(
+                                        height: 75,
+                                        width: MediaQuery.of(context).size.width,
+                                        decoration: const BoxDecoration(
+                                          color: Color.fromARGB(255, 105, 105, 105),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20),
+                                          )
+                                        ),
+                                        child: Row(
+                                          children: [ 
+                                              Expanded(
+                                                child: Align(
+                                                  alignment: Alignment.center,
+                                                  child: Text('ChatBus 料金プラン',
+                                                    style: TextStyle(
+                                                      fontSize: 25,
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),                                         
+                                            IconButton(
+                                              icon: Icon(Icons.close,
+                                                size: 30,
                                                 color: Colors.white,
+                                                ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }   
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                                                
+                                      const SizedBox(height: 30),
+                                                                
+                                      // ■ フリープラン説明
+                                      Container(
+                                        width: MediaQuery.of(context).size.width * 0.9,
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 196, 196, 196),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 7, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 5),
+                                                                
+                                            // ■ プラン名
+                                            Text('フリー',
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                                                
+                                            const SizedBox(height: 5),
+                                                                
+                                            // ■ 価格表示
+                                            Text('0\$/月',
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                                fontSize: 15,
                                                 fontWeight: FontWeight.bold
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                
-                                        const SizedBox(height: 30),
-                                
-                                        // ■ フリープラン説明
-                                        Container(
-                                          width: MediaQuery.of(context).size.width * 0.9,
-                                          decoration: const BoxDecoration(
-                                              color: Color.fromARGB(255, 196, 196, 196),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black,
-                                                  offset: Offset(0, 1.5), // 上方向への影
-                                                  blurRadius: 7, // ぼかしの量
-                                                )
-                                              ]),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                
-                                              const SizedBox(height: 5),
-                                
-                                              // ■ プラン名
-                                              Text('フリー',
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                
-                                              const SizedBox(height: 5),
-                                
-                                              // ■ 価格表示
-                                              Text('0\$/月',
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                
-                                              const Divider(
-                                                      color: Color.fromARGB(255, 150, 150, 150),
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                
-                                              // ■ １段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              // ■ ２段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              // ■ ３段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              const Divider(
-                                                      color: Color.fromARGB(255, 150, 150, 150),
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                
-                                              // ■ プラン選択ボタン: free
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10
-                                                ),
-                                                child: meUser!.subscriptionPlan == 'free'
-                                                  // freeプランを契約中の場合
-                                                  // ボタンを無効化
-                                                  ? IgnorePointer(
-                                                    ignoring: true,
-                                                    child: Opacity(
-                                                      opacity: 0.3,
-                                                      child: ElevatedButton(
-                                                          onPressed: () {},
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.blue ,
-                                                            foregroundColor: Colors.white, // ボタンのテキスト色
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                            ),
-                                                          ),
-                                                            child: const Text('プランを選択')
-                                                        ),
-                                                    ),
-                                                  )
-                                                  // freeプランを契約してない場合
-                                                  // ボタンを有効化
-                                                  : ElevatedButton(
-                                                      onPressed: () {
-                                                        confirmCancelPlan(context);
-                                                        // makePermanentAccountShowDialog(context);
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Colors.blue, // ボタンの背景色
-                                                        foregroundColor: Colors.white, // ボタンのテキスト色
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                        ),
-                                                      ),
-                                                        child: const Text('プランを選択')
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
                                                   ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                
-                                        const SizedBox(height: 20),
-                                
-                                        // ■ Premiumプラン説明
-                                        Container(
-                                          width: MediaQuery.of(context).size.width * 0.9,
-                                          decoration: const BoxDecoration(
-                                              color: Color.fromARGB(255, 196, 196, 196),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black,
-                                                  offset: Offset(0, 1.5), // 上方向への影
-                                                  blurRadius: 7, // ぼかしの量
-                                                )
-                                              ]),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                
-                                              const SizedBox(height: 5),
-                                
-                                              // ■ プラン名
-                                              Text('プレミアム',
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 13,
-                                                ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
                                               ),
-                                
-                                              const SizedBox(height: 5),
-                                
-                                              // ■ 価格表示
-                                              Text('0\$/月',
-                                                style: const TextStyle(
-                                                  color: Color.fromARGB(255, 144, 144, 144),
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                
-                                              const Divider(
-                                                      color: Color.fromARGB(255, 150, 150, 150),
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
                                                     ),
-                                
-                                              // ■ １段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              // ■ ２段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              // ■ ３段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  right: 8, 
-                                                  bottom: 8
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    const Padding(
-                                                      padding: EdgeInsets.only(
-                                                        left: 20,
-                                                        right: 10,
-                                                        ),                                  
-                                                      child: Icon(
-                                                        Icons.check,
-                                                        size: 15,
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                      ),
-                                                    ),
-                                                    Flexible(
-                                                      child: Text(
-                                                        'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(255, 144, 144, 144),
-                                                          fontSize: 13,
-                                                        ),
-                                                        ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                
-                                              const Divider(
-                                                      color: Color.fromARGB(255, 150, 150, 150),
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                
-                                              // ■ プラン選択ボタン: premium
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10
-                                                ),
-                                                child: meUser!.subscriptionPlan == 'premium'
-                                                  // premiumプランを契約中の場合
-                                                  // ボタンを無効化
-                                                  ? IgnorePointer(
-                                                    ignoring: true,
-                                                    child: Opacity(
-                                                      opacity: 0.3,
-                                                      child: ElevatedButton(
-                                                          onPressed: () {},
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.blue ,
-                                                            foregroundColor: Colors.white, // ボタンのテキスト色
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                            ),
-                                                          ),
-                                                            child: const Text('プランを選択')
-                                                        ),
-                                                    ),
-                                                  )
-                                                  // premiumプランを契約してない場合
-                                                  // ボタンを有効化
-                                                  : ElevatedButton(
-                                                      onPressed: () async{
-                                                        switch (meUser!.accountStatus) {
-                                                          // 匿名アカウントの場合: 
-                                                          // ① 永久アカウント作成用のshowDialogを表示
-                                                          // ② showDialog内でStripeの決済画面へ遷移
-                                                          case 'anonymous': 
-                                                            makePermanentAccountShowDialog(context);
-                                                            break;
-                                
-                                                          // 永久アカウントの場合: 
-                                                          // ①Stripeの決済画面へ遷移
-                                                          case 'permanent': 
-                                                            String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
-                                                            if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
-                                                            break;
-                                                        }
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Colors.blue, // ボタンの背景色
-                                                        foregroundColor: Colors.white, // ボタンのテキスト色
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                        ),
-                                                      ),
-                                                        child: const Text('プランを選択')
                                                   ),
-                                              )
-                                            ],
-                                          ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: free
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'free'
+                                                // freeプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.blue ,
+                                                          foregroundColor: Colors.white, // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: const Text('プランを選択')
+                                                      ),
+                                                  ),
+                                                )
+                                                // freeプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () {
+                                                      confirmCancelPlan(context);
+                                                      // makePermanentAccountShowDialog(context);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.blue, // ボタンの背景色
+                                                      foregroundColor: Colors.white, // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: const Text('プランを選択')
+                                                ),
+                                            )
+                                          ],
                                         ),
-                                              const SizedBox(height: 20),
-                                      ],
-                                    )
-                                  ),
+                                      ),
+                                                                
+                                      const SizedBox(height: 20),
+                                                                
+                                      // ■ Premiumプラン説明
+                                      Container(
+                                        width: MediaQuery.of(context).size.width * 0.9,
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 196, 196, 196),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 7, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 5),
+                                                                
+                                            // ■ プラン名
+                                            Text('プレミアム',
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                                                
+                                            const SizedBox(height: 5),
+                                                                
+                                            // ■ 価格表示
+                                            Text('0\$/月',
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 144, 144, 144),
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                right: 8, 
+                                                bottom: 8
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(
+                                                      left: 20,
+                                                      right: 10,
+                                                      ),                                  
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 15,
+                                                      color: Color.fromARGB(255, 144, 144, 144),
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(255, 144, 144, 144),
+                                                        fontSize: 13,
+                                                      ),
+                                                      ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: premium
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'premium'
+                                                // premiumプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.blue ,
+                                                          foregroundColor: Colors.white, // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: const Text('プランを選択')
+                                                      ),
+                                                  ),
+                                                )
+                                                // premiumプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () async{
+                                                      switch (meUser!.accountStatus) {
+                                                        // 匿名アカウントの場合: 
+                                                        // ① 永久アカウント作成用のshowDialogを表示
+                                                        // ② showDialog内でStripeの決済画面へ遷移
+                                                        case 'anonymous': 
+                                                          makePermanentAccountShowDialog(context);
+                                                          break;
+                                                                
+                                                        // 永久アカウントの場合: 
+                                                        // ①Stripeの決済画面へ遷移
+                                                        case 'permanent': 
+                                                          String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
+                                                          if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
+                                                          break;
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.blue, // ボタンの背景色
+                                                      foregroundColor: Colors.white, // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: const Text('プランを選択')
+                                                ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                            const SizedBox(height: 20),
+                                    ],
+                                  )
                                 ),
                               ),
                             );
@@ -1774,7 +1788,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
             child: Center(
                 child: Text(
               AppLocalizations.of(context)!.headerMatchingHistryDrawer,
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold),
             ))),
         FutureBuilder(
             future: myDataFuture,
