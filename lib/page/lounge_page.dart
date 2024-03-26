@@ -1282,10 +1282,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                         width: MediaQuery.of(context).size.width,
                                         decoration: const BoxDecoration(
                                           color: Color.fromARGB(255, 105, 105, 105),
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.circular(20),
-                                          )
                                         ),
                                         child: Row(
                                           children: [ 
