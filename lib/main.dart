@@ -69,6 +69,7 @@ class MyApp extends ConsumerWidget {
 
       title: 'Flutter Demo',
       theme: ThemeData(
+        // colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6c8cfc)),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         primarySwatch: Colors.blueGrey,
         brightness: Brightness.light,
