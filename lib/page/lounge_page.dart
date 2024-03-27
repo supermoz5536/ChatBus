@@ -1288,23 +1288,29 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               Expanded(
                                                 child: Align(
                                                   alignment: Alignment.center,
-                                                  child: Text('ChatBus 料金プラン',
-                                                    style: TextStyle(
-                                                      fontSize: 25,
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.bold
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.only(left: 65),
+                                                    child: Text('料金プラン',
+                                                      style: TextStyle(
+                                                        fontSize: 30,
+                                                        color: Colors.white,
+                                                        fontWeight: FontWeight.bold
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),                                         
-                                            IconButton(
-                                              icon: Icon(Icons.close,
-                                                size: 30,
-                                                color: Colors.white,
-                                                ),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              }   
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 15),
+                                              child: IconButton(
+                                                icon: Icon(Icons.close,
+                                                  size: 30,
+                                                  color: Colors.white,
+                                                  ),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                }   
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1314,14 +1320,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                                 
                                       // ■ フリープラン説明
                                       Container(
-                                        width: MediaQuery.of(context).size.width * 0.9,
+                                        width: MediaQuery.of(context).size.width * 0.8,
                                         decoration: const BoxDecoration(
-                                            color: Color.fromARGB(255, 196, 196, 196),
+                                            color: Color.fromARGB(255, 129, 155, 250),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black,
                                                 offset: Offset(0, 1.5), // 上方向への影
-                                                blurRadius: 7, // ぼかしの量
+                                                blurRadius: 5, // ぼかしの量
                                               )
                                             ]),
                                         child: Column(
@@ -1329,30 +1335,29 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                                                 
-                                            const SizedBox(height: 5),
+                                            const SizedBox(height: 10),
                                                                 
                                             // ■ プラン名
                                             Text('フリー',
                                               style: const TextStyle(
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                                fontSize: 13,
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
                                               ),
                                             ),
                                                                 
-                                            const SizedBox(height: 5),
-                                                                
                                             // ■ 価格表示
-                                            Text('0\$/月',
+                                            Text('0\$ / 月',
                                               style: const TextStyle(
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                                fontSize: 15,
+                                                color: Colors.white,
+                                                fontSize: 17.5,
                                                 fontWeight: FontWeight.bold
                                               ),
                                             ),
                                             const SizedBox(height: 10),
                                                                 
                                             const Divider(
-                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    color: Colors.white,
                                                     height: 0,
                                                     thickness: 1,
                                                     indent: 30,
@@ -1363,33 +1368,42 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.lightbulb,
+                                                          size: 22.5,
+                                                          color: Colors.white)
                                                       ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          '無料で利用することができますが、いくつかの機能が制限されます。',
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
+                                                          ),
+                                                          ),
                                                       ),
+                                                  
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
@@ -1397,33 +1411,48 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: const Icon(
+                                                            Icons.clear,
+                                                            size: 22.5,
+                                                            color: Colors.white),
+                                                        )
                                                       ),
+                                                  
+                                                      Flexible(
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Text(
+                                                            'ジェンダーフィルターと無制限の翻訳機能を利用できます。',
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 14,
+                                                            ),
+                                                            ),
+                                                        ),
                                                       ),
+                                                  
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
@@ -1431,38 +1460,56 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 10,
-                                                right: 8, 
-                                                bottom: 8
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
                                               ),
-                                              child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
-                                                      left: 20,
-                                                      right: 10,
-                                                      ),                                  
-                                                    child: Icon(
-                                                      Icons.check,
-                                                      size: 15,
-                                                      color: Color.fromARGB(255, 144, 144, 144),
-                                                    ),
-                                                  ),
-                                                  Flexible(
-                                                    child: Text(
-                                                      'Database、Firestore、Storage、電話認証、Hosting、Test Lab に使用量の割り当てがあります',
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(255, 144, 144, 144),
-                                                        fontSize: 13,
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check,
+                                                          size: 20,
+                                                          color: Color(0xFF6c8cfc))
                                                       ),
+
+                                                      Flexible(
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: '全てのプランで利用可能\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: 'フレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
+                                                              ),
+                                                          ]
+                                                        ))
                                                       ),
+
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
                                             ),
                                                                 
                                             const Divider(
-                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    color: Colors.white,
                                                     height: 0,
                                                     thickness: 1,
                                                     indent: 30,
@@ -1485,8 +1532,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                     child: ElevatedButton(
                                                         onPressed: () {},
                                                         style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.blue ,
-                                                          foregroundColor: Colors.white, // ボタンのテキスト色
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                           ),
@@ -1503,31 +1550,35 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                       // makePermanentAccountShowDialog(context);
                                                     },
                                                     style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.blue, // ボタンの背景色
-                                                      foregroundColor: Colors.white, // ボタンのテキスト色
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                       ),
                                                     ),
-                                                      child: const Text('プランを選択')
+                                                      child: const Text('プランを選択',
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
                                                 ),
                                             )
                                           ],
                                         ),
                                       ),
                                                                 
-                                      const SizedBox(height: 20),
+                                      const SizedBox(height: 30),
                                                                 
                                       // ■ Premiumプラン説明
                                       Container(
-                                        width: MediaQuery.of(context).size.width * 0.9,
+                                        width: MediaQuery.of(context).size.width * 0.8,
                                         decoration: const BoxDecoration(
-                                            color: Colors.white,
+                                            color: Color.fromARGB(255, 129, 155, 250),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black,
                                                 offset: Offset(0, 1.5), // 上方向への影
-                                                blurRadius: 7, // ぼかしの量
+                                                blurRadius: 5, // ぼかしの量
                                               )
                                             ]),
                                         child: Column(
@@ -1535,30 +1586,29 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                                                 
-                                            const SizedBox(height: 5),
+                                            const SizedBox(height: 10),
                                                                 
                                             // ■ プラン名
                                             Text('プレミアム',
                                               style: const TextStyle(
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                                fontSize: 13,
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
                                               ),
                                             ),
-                                                                
-                                            const SizedBox(height: 5),
-                                                                
+                                                                                                
                                             // ■ 価格表示
-                                            Text('0\$/月',
+                                            Text('5\$ / 月',
                                               style: const TextStyle(
-                                                color: Color.fromARGB(255, 144, 144, 144),
-                                                fontSize: 15,
+                                                color: Colors.white,
+                                                fontSize: 17.5,
                                                 fontWeight: FontWeight.bold
                                               ),
                                             ),
                                             const SizedBox(height: 10),
                                                                 
                                             const Divider(
-                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    color: Colors.white,
                                                     height: 0,
                                                     thickness: 1,
                                                     indent: 30,
@@ -1571,7 +1621,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 top: 10,
                                                 left: 30,
                                                 right: 30, 
-                                                bottom: 10,
+                                                bottom: 5,
                                               ),
                                               child: SizedBox(
                                                 child: Padding(
@@ -1586,17 +1636,18 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                           right: 10,
                                                           ),                                  
                                                         child: const Icon(
-                                                          Icons.check_circle,
-                                                          size: 20,
-                                                          color: Colors.lightGreen)
+                                                          Icons.tips_and_updates_rounded,
+                                                          size: 22.5,
+                                                          color: Colors.white)
                                                       ),
                                                   
                                                       Flexible(
                                                         child: Text(
                                                           '制限なく全ての機能を利用することができるプランです。',
                                                           style: const TextStyle(
-                                                            color: Color.fromARGB(255, 144, 144, 144),
-                                                            fontSize: 13,
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
                                                           ),
                                                           ),
                                                       ),
@@ -1613,7 +1664,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 top: 10,
                                                 left: 30,
                                                 right: 30, 
-                                                bottom: 10,
+                                                bottom: 5,
                                               ),
                                               child: SizedBox(
                                                 child: Padding(
@@ -1630,15 +1681,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                         child: const Icon(
                                                           Icons.check_circle,
                                                           size: 20,
-                                                          color: Colors.lightGreen)
+                                                          color: Colors.white)
                                                       ),
                                                   
                                                       Flexible(
                                                         child: Text(
-                                                          'ジェンダーフィルターと無制限の翻訳機能を利用できます',
+                                                          'ジェンダーフィルターと無制限の翻訳機能を利用できます。',
                                                           style: const TextStyle(
-                                                            color: Color.fromARGB(255, 144, 144, 144),
-                                                            fontSize: 13,
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 14,
                                                           ),
                                                           ),
                                                       ),
@@ -1658,7 +1710,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 bottom: 10,
                                               ),
                                               child: Container(
-                                                color: Colors.greenAccent,
+                                                color: Colors.white,
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
                                                   child: Row(
@@ -1671,19 +1723,28 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                           right: 10,
                                                           ),                                  
                                                         child: const Icon(
-                                                          Icons.check_circle,
+                                                          Icons.check,
                                                           size: 20,
-                                                          color: Colors.lightGreen)
+                                                          color: Color(0xFF6c8cfc))
                                                       ),
 
                                                       Flexible(
-                                                        child: Text(
-                                                          '全てのプランで利用可能\nフレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
-                                                          style: const TextStyle(
-                                                            color: Color.fromARGB(255, 144, 144, 144),
-                                                            fontSize: 13,
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
                                                           ),
-                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: '全てのプランで利用可能\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: 'フレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
+                                                              ),
+                                                          ]
+                                                        ))
                                                       ),
 
                                                     ],
@@ -1693,7 +1754,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             ),
                                                                 
                                             const Divider(
-                                                    color: Color.fromARGB(255, 150, 150, 150),
+                                                    color: Colors.white,
                                                     height: 0,
                                                     thickness: 1,
                                                     indent: 30,
@@ -1716,8 +1777,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                     child: ElevatedButton(
                                                         onPressed: () {},
                                                         style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.blue ,
-                                                          foregroundColor: Colors.white, // ボタンのテキスト色
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
                                                           shape: RoundedRectangleBorder(
                                                             borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                           ),
@@ -1747,13 +1808,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                       }
                                                     },
                                                     style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.blue, // ボタンの背景色
-                                                      foregroundColor: Colors.white, // ボタンのテキスト色
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
                                                       shape: RoundedRectangleBorder(
                                                         borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                       ),
                                                     ),
-                                                      child: const Text('プランを選択')
+                                                      child: const Text('プランを選択',
+                                                        style: TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
                                                 ),
                                             )
                                           ],
