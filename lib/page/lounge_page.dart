@@ -22,9 +22,12 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/log_in_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/notifier/me_user_notifier.dart';
+import 'package:udemy_copy/riverpod/notifier/plan_window_able_notifier.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
+import 'package:udemy_copy/riverpod/provider/plan_window_able_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -66,6 +69,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   bool isMydataFutureDone = false;
   bool isGenderSelected = false;
   bool isSelectedLanguage = false;
+  bool? isPlanWindlowAble;
   User? user;
   User? meUser;
   bool isInputEmpty = true;
@@ -476,6 +480,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
     currentMode = ref.watch(modeNameProvider);
+    isPlanWindlowAble = ref.watch(planWindowAbleProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1264,6 +1269,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       onPressed: () {
 
                         showModalBottomSheet(
+                          isDismissible: false,
                           backgroundColor: Colors.white,
                           isScrollControlled: true,
                           context: context,
@@ -1294,7 +1300,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   child: Padding(
                                                     padding: const EdgeInsets.only(left: 65),
                                                     child: Text(AppLocalizations.of(context)!.pricePlan,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 30,
                                                         color: Colors.white,
                                                         fontWeight: FontWeight.bold
@@ -1306,11 +1312,12 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                             Padding(
                                               padding: const EdgeInsets.only(right: 15),
                                               child: IconButton(
-                                                icon: Icon(Icons.close,
+                                                icon: const Icon(Icons.close,
                                                   size: 30,
                                                   color: Colors.white,
                                                   ),
                                                 onPressed: () {
+                                                  ref.read(planWindowAbleProvider.notifier).closePlanWindow();
                                                   Navigator.of(context).pop();
                                                 }   
                                               ),
