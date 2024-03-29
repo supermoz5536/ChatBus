@@ -625,11 +625,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender!.male
-                      // == true && currentGender == 'male'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender!.male,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
@@ -648,11 +644,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.female
-                      //  == true && currentGender == 'female'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender.female,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
@@ -671,11 +663,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.both
-                      //  == true && currentGender == 'both'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender.both,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){
