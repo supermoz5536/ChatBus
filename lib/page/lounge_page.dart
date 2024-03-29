@@ -70,6 +70,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   bool isGenderSelected = false;
   bool isSelectedLanguage = false;
   bool? isPlanWindlowAble;
+  bool? ignorePlanWindow = false;
   User? user;
   User? meUser;
   bool isInputEmpty = true;
@@ -453,14 +454,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     );
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (isPlanWindlowAble == true) {
-      planWindowShowModalBottomSheet(context);
-    }
-  }
-
   // disposeメソッドをオーバーライド
   @override
   void dispose() {
@@ -488,6 +481,15 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
     currentMode = ref.watch(modeNameProvider);
     isPlanWindlowAble = ref.watch(planWindowAbleProvider);
+
+    // Genderフィルターのmale or female にtrueが入力されるたびに
+    // 状態変更が発生してbuild関数が着火する
+    // window表示中にignorePlanWindowをtrueにして重複を回避
+    if (isPlanWindlowAble == true && ignorePlanWindow == false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        planWindowShowModalBottomSheet(context);
+      });
+    } 
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1685,6 +1687,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   }
 
   Future<dynamic> planWindowShowModalBottomSheet(BuildContext context) {
+    ignorePlanWindow = true;
+
     return showModalBottomSheet(
                         isDismissible: false,
                         backgroundColor: Colors.white,
@@ -1735,6 +1739,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                 ),
                                               onPressed: () {
                                                 ref.read(planWindowAbleProvider.notifier).closePlanWindow();
+                                                ignorePlanWindow = false;
                                                 Navigator.of(context).pop();
                                               }   
                                             ),
