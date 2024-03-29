@@ -1556,6 +1556,9 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               contentPadding: EdgeInsets.only(left: 10),
               border: InputBorder.none,
             ),
+            onSubmitted: (_) async{
+              await sendMessage();
+            },
           ),
         )),
 
@@ -1564,13 +1567,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
             onPressed: footerTextController.text.isEmpty
             ? null
             : () async {
-              await RoomFirestore.sendMessage(
-                  roomId: widget.talkRoom.roomId!,
-                  message: footerTextController.text);
-              footerTextController.clear();
-              setState(() {
-                isInputEmpty = true;
-              });
+              await sendMessage();
             },
             icon: Icon(
               Icons.send,
@@ -1578,6 +1575,16 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
             ))
       ],
     );
+  }
+
+  Future<void> sendMessage() async {
+    await RoomFirestore.sendMessage(
+        roomId: widget.talkRoom.roomId!,
+        message: footerTextController.text);
+    footerTextController.clear();
+    setState(() {
+      isInputEmpty = true;
+    });
   }
 
 

@@ -529,6 +529,9 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           contentPadding: EdgeInsets.only(left: 10),
                           border: InputBorder.none,
                         ),
+                        onSubmitted: (_) async{
+                          await sendMessage();
+                        },
                       ),
                     )),
 
@@ -537,15 +540,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                       onPressed: footerTextController.text.isEmpty
                         ? null
                         : () async {
-                          await DMRoomFirestore.sendDM(
-                            dMRoomId: widget.dMRoom.dMRoomId,
-                            message: footerTextController.text,
-                            talkuserUid: widget.dMRoom.talkuserUid,
-                            );
-                          footerTextController.clear();
-                          setState(() {
-                            isInputEmpty = true;
-                          });
+                          await sendMessage();
                         },
                         icon: Icon(
                           Icons.send,
@@ -706,5 +701,17 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
         ],
       ),
     );
+  }
+
+  Future<void> sendMessage() async {
+    await DMRoomFirestore.sendDM(
+      dMRoomId: widget.dMRoom.dMRoomId,
+      message: footerTextController.text,
+      talkuserUid: widget.dMRoom.talkuserUid,
+      );
+    footerTextController.clear();
+    setState(() {
+      isInputEmpty = true;
+    });
   }
 }
