@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
+import 'package:udemy_copy/model/user.dart';
+import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
+import 'package:udemy_copy/riverpod/provider/plan_window_able_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -22,7 +25,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
   int? isButtonOn;
   bool? withinRange;
   bool? withinTotalRange;
+  bool? isPlanWindlowAble;
   List<bool> isExpanded = [false, false, false, false];
+  User? meUser;
 
   
   SnackBar customSnackBar() {
@@ -66,6 +71,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     SelectedLanguage? selectedNativeLanguage = ref.watch(selectedNativeLanguageProvider);
     SelectedGender? selectedGender = ref.watch(selectedGenderProvider);
     currentMode = ref.watch(modeNameProvider);
+    isPlanWindlowAble = ref.watch(planWindowAbleProvider);
+    meUser = ref.watch(meUserProvider);
 
     
     return Scaffold(
@@ -625,20 +632,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender!.male
-                      // == true && currentGender == 'male'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender!.male,
                       onChanged: (bool? newValue) {
-                        setState(() {
-                          if (newValue == true){
-                          // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
-                          // ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
-                          // 状態値の全3つのプロパティを更新
-                          ref.read(selectedGenderProvider.notifier).switchSelectedGender('male');
-                          } else if (newValue == false ){ }
-                        });
+                          if (newValue == true) {
+                            // 使用する際にプランがfreeの場合は
+                            // 課金を促すため、PlanWindowをトリガー
+                            if (meUser!.subscriptionPlan == 'free') {
+                              ref.read(planWindowAbleProvider.notifier).triggerPlanWindow();
+
+                            // premiumの場合は、通常処理
+                            } else {
+                              // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
+                              // ref.read(currentGenderProvider.notifier).updateCurrentGender('male');
+                              // 状態値の全3つのプロパティを更新
+                              ref.read(selectedGenderProvider.notifier).switchSelectedGender('male');
+                            }
+                          } 
                       },
                     ),
                               
@@ -648,20 +657,15 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.female
-                      //  == true && currentGender == 'female'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender.female,
                       onChanged: (bool? newValue) {
-                        setState(() {
-                          if (newValue == true){
-                          // currentGender を male に更新することで、setState()実行時に他の選択肢がfalseになる
-                          // ref.read(currentGenderProvider.notifier).updateCurrentGender('female');
-                          // 状態値の全3つのプロパティを更新
-                          ref.read(selectedGenderProvider.notifier).switchSelectedGender('female');
-                          } else if (newValue == false ){ }
-                        });
+                          if (newValue == true) {
+                           if (meUser!.subscriptionPlan == 'free') {
+                              ref.read(planWindowAbleProvider.notifier).triggerPlanWindow();
+                            } else {
+                              ref.read(selectedGenderProvider.notifier).switchSelectedGender('female');
+                            }
+                         }
                       },
                     ),
                               
@@ -671,11 +675,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         style: const TextStyle(
                           color: Color.fromARGB(255, 102, 102, 102),
                           fontSize: 15)),
-                      value: selectedGender.both
-                      //  == true && currentGender == 'both'
-                      //   ? true
-                      //   : false
-                        ,
+                      value: selectedGender.both,
                       onChanged: (bool? newValue) {
                         setState(() {
                           if (newValue == true){

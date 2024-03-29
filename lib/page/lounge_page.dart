@@ -22,9 +22,12 @@ import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/log_in_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
+import 'package:udemy_copy/riverpod/notifier/me_user_notifier.dart';
+import 'package:udemy_copy/riverpod/notifier/plan_window_able_notifier.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/friend__request_notifications_provider.dart';
 import 'package:udemy_copy/riverpod/provider/mode_name_provider.dart';
+import 'package:udemy_copy/riverpod/provider/plan_window_able_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_gender_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
@@ -66,6 +69,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
   bool isMydataFutureDone = false;
   bool isGenderSelected = false;
   bool isSelectedLanguage = false;
+  bool? isPlanWindlowAble;
+  bool? ignorePlanWindow = false;
   User? user;
   User? meUser;
   bool isInputEmpty = true;
@@ -449,7 +454,6 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     );
   }
 
-
   // disposeメソッドをオーバーライド
   @override
   void dispose() {
@@ -476,6 +480,16 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     List<DMNotification?>? dMNotifications = ref.watch(dMNotificationsProvider);
     List<FriendRequestNotification?>? friendNotifications = ref.watch(friendRequestNotificationsProvider);
     currentMode = ref.watch(modeNameProvider);
+    isPlanWindlowAble = ref.watch(planWindowAbleProvider);
+
+    // Genderフィルターのmale or female にtrueが入力されるたびに
+    // 状態変更が発生してbuild関数が着火する
+    // window表示中にignorePlanWindowをtrueにして重複を回避
+    if (isPlanWindlowAble == true && ignorePlanWindow == false) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        planWindowShowModalBottomSheet(context);
+      });
+    } 
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -1262,589 +1276,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         // ボタンの最小サイズを設定
                         minimumSize: MaterialStateProperty.all(const Size(0, 30))),
                       onPressed: () {
-
-                        showModalBottomSheet(
-                          backgroundColor: Colors.white,
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (_) {
-                            // この Scaffold と ScaffoldMessenger は
-                            // confirmCancelPlan に応答するSnackBarの参照用
-                            return ScaffoldMessenger(
-                              key: scaffoldMessengerKey,
-                              child: Scaffold(
-                                body: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-
-                                      // ■ ヘッダー部分
-                                      Container(
-                                        height: 75,
-                                        width: MediaQuery.of(context).size.width,
-                                        decoration: const BoxDecoration(
-                                          color: Color.fromARGB(255, 105, 105, 105),
-                                        ),
-                                        child: Row(
-                                          children: [ 
-                                              Expanded(
-                                                child: Align(
-                                                  alignment: Alignment.center,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(left: 65),
-                                                    child: Text(AppLocalizations.of(context)!.pricePlan,
-                                                      style: TextStyle(
-                                                        fontSize: 30,
-                                                        color: Colors.white,
-                                                        fontWeight: FontWeight.bold
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),                                         
-                                            Padding(
-                                              padding: const EdgeInsets.only(right: 15),
-                                              child: IconButton(
-                                                icon: Icon(Icons.close,
-                                                  size: 30,
-                                                  color: Colors.white,
-                                                  ),
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                }   
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                                                
-                                      const SizedBox(height: 30),
-                                                                
-                                      // ■ フリープラン説明
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 35,
-                                          right: 35
-                                        ),
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                              color: Color.fromARGB(255, 129, 155, 250),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black,
-                                                  offset: Offset(0, 1.5), // 上方向への影
-                                                  blurRadius: 5, // ぼかしの量
-                                                )
-                                              ]),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                                                  
-                                              const SizedBox(height: 10),
-                                                                  
-                                              // ■ プラン名
-                                              Text(AppLocalizations.of(context)!.free,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                                                  
-                                              // ■ 価格表示
-                                              Text(AppLocalizations.of(context)!.freePlanPrice,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 17.5,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                                                  
-                                              const Divider(
-                                                      color: Colors.white,
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                                                  
-                                              // ■ １段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 5,
-                                                ),
-                                                child: SizedBox(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                    
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: const Icon(
-                                                            Icons.lightbulb,
-                                                            size: 22.5,
-                                                            color: Colors.white)
-                                                        ),
-                                                    
-                                                        Flexible(
-                                                          child: Text(
-                                                            AppLocalizations.of(context)!.freePlanLine1,
-                                                            style: const TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.bold
-                                                            ),
-                                                            ),
-                                                        ),
-                                                    
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              // ■ ２段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 5,
-                                                ),
-                                                child: SizedBox(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                    
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: Opacity(
-                                                            opacity: 0.5,
-                                                            child: const Icon(
-                                                              Icons.clear,
-                                                              size: 22.5,
-                                                              color: Colors.white),
-                                                          )
-                                                        ),
-                                                    
-                                                        Flexible(
-                                                          child: Opacity(
-                                                            opacity: 0.5,
-                                                            child: Text(
-                                                              AppLocalizations.of(context)!.freePlanLine2,
-                                                              style: const TextStyle(
-                                                                color: Colors.white,
-                                                                fontWeight: FontWeight.bold,
-                                                                fontSize: 14,
-                                                              ),
-                                                              ),
-                                                          ),
-                                                        ),
-                                                    
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              // ■ ３段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 10,
-                                                ),
-                                                child: Container(
-                                                  color: Colors.white,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                        
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: const Icon(
-                                                            Icons.check,
-                                                            size: 20,
-                                                            color: Color(0xFF6c8cfc))
-                                                        ),
-                                        
-                                                        Flexible(
-                                                          child: RichText(text: TextSpan(
-                                                            style: TextStyle(
-                                                              color: const Color.fromARGB(255, 139, 164, 252),
-                                                              fontSize: 14,
-                                                              // fontStyle: DefaultTextStyle.of(context).style,
-                                                            ),
-                                                            children: [
-                                                              TextSpan(
-                                                                text: AppLocalizations.of(context)!.freePlanLine3_1 + '\n',
-                                                                style: TextStyle(                                                                
-                                                                  fontWeight: FontWeight.bold)),
-                                                              TextSpan(
-                                                                text: AppLocalizations.of(context)!.freePlanLine3_2,
-                                                                ),
-                                                            ]
-                                                          ))
-                                                        ),
-                                        
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              const Divider(
-                                                      color: Colors.white,
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                                                  
-                                              // ■ プラン選択ボタン: free
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10
-                                                ),
-                                                child: meUser!.subscriptionPlan == 'free'
-                                                  // freeプランを契約中の場合
-                                                  // ボタンを無効化
-                                                  ? IgnorePointer(
-                                                    ignoring: true,
-                                                    child: Opacity(
-                                                      opacity: 0.3,
-                                                      child: ElevatedButton(
-                                                          onPressed: () {},
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.white, // ボタンの背景色
-                                                            foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                            ),
-                                                          ),
-                                                            child: Text(AppLocalizations.of(context)!.choosePlan)
-                                                        ),
-                                                    ),
-                                                  )
-                                                  // freeプランを契約してない場合
-                                                  // ボタンを有効化
-                                                  : ElevatedButton(
-                                                      onPressed: () {
-                                                        confirmCancelPlan(context);
-                                                        // makePermanentAccountShowDialog(context);
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Colors.white, // ボタンの背景色
-                                                        foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                        ),
-                                                      ),
-                                                        child: Text(AppLocalizations.of(context)!.choosePlan,
-                                                          style: const TextStyle(
-                                                            fontWeight: FontWeight.bold
-                                                          ),
-                                                        )
-                                                  ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                                                
-                                      const SizedBox(height: 30),
-                                                                
-                                      // ■ Premiumプラン説明
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          left: 35,
-                                          right: 35
-                                        ),
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                              color: Color.fromARGB(255, 129, 155, 250),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black,
-                                                  offset: Offset(0, 1.5), // 上方向への影
-                                                  blurRadius: 5, // ぼかしの量
-                                                )
-                                              ]),
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                                                  
-                                              const SizedBox(height: 10),
-                                                                  
-                                              // ■ プラン名
-                                              Text(AppLocalizations.of(context)!.premium,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                                                                                  
-                                              // ■ 価格表示
-                                              Text(AppLocalizations.of(context)!.premiumPlanPrice,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 17.5,
-                                                  fontWeight: FontWeight.bold
-                                                ),
-                                              ),
-                                              const SizedBox(height: 10),
-                                                                  
-                                              const Divider(
-                                                      color: Colors.white,
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                                                  
-                                              // ■ １段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 5,
-                                                ),
-                                                child: SizedBox(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                    
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: const Icon(
-                                                            Icons.tips_and_updates_rounded,
-                                                            size: 22.5,
-                                                            color: Colors.white)
-                                                        ),
-                                                    
-                                                        Flexible(
-                                                          child: Text(
-                                                            AppLocalizations.of(context)!.premiumPlanLine1,
-                                                            style: const TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 14,
-                                                              fontWeight: FontWeight.bold
-                                                            ),
-                                                            ),
-                                                        ),
-                                                    
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              // ■ ２段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 5,
-                                                ),
-                                                child: SizedBox(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                    
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: const Icon(
-                                                            Icons.check_circle,
-                                                            size: 20,
-                                                            color: Colors.white)
-                                                        ),
-                                                    
-                                                        Flexible(
-                                                          child: Text(
-                                                            AppLocalizations.of(context)!.premiumPlanLine2,
-                                                            style: const TextStyle(
-                                                              color: Colors.white,
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 14,
-                                                            ),
-                                                            ),
-                                                        ),
-                                                    
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              // ■ ３段落目
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 30,
-                                                  right: 30, 
-                                                  bottom: 10,
-                                                ),
-                                                child: Container(
-                                                  color: Colors.white,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.all(8.0),
-                                                    child: Row(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                        
-                                                        const Padding(
-                                                          padding: EdgeInsets.only(
-                                                            left: 8,
-                                                            right: 10,
-                                                            ),                                  
-                                                          child: const Icon(
-                                                            Icons.check,
-                                                            size: 20,
-                                                            color: Color(0xFF6c8cfc))
-                                                        ),
-                                        
-                                                        Flexible(
-                                                          child: RichText(text: TextSpan(
-                                                            style: TextStyle(
-                                                              color: const Color.fromARGB(255, 139, 164, 252),
-                                                              fontSize: 14,
-                                                              // fontStyle: DefaultTextStyle.of(context).style,
-                                                            ),
-                                                            children: [
-                                                              TextSpan(
-                                                                text: AppLocalizations.of(context)!.premiumPlanLine3_1 + '\n',
-                                                                style: TextStyle(                                                                
-                                                                  fontWeight: FontWeight.bold)),
-                                                              TextSpan(
-                                                                text: AppLocalizations.of(context)!.premiumPlanLine3_2,
-                                                                ),
-                                                            ]
-                                                          ))
-                                                        ),
-                                        
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                                                  
-                                              const Divider(
-                                                      color: Colors.white,
-                                                      height: 0,
-                                                      thickness: 1,
-                                                      indent: 30,
-                                                      endIndent: 30,
-                                                    ),
-                                                                  
-                                              // ■ プラン選択ボタン: premium
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                  top: 10,
-                                                  bottom: 10
-                                                ),
-                                                child: meUser!.subscriptionPlan == 'premium'
-                                                  // premiumプランを契約中の場合
-                                                  // ボタンを無効化
-                                                  ? IgnorePointer(
-                                                    ignoring: true,
-                                                    child: Opacity(
-                                                      opacity: 0.3,
-                                                      child: ElevatedButton(
-                                                          onPressed: () {},
-                                                          style: ElevatedButton.styleFrom(
-                                                            backgroundColor: Colors.white, // ボタンの背景色
-                                                            foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
-                                                            shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                            ),
-                                                          ),
-                                                            child: Text(AppLocalizations.of(context)!.choosePlan)
-                                                        ),
-                                                    ),
-                                                  )
-                                                  // premiumプランを契約してない場合
-                                                  // ボタンを有効化
-                                                  : ElevatedButton(
-                                                      onPressed: () async{
-                                                        switch (meUser!.accountStatus) {
-                                                          // 匿名アカウントの場合: 
-                                                          // ① 永久アカウント作成用のshowDialogを表示
-                                                          // ② showDialog内でStripeの決済画面へ遷移
-                                                          case 'anonymous': 
-                                                            makePermanentAccountShowDialog(context);
-                                                            break;
-                                                                  
-                                                          // 永久アカウントの場合: 
-                                                          // ①Stripeの決済画面へ遷移
-                                                          case 'permanent': 
-                                                            String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
-                                                            if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
-                                                            break;
-                                                        }
-                                                      },
-                                                      style: ElevatedButton.styleFrom(
-                                                        backgroundColor: Colors.white, // ボタンの背景色
-                                                        foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(5), // 角の丸みを設定
-                                                        ),
-                                                      ),
-                                                        child: Text(AppLocalizations.of(context)!.choosePlan,
-                                                          style: const TextStyle(
-                                                            fontWeight: FontWeight.bold
-                                                          ),
-                                                        )
-                                                  ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                            const SizedBox(height: 20),
-                                    ],
-                                  )
-                                ),
-                              ),
-                            );
-                          }
-                        );
+                        planWindowShowModalBottomSheet(context);
                       },
                       child: Text(
                         // '現在のプラン名',
@@ -2252,6 +1684,596 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         ],
       ),
     );
+  }
+
+  Future<dynamic> planWindowShowModalBottomSheet(BuildContext context) {
+    ignorePlanWindow = true;
+
+    return showModalBottomSheet(
+                        isDismissible: false,
+                        backgroundColor: Colors.white,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (_) {
+                          // この Scaffold と ScaffoldMessenger は
+                          // confirmCancelPlan に応答するSnackBarの参照用
+                          return ScaffoldMessenger(
+                            key: scaffoldMessengerKey,
+                            child: Scaffold(
+                              body: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+
+                                    // ■ ヘッダー部分
+                                    Container(
+                                      height: 75,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: const BoxDecoration(
+                                        color: Color.fromARGB(255, 105, 105, 105),
+                                      ),
+                                      child: Row(
+                                        children: [ 
+                                            Expanded(
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 65),
+                                                  child: Text(AppLocalizations.of(context)!.pricePlan,
+                                                    style: const TextStyle(
+                                                      fontSize: 30,
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),                                         
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 15),
+                                            child: IconButton(
+                                              icon: const Icon(Icons.close,
+                                                size: 30,
+                                                color: Colors.white,
+                                                ),
+                                              onPressed: () {
+                                                ref.read(planWindowAbleProvider.notifier).closePlanWindow();
+                                                ignorePlanWindow = false;
+                                                Navigator.of(context).pop();
+                                              }   
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                                              
+                                    const SizedBox(height: 30),
+                                                              
+                                    // ■ フリープラン説明
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 35,
+                                        right: 35
+                                      ),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 129, 155, 250),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 5, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 10),
+                                                                
+                                            // ■ プラン名
+                                            Text(AppLocalizations.of(context)!.free,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                                                
+                                            // ■ 価格表示
+                                            Text(AppLocalizations.of(context)!.freePlanPrice,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17.5,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.lightbulb,
+                                                          size: 22.5,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.freePlanLine1,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: const Icon(
+                                                            Icons.clear,
+                                                            size: 22.5,
+                                                            color: Colors.white),
+                                                        )
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Text(
+                                                            AppLocalizations.of(context)!.freePlanLine2,
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 14,
+                                                            ),
+                                                            ),
+                                                        ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
+                                              ),
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                      
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check,
+                                                          size: 20,
+                                                          color: Color(0xFF6c8cfc))
+                                                      ),
+                                      
+                                                      Flexible(
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.freePlanLine3_1 + '\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.freePlanLine3_2,
+                                                              ),
+                                                          ]
+                                                        ))
+                                                      ),
+                                      
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: free
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'free'
+                                                // freeプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: Text(AppLocalizations.of(context)!.choosePlan)
+                                                      ),
+                                                  ),
+                                                )
+                                                // freeプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () {
+                                                      confirmCancelPlan(context);
+                                                      // makePermanentAccountShowDialog(context);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
+                                                ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                                              
+                                    const SizedBox(height: 30),
+                                                              
+                                    // ■ Premiumプラン説明
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 35,
+                                        right: 35
+                                      ),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 129, 155, 250),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 5, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 10),
+                                                                
+                                            // ■ プラン名
+                                            Text(AppLocalizations.of(context)!.premium,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                                                                                
+                                            // ■ 価格表示
+                                            Text(AppLocalizations.of(context)!.premiumPlanPrice,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17.5,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.tips_and_updates_rounded,
+                                                          size: 22.5,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.premiumPlanLine1,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check_circle,
+                                                          size: 20,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.premiumPlanLine2,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 14,
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
+                                              ),
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                      
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check,
+                                                          size: 20,
+                                                          color: Color(0xFF6c8cfc))
+                                                      ),
+                                      
+                                                      Flexible(
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.premiumPlanLine3_1 + '\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.premiumPlanLine3_2,
+                                                              ),
+                                                          ]
+                                                        ))
+                                                      ),
+                                      
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: premium
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'premium'
+                                                // premiumプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: Text(AppLocalizations.of(context)!.choosePlan)
+                                                      ),
+                                                  ),
+                                                )
+                                                // premiumプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () async{
+                                                      switch (meUser!.accountStatus) {
+                                                        // 匿名アカウントの場合: 
+                                                        // ① 永久アカウント作成用のshowDialogを表示
+                                                        // ② showDialog内でStripeの決済画面へ遷移
+                                                        case 'anonymous': 
+                                                          makePermanentAccountShowDialog(context);
+                                                          break;
+                                                                
+                                                        // 永久アカウントの場合: 
+                                                        // ①Stripeの決済画面へ遷移
+                                                        case 'permanent': 
+                                                          String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
+                                                          if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
+                                                          break;
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
+                                                ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                          const SizedBox(height: 20),
+                                  ],
+                                )
+                              ),
+                            ),
+                          );
+                        }
+                      );
   }
 
   Future<dynamic> confirmCancelPlan(BuildContext context) {
