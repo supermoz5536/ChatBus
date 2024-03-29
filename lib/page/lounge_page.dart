@@ -1248,9 +1248,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 child: Row(
                   children: [
 
-                  const Expanded(
+                  Expanded(
                     child: ListTile(
-                      title: Text('subscription'),
+                      title: Text(AppLocalizations.of(context)!.subscription),
                     ),
                   ),
 
@@ -1258,6 +1258,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   Padding(
                     padding: const EdgeInsets.only(right: 20),
                     child: ElevatedButton(
+                      style: ButtonStyle(
+                        // ボタンの最小サイズを設定
+                        minimumSize: MaterialStateProperty.all(const Size(0, 30))),
                       onPressed: () {
 
                         showModalBottomSheet(
@@ -1290,7 +1293,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                   alignment: Alignment.center,
                                                   child: Padding(
                                                     padding: const EdgeInsets.only(left: 65),
-                                                    child: Text('料金プラン',
+                                                    child: Text(AppLocalizations.of(context)!.pricePlan,
                                                       style: TextStyle(
                                                         fontSize: 30,
                                                         color: Colors.white,
@@ -1342,7 +1345,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               const SizedBox(height: 10),
                                                                   
                                               // ■ プラン名
-                                              Text('フリー',
+                                              Text(AppLocalizations.of(context)!.free,
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 25,
@@ -1351,7 +1354,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               ),
                                                                   
                                               // ■ 価格表示
-                                              Text('0\$ / 月',
+                                              Text(AppLocalizations.of(context)!.freePlanPrice,
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 17.5,
@@ -1396,7 +1399,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                     
                                                         Flexible(
                                                           child: Text(
-                                                            '無料で利用することができますが、いくつかの機能が制限されます。',
+                                                            AppLocalizations.of(context)!.freePlanLine1,
                                                             style: const TextStyle(
                                                               color: Colors.white,
                                                               fontSize: 14,
@@ -1444,7 +1447,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                           child: Opacity(
                                                             opacity: 0.5,
                                                             child: Text(
-                                                              'ジェンダーフィルターと無制限の翻訳機能を利用できます。',
+                                                              AppLocalizations.of(context)!.freePlanLine2,
                                                               style: const TextStyle(
                                                                 color: Colors.white,
                                                                 fontWeight: FontWeight.bold,
@@ -1496,11 +1499,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                             ),
                                                             children: [
                                                               TextSpan(
-                                                                text: '全てのプランで利用可能\n',
+                                                                text: AppLocalizations.of(context)!.freePlanLine3_1 + '\n',
                                                                 style: TextStyle(                                                                
                                                                   fontWeight: FontWeight.bold)),
                                                               TextSpan(
-                                                                text: 'フレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
+                                                                text: AppLocalizations.of(context)!.freePlanLine3_2,
                                                                 ),
                                                             ]
                                                           ))
@@ -1542,7 +1545,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                               borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                             ),
                                                           ),
-                                                            child: const Text('プランを選択')
+                                                            child: Text(AppLocalizations.of(context)!.choosePlan)
                                                         ),
                                                     ),
                                                   )
@@ -1560,8 +1563,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                           borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                         ),
                                                       ),
-                                                        child: const Text('プランを選択',
-                                                          style: TextStyle(
+                                                        child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                          style: const TextStyle(
                                                             fontWeight: FontWeight.bold
                                                           ),
                                                         )
@@ -1598,7 +1601,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               const SizedBox(height: 10),
                                                                   
                                               // ■ プラン名
-                                              Text('プレミアム',
+                                              Text(AppLocalizations.of(context)!.premium,
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 25,
@@ -1607,7 +1610,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                               ),
                                                                                                   
                                               // ■ 価格表示
-                                              Text('5\$ / 月',
+                                              Text(AppLocalizations.of(context)!.premiumPlanPrice,
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 17.5,
@@ -1652,7 +1655,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                     
                                                         Flexible(
                                                           child: Text(
-                                                            '制限なく全ての機能を利用することができるプランです。',
+                                                            AppLocalizations.of(context)!.premiumPlanLine1,
                                                             style: const TextStyle(
                                                               color: Colors.white,
                                                               fontSize: 14,
@@ -1695,7 +1698,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                     
                                                         Flexible(
                                                           child: Text(
-                                                            'ジェンダーフィルターと無制限の翻訳機能を利用できます。',
+                                                            AppLocalizations.of(context)!.premiumPlanLine2,
                                                             style: const TextStyle(
                                                               color: Colors.white,
                                                               fontWeight: FontWeight.bold,
@@ -1746,11 +1749,11 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                             ),
                                                             children: [
                                                               TextSpan(
-                                                                text: '全てのプランで利用可能\n',
+                                                                text: AppLocalizations.of(context)!.premiumPlanLine3_1 + '\n',
                                                                 style: TextStyle(                                                                
                                                                   fontWeight: FontWeight.bold)),
                                                               TextSpan(
-                                                                text: 'フレンド登録、ダイレクトメッセージ、マッチングヒストリー、プロフィール機能、等々。',
+                                                                text: AppLocalizations.of(context)!.premiumPlanLine3_2,
                                                                 ),
                                                             ]
                                                           ))
@@ -1792,7 +1795,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                               borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                             ),
                                                           ),
-                                                            child: const Text('プランを選択')
+                                                            child: Text(AppLocalizations.of(context)!.choosePlan)
                                                         ),
                                                     ),
                                                   )
@@ -1823,8 +1826,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                                           borderRadius: BorderRadius.circular(5), // 角の丸みを設定
                                                         ),
                                                       ),
-                                                        child: const Text('プランを選択',
-                                                          style: TextStyle(
+                                                        child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                          style: const TextStyle(
                                                             fontWeight: FontWeight.bold
                                                           ),
                                                         )
@@ -1843,7 +1846,15 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                           }
                         );
                       },
-                      child: const Text('現在のプラン名'),
+                      child: Text(
+                        // '現在のプラン名',
+                        meUser!.subscriptionPlan! == 'free'
+                        ? 'Free'
+                        : 'Premium',
+                        style: const TextStyle(
+                          fontSize: 15
+                        ),
+                        ),
                     )
                   ),
                 ]
@@ -1858,11 +1869,17 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
                   ),
                 ),
-                padding: const EdgeInsets.all(8),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Text('環境設定部分')
+                    IconButton(
+                            icon: const Icon(Icons.settings),
+                            iconSize: 25,
+                            tooltip: 'comming soon',
+                            color: const Color.fromARGB(255, 130, 130, 130),
+                            padding: EdgeInsets.zero,
+                            onPressed: () {},
+                          ),
                 ])
             ),               
           ],
@@ -2246,14 +2263,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
       builder: (_) {
 
         return AlertDialog(
-            title: const Center(
-              child: Text('本当にフリープランに切り替えますか？',
-                style: TextStyle(
+            title: Center(
+              child: Text(AppLocalizations.of(context)!.confirmCancelPremium,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold
                 ),
               ),
             ),
-            content: const Text('切り替えた後も、引き続きpremiumプランは期間終了まで利用できます'),
+            content: Text(AppLocalizations.of(context)!.confirmAfterCancelPremium),
             actions: [
         
               TextButton(
@@ -2268,7 +2285,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                       }
                       if (context.mounted) Navigator.pop(context);
                     },
-                    child: const Text('はい')
+                    child: Text(AppLocalizations.of(context)!.yes)
                   ),
         
           
@@ -2277,7 +2294,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                   print('Close dialog context (no): $context'); // ダイアログ閉じる操作のcontextをログ出力
                   if (context.mounted) Navigator.pop(context);
                 },
-                child: const Text('いいえ')
+                child: Text(AppLocalizations.of(context)!.no)
               ),
           
             ],
@@ -2295,9 +2312,9 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         return  Scaffold(
           backgroundColor: Colors.transparent,
           body: AlertDialog(
-            title: const Center(
-              child: Text('アカウントを作成',
-                style: TextStyle(
+            title: Center(
+              child: Text(AppLocalizations.of(context)!.createAccount,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold
                 ),
               ),
@@ -2312,8 +2329,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 children: [
               
                   // ■ Subtitle
-                  const Text('プレミアムの登録には、アカウントの作成が必要です。',
-                    style: TextStyle(
+                  Text(AppLocalizations.of(context)!.requireCreateAccount,
+                    style: const TextStyle(
                       fontSize: 15,
                     ),
                   ),
@@ -2411,14 +2428,14 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                     }
                   }
                 },
-                child: const Text('作成する')
+                child: Text(AppLocalizations.of(context)!.create)
               ),
           
               TextButton(
                 onPressed: () {
                   if (context.mounted) Navigator.pop(context);
                 },
-                child: const Text('キャンセル')
+                child: Text(AppLocalizations.of(context)!.cancel)
               )
             ],
           ),
@@ -2455,15 +2472,15 @@ class _LoungePageState extends ConsumerState<LoungePage> {
 
 
   SnackBar upgradeToPermanentErrorSnackBar(String? errorResult) {
-    return const SnackBar(
-      duration:  Duration(milliseconds: 2500),
+    return SnackBar(
+      duration: const Duration(milliseconds: 2500),
       behavior: SnackBarBehavior.floating,
-      margin:  EdgeInsets.all(30),
+      margin: const EdgeInsets.all(30),
       content: SizedBox(
         height: 100,
         child: Row(
           children: [
-             Padding(
+             const Padding(
               padding: EdgeInsets.only(left: 5, right: 20),
                 child: Icon(
                   Icons.error_outline_outlined,
@@ -2473,8 +2490,8 @@ class _LoungePageState extends ConsumerState<LoungePage> {
               child: Padding(
                 padding: EdgeInsets.only(right: 10),
                 child:
-                  Text('Emailの形式が正しくありません。',
-                  style:  TextStyle(
+                  Text(AppLocalizations.of(context)!.errorEmailFormat,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     color: Colors.white,
@@ -2484,7 +2501,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           ],
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 94, 94, 94),
+      backgroundColor: const Color.fromARGB(255, 94, 94, 94),
     );
   }
 
@@ -2508,10 +2525,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 padding: const EdgeInsets.only(right: 10),
                 child:
                   Text( result == "canceled"
-                    ? 'プランの切り替え処理が完了しました。Premiumプランの期間終了日にFreeプランへ切り替わります'
+                    ? AppLocalizations.of(context)!.doneSwitchFreePlan
                     : result == 'already_canceled'
-                      ? 'プランの切り替え処理は既に完了しています。Premiumプランの期間終了日にFreeプランへ切り替わります'
-                      : 'システムエラーです。運営に問い合わせてください。',
+                      ? AppLocalizations.of(context)!.doneAlreadySwitchFreePlan
+                      : AppLocalizations.of(context)!.contactSupport,
                     style:  const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -2523,7 +2540,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
           ],
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 94, 94, 94),
+      backgroundColor: const Color.fromARGB(255, 94, 94, 94),
     );
   }
 
