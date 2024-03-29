@@ -44,7 +44,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
   String? longPressedItemId;
   StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController footerTextController = TextEditingController();
   final _overlayController3rd = OverlayPortalController();
     bool? isDisabledRequest = false;
       bool isFriendRequestExist = false;
@@ -515,8 +515,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                       padding: const EdgeInsets.all(8.0), // 入力フィールドの枠の大きさ
 
                       child: TextField(
-                        controller:
-                            controller, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
+                        controller: footerTextController, // columとrowは子要素の範囲を指定しないから, expandedで自動で範囲をしてしてやると、textfiledが範囲を理解できて表示される
                         onChanged: (value) {
                           // TextFiledの値(value)を引数
                           setState(() {
@@ -535,13 +534,18 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
                     //■送信アイコン
                     IconButton(
-                        onPressed: () async {
+                      onPressed: footerTextController.text.isEmpty
+                        ? null
+                        : () async {
                           await DMRoomFirestore.sendDM(
                             dMRoomId: widget.dMRoom.dMRoomId,
-                            message: controller.text,
+                            message: footerTextController.text,
                             talkuserUid: widget.dMRoom.talkuserUid,
                             );
-                          controller.clear();
+                          footerTextController.clear();
+                          setState(() {
+                            isInputEmpty = true;
+                          });
                         },
                         icon: Icon(
                           Icons.send,
