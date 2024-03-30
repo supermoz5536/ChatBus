@@ -50,21 +50,20 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   User? meUser;
+  User? talkuserProfile;
   int? soundId;
   int? prevItemCount = 1;
   Future<User?>? futureTalkuserProfile;
   String? currentLanguageCode;
   String? currentTargetLanguageCode;
   String? currentMode;
-  User? talkuserProfile;
+  String? longPressedItemId;
   bool? isDisabled = false;
   bool? isDisabledRequest = false;
   bool? isChatting = true;
   bool isInputEmpty = true;
   bool isFriendRequestExist = false;
   bool isFriendUidExist = false;
-  String? longPressedItemId;
-  StreamSubscription? talkuserDocSubscription;
   MatchingProgress? matchingProgress;
   LanguageNotifierService? languageNotifierService;
   DMNotifierService? dMNotifierservice;
@@ -75,6 +74,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController statementController = TextEditingController();
   final TextEditingController footerTextController = TextEditingController();
+  StreamSubscription? talkuserDocSubscription;
   StreamSubscription? dMSubscription;
   StreamSubscription? friendRequestSubscription;
 
@@ -174,6 +174,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   void dispose() {
     if (dMSubscription != null) dMSubscription!.cancel();
     if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
+    if (talkuserDocSubscription != null) talkuserDocSubscription!.cancel();
+    if (dMSubscription != null) dMSubscription!.cancel();
+    if (friendRequestSubscription != null) friendRequestSubscription!.cancel();
+    nameController.dispose();
+    statementController.dispose();
+    footerTextController.dispose();
     super.dispose();
   }
 
