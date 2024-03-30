@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
@@ -46,9 +47,11 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
   MatchingProgress? matchingProgress;
   final TextEditingController footerTextController = TextEditingController();
   final _overlayController3rd = OverlayPortalController();
-    bool? isDisabledRequest = false;
-      bool isFriendRequestExist = false;
-      bool isFriendUidExist = false;
+  bool? isDisabledRequest = false;
+  bool isFriendRequestExist = false;
+  bool isFriendUidExist = false;
+  int? soundId;
+  int? prevItemCount = 100;
 
 
 
@@ -62,6 +65,10 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
     isDisabled = false;
     isChatting = true;
+
+    SoundPool.loadSeMessage().then((result){
+      soundId = result;
+    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // db上のmyUidの未読フラグを削除
@@ -73,8 +80,14 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
     /// アイコンの表示とポップアップ描画に必要な情報のFuture
     futureTalkuserProfile = UserFirestore.fetchProfile(widget.dMRoom.talkuserUid);
+  }
 
-  } // initState
+  // disposeメソッドをオーバーライド
+  @override
+  void dispose() {
+    footerTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,9 +124,9 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
               /// その場合、「何の変更がトリガーか？」「どのポイントで無限ループが解消してるか？」
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  int itemCount = snapshot.data!.docs.length;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
-
                     child: ListView.builder(
                         physics: const RangeMaintainingScrollPhysics(), //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true, //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
@@ -123,18 +136,27 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           final doc = snapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
-                                                  message: data['message'],
-                                                  translatedMessage: data['translated_message'], 
-                                                  messageId: doc.id,
-                                                  isMe: Shared_Prefes.fetchUid() == data['sender_id'],
-                                                  sendTime: data['send_time'],
-                                                  isDivider: data['is_divider']
+                                                    message: data['message'],
+                                                    translatedMessage: data['translated_message'], 
+                                                    messageId: doc.id,
+                                                    isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                    sendTime: data['send_time'],
+                                                    isDivider: data['is_divider']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
                                                   //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
+                              // 相手からのメッセージの場合のみ効果音をトリガー
+                              // itemCount と prevItemCount をフラグに
+                              // messageが増えた時の値のズレを利用する
+                              if (itemCount > prevItemCount! && message.isMe == false) {
+                                print('if内実行されました。');
+                                SoundPool.playSeMessage(soundId);
+                              }
+                              // 完了後は同値に戻す
+                              prevItemCount = itemCount;
 
                           /// divierメッセージを表示するmessageの場合
                           if (message.isDivider == true && snapshot.data!.docs.length == 1) {

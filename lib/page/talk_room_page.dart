@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -12,14 +13,12 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm_notification.dart';
 import 'package:udemy_copy/model/friend_request_notification.dart';
 import 'package:udemy_copy/model/lounge.dart';
-import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
-import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
@@ -51,6 +50,8 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   User? meUser;
+  int? soundId;
+  int? prevItemCount = 1;
   Future<User?>? futureTalkuserProfile;
   String? currentLanguageCode;
   String? currentTargetLanguageCode;
@@ -86,6 +87,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
     CustomAnalytics.logTalkRoomPageIn();
+
+    SoundPool.loadSeMessage().then((result){
+      soundId = result;
+    });
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
@@ -1046,7 +1051,16 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                       //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                       //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
-
+                              // 相手からのメッセージの場合のみ効果音をトリガー
+                              // itemCount と prevItemCount をフラグに
+                              // messageが増えた時の値のズレを利用する
+                              if (itemCount > prevItemCount! && message.isMe == false) {
+                                print('if内実行されました。');
+                                SoundPool.playSeMessage(soundId);
+                              }
+                              // 完了後は同値に戻す
+                              prevItemCount = itemCount;
+                                                                                   
                               // 吹き出し部分全体の環境設定
                               return Padding(
                                 padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
