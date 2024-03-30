@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
@@ -46,9 +47,11 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
   MatchingProgress? matchingProgress;
   final TextEditingController footerTextController = TextEditingController();
   final _overlayController3rd = OverlayPortalController();
-    bool? isDisabledRequest = false;
-      bool isFriendRequestExist = false;
-      bool isFriendUidExist = false;
+  bool? isDisabledRequest = false;
+  bool isFriendRequestExist = false;
+  bool isFriendUidExist = false;
+  int? soundId;
+  int? prevItemCount = 100;
 
 
 
@@ -62,6 +65,10 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
     isDisabled = false;
     isChatting = true;
+
+    SoundPool.loadSeMessage().then((result){
+      soundId = result;
+    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // db上のmyUidの未読フラグを削除
@@ -111,9 +118,9 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
               /// その場合、「何の変更がトリガーか？」「どのポイントで無限ループが解消してるか？」
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
+                  int itemCount = snapshot.data!.docs.length;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 60.0),
-
                     child: ListView.builder(
                         physics: const RangeMaintainingScrollPhysics(), //phyisicsがスクロールを制御するプロパティ。画面を超えて要素が表示され始めたらスクロールが可能になるような設定のやり方
                         shrinkWrap: true, //表示してるchildrenに含まれるwidgetのサイズにlistviewを設定するやり方
@@ -135,6 +142,16 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                                   //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                   //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
+                              // 相手からのメッセージの場合のみ効果音をトリガー
+                              // itemCount と prevItemCount をフラグに
+                              // messageが増えた時の値のズレを利用する
+                              print('itemCount == $itemCount');
+                              if (itemCount > prevItemCount! && message.isMe == false) {
+                                print('if内実行されました。');
+                                SoundPool.playSeMessage(soundId);
+                              }
+                              // 完了後は同値に戻す
+                              prevItemCount = itemCount;
 
                           /// divierメッセージを表示するmessageの場合
                           if (message.isDivider == true && snapshot.data!.docs.length == 1) {
