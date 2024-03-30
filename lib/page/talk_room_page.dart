@@ -673,6 +673,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                         child: Column(
                           children: [
 
+                            // ■ プロフィール画面選択
                             Material(
                             color: Colors.transparent,
                             child: Ink(
@@ -879,7 +880,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               ),
             ),
             
-
+            // ■ Display Language
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -903,7 +904,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
               ),
             ),
 
-
+            // ■ Target Language
             Container(
               decoration: const BoxDecoration(
                 border: Border(
@@ -929,8 +930,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
 
 
-
-
+            // ■ サブスクリプション
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
@@ -939,11 +939,41 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                   ),
                 ),
                 padding: const EdgeInsets.all(8),
-                child: Row(children: [
-                  Text(AppLocalizations.of(context)!.subscription),
-                ])),
+                child: Row(
+                  children: [
 
+                  Expanded(
+                    child: ListTile(
+                      title: Text(AppLocalizations.of(context)!.subscription),
+                    ),
+                  ),
 
+                  // ■ プラン選択 
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        // ボタンの最小サイズを設定
+                        minimumSize: MaterialStateProperty.all(const Size(0, 30))),
+                      onPressed: () {
+                        planWindowShowModalBottomSheet(context);
+                      },
+                      child: Text(
+                        // '現在のプラン名',
+                        meUser!.subscriptionPlan! == 'free'
+                        ? 'Free'
+                        : 'Premium',
+                        style: const TextStyle(
+                          fontSize: 15
+                        ),
+                        ),
+                    )
+                  ),
+                ]
+              )
+            ),
+            
+            // ■ 最下部の環境設定部分
             Container(
                 decoration: const BoxDecoration(
                   border: Border(
@@ -951,10 +981,19 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                         color: Color.fromARGB(255, 199, 199, 199), width: 1.0),
                   ),
                 ),
-                padding: const EdgeInsets.all(8),
-                child: Row(children: [
-                  Text(AppLocalizations.of(context)!.environmentalSetting),
-                ]))
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                            icon: const Icon(Icons.settings),
+                            iconSize: 25,
+                            tooltip: 'comming soon',
+                            color: const Color.fromARGB(255, 130, 130, 130),
+                            padding: EdgeInsets.zero,
+                            onPressed: () {},
+                          ),
+                ])
+            ),   
           ],
         ),
       ),
@@ -1745,5 +1784,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                     },
                   );
   }
+
+
 }
 
