@@ -998,6 +998,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         child: Column(
                           children: [
 
+                            // ■ プロフィール画面選択
                             Material(
                             color: Colors.transparent,
                             child: Ink(
@@ -1031,7 +1032,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             ),
                           ),
 
-
+                            // ■ 名前の選択
                             Row(
                               children: [
                                 Expanded(
@@ -1102,6 +1103,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 ), 
                             ]),
 
+                            // ■ プロフィールコメントの選択
                             Row(
                               children: [
                                 Expanded(
@@ -1168,9 +1170,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
+
+                            // ■ プロフィールコメント表示欄
                             Row(
                               children: [
-
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15.0),
                                   child: Container(

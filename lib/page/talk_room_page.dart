@@ -694,8 +694,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                   // 状態変数の更新
                                   // ウィジェット再描画.
                                   String? newUserImageUrl = await UserFirebaseStorage.pickAndUploadProfImage(meUser!.uid);
+                                  if (newUserImageUrl != null) {
                                   UserFirestore.updateUserImageUrl(meUser!.uid, newUserImageUrl);
                                   ref.read(meUserProvider.notifier).updateUserImageUrl(newUserImageUrl);
+                                  }
                                 },
                                 child: const SizedBox(width: 110, height: 110),
                                 // InkWellの有効範囲はchildのWidgetの範囲に相当するので
@@ -704,17 +706,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                             ),
                           ),
 
-                            // Ink(
-                            //   child: InkWell(
-                            //     onTap: (){},
-                            //     child: CircleAvatar(     
-                            //       radius: 50,
-                            //       backgroundImage: NetworkImage(
-                            //         meUser!.userImageUrl!),
-                            //     ),
-                            //   ),
-                            // ),
-
+                            // ■ 名前の選択
                             Row(
                               children: [
                                 Expanded(
@@ -735,7 +727,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeName),
+                                          // title: Text(AppLocalizations.of(context)!.changeName),
                                           content: TextField(
                                             controller: nameController,
                                             decoration: InputDecoration(
@@ -761,12 +753,22 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 ref.read(meUserProvider.notifier).updateUserName(nameController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
-                                              child: Text(AppLocalizations.of(context)!.ok)),
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
+                                              child: Text(AppLocalizations.of(context)!.ok),
+                                              ),
+                                              
+                                              
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
-                                              child: Text(AppLocalizations.of(context)!.cancel))
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
+                                              child: Text(AppLocalizations.of(context)!.cancel),
+                                              )
                                           ],
                                         );
                                     });
@@ -775,6 +777,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                 ), 
                             ]),
 
+                            // ■ プロフィールコメントの選択
                             Row(
                               children: [
                                 Expanded(
@@ -795,7 +798,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       context: context,
                                       builder: (_){
                                         return AlertDialog(
-                                          title: Text(AppLocalizations.of(context)!.changeStatement),
+                                          // title: Text(AppLocalizations.of(context)!.changeStatement),
                                           content: TextField(
                                             controller: statementController,
                                             decoration: InputDecoration(
@@ -804,8 +807,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 color: Color.fromARGB(255, 153, 153, 153)
                                               )
                                             ),
-                                            keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
-                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 120)],
+                                            // keyboardType: TextInputType.multiline, // キーボードタイプを複数行対応に設定
+                                            inputFormatters: [CustomLengthTextInputFormatter(maxCount: 68)],
                                           ),
                                           actions: <Widget>[
                                             TextButton(
@@ -821,11 +824,18 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                 ref.read(meUserProvider.notifier).updateStatement(statementController.text);
                                                 if (mounted) Navigator.pop(context);
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.ok)),
+
                                             TextButton(
                                               onPressed: () {
                                                 if (mounted) Navigator.pop(context);                                        
                                               },
+                                              style: TextButton.styleFrom(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // パディングを調整
+                                                minimumSize: const Size(32, 16)), // ボタンの最小サイズを指定
                                               child: Text(AppLocalizations.of(context)!.cancel))
                                           ],
                                         );
@@ -835,9 +845,9 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                 ), 
                             ]),
 
+                            // ■ プロフィールコメント表示欄
                             Row(
                               children: [
-
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15.0),
                                   child: Container(
