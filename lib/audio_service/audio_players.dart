@@ -13,13 +13,13 @@ class AudioPlayers {
     // 内部的にアセットパスを指定する際に
     // 自動的に付加される /assets のパス追加を無効にします
     // なので、手動での入力は /assets から始まるフルパスになります
-    AudioCache.instance = AudioCache(prefix: '');
-    await player.play(AssetSource('assets/se/match.mp3'));
+    // AudioCache.instance = AudioCache(prefix: '');
+    await player.play(AssetSource('se/match.mp3'));
   }
 
   static Future<void> playSeMessage() async{
-    AudioCache.instance = AudioCache(prefix: '');
-    await player.play(AssetSource('assets/se/message'));
+    // AudioCache.instance = AudioCache(prefix: '');
+    await player.play(AssetSource('se/message'));
   }
 
 }
