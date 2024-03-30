@@ -187,7 +187,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Widget build(BuildContext context) {
     meUser = ref.watch(meUserProvider);
     String? targetLanguageCode = ref.watch(targetLanguageProvider);
-    SelectedLanguage? selectedLanguage = ref.watch(selectedLanguageProvider);
     languageNotifierService = LanguageNotifierService(ref);
     dMNotifierservice = DMNotifierService(ref);
     friendRequestNotifierservice = FriendRequestNotifierService(ref);
