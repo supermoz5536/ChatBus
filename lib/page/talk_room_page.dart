@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/analytics/custom_analytics.dart';
-import 'package:udemy_copy/audio_service/audio_players.dart';
+import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -37,7 +37,6 @@ import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 class TalkRoomPage extends ConsumerStatefulWidget {
   final TalkRoom talkRoom;
@@ -51,6 +50,7 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   User? meUser;
+  int? soundIdMatch;
   Future<User?>? futureTalkuserProfile;
   String? currentLanguageCode;
   String? currentTargetLanguageCode;
@@ -68,7 +68,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   LanguageNotifierService? languageNotifierService;
   DMNotifierService? dMNotifierservice;
   FriendRequestNotifierService? friendRequestNotifierservice;
-  final audioPlayer = AudioPlayer();
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final _overlayController3rd = OverlayPortalController();
@@ -87,8 +86,6 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
     CustomAnalytics.logTalkRoomPageIn();
-
-    AudioPlayers.playSeMatch();
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
