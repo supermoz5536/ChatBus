@@ -2539,17 +2539,21 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         height: 100,
         child: Row(
           children: [
-            const Padding(
-            padding: EdgeInsets.only(left: 5, right: 20),
-              child: Icon(
-                Icons.error_outline_outlined,
-                color: Colors.white,),
+            Padding(
+              padding: EdgeInsets.only(left: 5, right: 20),
+              child: result == "canceled"
+              ? const Icon(
+                  Icons.check_circle_outline_outlined,
+                  color: Colors.white,)
+              : const Icon(
+                  Icons.error_outline_outlined,
+                  color: Colors.white,)
             ),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child:
-                  Text( result == "canceled"
+                  Text(result == "canceled"
                     ? AppLocalizations.of(context)!.doneSwitchFreePlan
                     : result == 'already_canceled'
                       ? AppLocalizations.of(context)!.doneAlreadySwitchFreePlan
