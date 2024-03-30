@@ -80,8 +80,14 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
 
     /// アイコンの表示とポップアップ描画に必要な情報のFuture
     futureTalkuserProfile = UserFirestore.fetchProfile(widget.dMRoom.talkuserUid);
+  }
 
-  } // initState
+  // disposeメソッドをオーバーライド
+  @override
+  void dispose() {
+    footerTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,12 +136,12 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                           final doc = snapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
                           final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
                           final Message message = Message(
-                                                  message: data['message'],
-                                                  translatedMessage: data['translated_message'], 
-                                                  messageId: doc.id,
-                                                  isMe: Shared_Prefes.fetchUid() == data['sender_id'],
-                                                  sendTime: data['send_time'],
-                                                  isDivider: data['is_divider']
+                                                    message: data['message'],
+                                                    translatedMessage: data['translated_message'], 
+                                                    messageId: doc.id,
+                                                    isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                    sendTime: data['send_time'],
+                                                    isDivider: data['is_divider']
                                                   );
                                                   //各々の吹き出しの情報となるので、召喚獣を実際に呼び出して、個別化した方がいい。
                                                   //data()でメソッドを呼ぶと
@@ -145,7 +151,6 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                               // 相手からのメッセージの場合のみ効果音をトリガー
                               // itemCount と prevItemCount をフラグに
                               // messageが増えた時の値のズレを利用する
-                              print('itemCount == $itemCount');
                               if (itemCount > prevItemCount! && message.isMe == false) {
                                 print('if内実行されました。');
                                 SoundPool.playSeMessage(soundId);
