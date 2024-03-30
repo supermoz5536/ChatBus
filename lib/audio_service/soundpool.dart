@@ -4,13 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
 class SoundPool {
-  // Soundpoolインスタンスの初期化（１度だけ）
+  // シングルトンとして Soundpoolインスタンス の初期化
   static final Soundpool soundPool = 
     Soundpool.fromOptions(
       options: const SoundpoolOptions(
         streamType: StreamType.notification));
 
 
+  /// MatchingProgressPageでの事前の音声データのロード
   static Future<int?> loadSeMatch() async{
     int? soundId = await rootBundle.load('se/match.mp3')
       .then((ByteData soundData) {
@@ -19,15 +20,29 @@ class SoundPool {
     return soundId;
   }
 
+  /// MatchingProgressPageでの画面遷移時の音声再生
   static Future<void> playSeMatch(int? id) async{
     if (id != null) {
     await soundPool.play(id);
     }
   }
 
-  // static Future<void> playSeMessage() async{
-  //   // AudioCache.instance = AudioCache(prefix: '');
-  //   await player.play(AssetSource('se/message'));
-  // }
+
+  /// MatchingProgressPageでの事前の音声データのロード
+  static Future<int?> loadSeMessage() async{
+    int? soundId = await rootBundle.load('se/message.mp3')
+      .then((ByteData soundData) {
+        return soundPool.load(soundData);
+    });
+    return soundId;
+  }
+
+  /// MatchingProgressPageでの画面遷移時の音声再生
+  static Future<void> playSeMessage(int? id) async{
+    if (id != null) {
+    await soundPool.play(id);
+    }
+  }
+
 
 }

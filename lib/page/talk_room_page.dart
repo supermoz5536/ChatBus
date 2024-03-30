@@ -50,7 +50,8 @@ class TalkRoomPage extends ConsumerStatefulWidget {
 
 class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   User? meUser;
-  int? soundIdMatch;
+  int? soundId;
+  int? prevItemCount = 1;
   Future<User?>? futureTalkuserProfile;
   String? currentLanguageCode;
   String? currentTargetLanguageCode;
@@ -86,6 +87,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
     CustomAnalytics.logTalkRoomPageIn();
+
+    SoundPool.loadSeMessage().then((result){
+      soundId = result;
+    });
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
@@ -1046,7 +1051,16 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                                       //ドキュメントデータがdynamic型(オブジェクト型)で返されるため
                                                       //キーを設定してMap型で処理するには明示的にMap<Stgring, dynamic>と宣言する必要がある
 
-
+                              // 相手からのメッセージの場合のみ効果音をトリガー
+                              // itemCount と prevItemCount をフラグに
+                              // messageが増えた時の値のズレを利用する
+                              if (itemCount > prevItemCount! && message.isMe == false) {
+                                print('if内実行されました。');
+                                SoundPool.playSeMessage(soundId);
+                              }
+                              // 完了後は同値に戻す
+                              prevItemCount = itemCount;
+                                                                                   
                               // 吹き出し部分全体の環境設定
                               return Padding(
                                 padding: const EdgeInsets.only(top: 20, left: 11, right: 11, bottom: 20),
