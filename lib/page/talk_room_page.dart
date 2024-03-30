@@ -12,14 +12,12 @@ import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm_notification.dart';
 import 'package:udemy_copy/model/friend_request_notification.dart';
 import 'package:udemy_copy/model/lounge.dart';
-import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/massage.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/selected_gender.dart';
 import 'package:udemy_copy/model/selected_language.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
-import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/page/matching_progress_page.dart';
 import 'package:udemy_copy/riverpod/provider/dm_notifications_provider.dart';
@@ -38,6 +36,7 @@ import 'package:udemy_copy/utils/service/language_notifier_service.dart';
 import 'package:udemy_copy/utils/shared_prefs.dart';
 import 'package:udemy_copy/utils/unit_functions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class TalkRoomPage extends ConsumerStatefulWidget {
   final TalkRoom talkRoom;
@@ -68,6 +67,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   LanguageNotifierService? languageNotifierService;
   DMNotifierService? dMNotifierservice;
   FriendRequestNotifierService? friendRequestNotifierservice;
+  final audioPlayer = AudioPlayer();
   final _overlayController1st = OverlayPortalController();
   final _overlayController2nd = OverlayPortalController();
   final _overlayController3rd = OverlayPortalController();
@@ -86,6 +86,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
 
     CustomAnalytics.logTalkRoomPageIn();
+
+    
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
