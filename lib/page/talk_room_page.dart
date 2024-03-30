@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/analytics/custom_analytics.dart';
 import 'package:udemy_copy/audio_service/soundpool.dart';
+import 'package:udemy_copy/authentication/auth_service.dart';
+import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
 import 'package:udemy_copy/map_value/language_name.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
@@ -29,6 +31,7 @@ import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.dart';
 import 'package:udemy_copy/riverpod/provider/target_language_provider.dart';
+import 'package:udemy_copy/stripe/stripe_checkout.dart';
 import 'package:udemy_copy/utils/custom_length_text_input_formatter.dart';
 import 'package:udemy_copy/utils/screen_transition.dart';
 import 'package:udemy_copy/utils/service/dm_notifier_service.dart';
@@ -77,6 +80,12 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   StreamSubscription? talkuserDocSubscription;
   StreamSubscription? dMSubscription;
   StreamSubscription? friendRequestSubscription;
+
+  String email = '';
+  String password = '';
+  bool hidePassword = true;
+  final GlobalKey<FormState> formKeyTalkRoom = GlobalKey<FormState>();
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKeyTalkRoom = GlobalKey<ScaffoldMessengerState>();
 
   @override // 追加機能の記述部分であることの明示
   void initState() {
@@ -972,7 +981,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                 ]
               )
             ),
-            
+
             // ■ 最下部の環境設定部分
             Container(
                 decoration: const BoxDecoration(
@@ -1783,6 +1792,855 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                         });
                     },
                   );
+  }
+
+  Future<dynamic> planWindowShowModalBottomSheet(BuildContext context) {
+    return showModalBottomSheet(
+                        isDismissible: false,
+                        backgroundColor: Colors.white,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (_) {
+                          // この Scaffold と ScaffoldMessenger は
+                          // confirmCancelPlan に応答するSnackBarの参照用
+                          return ScaffoldMessenger(
+                            key: scaffoldMessengerKeyTalkRoom,
+                            child: Scaffold(
+                              body: SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+
+                                    // ■ ヘッダー部分
+                                    Container(
+                                      height: 75,
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: const BoxDecoration(
+                                        color: Color.fromARGB(255, 105, 105, 105),
+                                      ),
+                                      child: Row(
+                                        children: [ 
+                                            Expanded(
+                                              child: Align(
+                                                alignment: Alignment.center,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 65),
+                                                  child: Text(AppLocalizations.of(context)!.pricePlan,
+                                                    style: const TextStyle(
+                                                      fontSize: 30,
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),                                         
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 15),
+                                            child: IconButton(
+                                              icon: const Icon(Icons.close,
+                                                size: 30,
+                                                color: Colors.white,
+                                                ),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              }   
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                                              
+                                    const SizedBox(height: 30),
+                                                              
+                                    // ■ フリープラン説明
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 35,
+                                        right: 35
+                                      ),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 129, 155, 250),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 5, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 10),
+                                                                
+                                            // ■ プラン名
+                                            Text(AppLocalizations.of(context)!.free,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                                                
+                                            // ■ 価格表示
+                                            Text(AppLocalizations.of(context)!.freePlanPrice,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17.5,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.lightbulb,
+                                                          size: 22.5,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.freePlanLine1,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: const Icon(
+                                                            Icons.clear,
+                                                            size: 22.5,
+                                                            color: Colors.white),
+                                                        )
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Text(
+                                                            AppLocalizations.of(context)!.freePlanLine2,
+                                                            style: const TextStyle(
+                                                              color: Colors.white,
+                                                              fontWeight: FontWeight.bold,
+                                                              fontSize: 14,
+                                                            ),
+                                                            ),
+                                                        ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
+                                              ),
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                      
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check,
+                                                          size: 20,
+                                                          color: Color(0xFF6c8cfc))
+                                                      ),
+                                      
+                                                      Flexible(
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.freePlanLine3_1 + '\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.freePlanLine3_2,
+                                                              ),
+                                                          ]
+                                                        ))
+                                                      ),
+                                      
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: free
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'free'
+                                                // freeプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: Text(AppLocalizations.of(context)!.choosePlan)
+                                                      ),
+                                                  ),
+                                                )
+                                                // freeプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () {
+                                                      confirmCancelPlan(context);
+                                                      // makePermanentAccountShowDialog(context);
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
+                                                ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                                              
+                                    const SizedBox(height: 30),
+                                                              
+                                    // ■ Premiumプラン説明
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 35,
+                                        right: 35
+                                      ),
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(255, 129, 155, 250),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black,
+                                                offset: Offset(0, 1.5), // 上方向への影
+                                                blurRadius: 5, // ぼかしの量
+                                              )
+                                            ]),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                                                
+                                            const SizedBox(height: 10),
+                                                                
+                                            // ■ プラン名
+                                            Text(AppLocalizations.of(context)!.premium,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                                                                                
+                                            // ■ 価格表示
+                                            Text(AppLocalizations.of(context)!.premiumPlanPrice,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 17.5,
+                                                fontWeight: FontWeight.bold
+                                              ),
+                                            ),
+                                            const SizedBox(height: 10),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ １段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.tips_and_updates_rounded,
+                                                          size: 22.5,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.premiumPlanLine1,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                            fontWeight: FontWeight.bold
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ２段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 5,
+                                              ),
+                                              child: SizedBox(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                  
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check_circle,
+                                                          size: 20,
+                                                          color: Colors.white)
+                                                      ),
+                                                  
+                                                      Flexible(
+                                                        child: Text(
+                                                          AppLocalizations.of(context)!.premiumPlanLine2,
+                                                          style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 14,
+                                                          ),
+                                                          ),
+                                                      ),
+                                                  
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            // ■ ３段落目
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                left: 30,
+                                                right: 30, 
+                                                bottom: 10,
+                                              ),
+                                              child: Container(
+                                                color: Colors.white,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                      
+                                                      const Padding(
+                                                        padding: EdgeInsets.only(
+                                                          left: 8,
+                                                          right: 10,
+                                                          ),                                  
+                                                        child: const Icon(
+                                                          Icons.check,
+                                                          size: 20,
+                                                          color: Color(0xFF6c8cfc))
+                                                      ),
+                                      
+                                                      Flexible(
+                                                        child: RichText(text: TextSpan(
+                                                          style: TextStyle(
+                                                            color: const Color.fromARGB(255, 139, 164, 252),
+                                                            fontSize: 14,
+                                                            // fontStyle: DefaultTextStyle.of(context).style,
+                                                          ),
+                                                          children: [
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.premiumPlanLine3_1 + '\n',
+                                                              style: TextStyle(                                                                
+                                                                fontWeight: FontWeight.bold)),
+                                                            TextSpan(
+                                                              text: AppLocalizations.of(context)!.premiumPlanLine3_2,
+                                                              ),
+                                                          ]
+                                                        ))
+                                                      ),
+                                      
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                                                
+                                            const Divider(
+                                                    color: Colors.white,
+                                                    height: 0,
+                                                    thickness: 1,
+                                                    indent: 30,
+                                                    endIndent: 30,
+                                                  ),
+                                                                
+                                            // ■ プラン選択ボタン: premium
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 10,
+                                                bottom: 10
+                                              ),
+                                              child: meUser!.subscriptionPlan == 'premium'
+                                                // premiumプランを契約中の場合
+                                                // ボタンを無効化
+                                                ? IgnorePointer(
+                                                  ignoring: true,
+                                                  child: Opacity(
+                                                    opacity: 0.3,
+                                                    child: ElevatedButton(
+                                                        onPressed: () {},
+                                                        style: ElevatedButton.styleFrom(
+                                                          backgroundColor: Colors.white, // ボタンの背景色
+                                                          foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                          shape: RoundedRectangleBorder(
+                                                            borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                          ),
+                                                        ),
+                                                          child: Text(AppLocalizations.of(context)!.choosePlan)
+                                                      ),
+                                                  ),
+                                                )
+                                                // premiumプランを契約してない場合
+                                                // ボタンを有効化
+                                                : ElevatedButton(
+                                                    onPressed: () async{
+                                                      switch (meUser!.accountStatus) {
+                                                        // 匿名アカウントの場合: 
+                                                        // ① 永久アカウント作成用のshowDialogを表示
+                                                        // ② showDialog内でStripeの決済画面へ遷移
+                                                        case 'anonymous': 
+                                                          makePermanentAccountShowDialog(context);
+                                                          break;
+                                                                
+                                                        // 永久アカウントの場合: 
+                                                        // ①Stripeの決済画面へ遷移
+                                                        case 'permanent': 
+                                                          String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
+                                                          if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
+                                                          break;
+                                                      }
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.white, // ボタンの背景色
+                                                      foregroundColor: const Color(0xFFf08c28), // ボタンのテキスト色
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(5), // 角の丸みを設定
+                                                      ),
+                                                    ),
+                                                      child: Text(AppLocalizations.of(context)!.choosePlan,
+                                                        style: const TextStyle(
+                                                          fontWeight: FontWeight.bold
+                                                        ),
+                                                      )
+                                                ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                          const SizedBox(height: 20),
+                                  ],
+                                )
+                              ),
+                            ),
+                          );
+                        }
+                      );
+  }
+
+  Future<dynamic> confirmCancelPlan(BuildContext context) {
+    // print('showDialog called with context: $context'); // showDialogを呼び出す時のcontextをログ出力
+ 
+    return showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) {
+
+        return AlertDialog(
+            title: Center(
+              child: Text(AppLocalizations.of(context)!.confirmCancelPremium,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            content: Text(AppLocalizations.of(context)!.confirmAfterCancelPremium),
+            actions: [
+        
+              TextButton(
+                    onPressed: () async{
+                      // premium → free のプランの切り替え処理を行う
+                      String? result = await CloudFunctions.callUpdateCancelAtPeriodEnd(meUser!.uid);
+                      // scaffoldKeyを通じてScaffoldStateにアクセスする
+                      // scaffoldKey が参照する Scaffold が mounted かを確認
+                      // 参照先 Scaffold は showModalBottomSheet の直下
+                      if (scaffoldMessengerKeyTalkRoom.currentState?.mounted ?? false) {
+                        scaffoldMessengerKeyTalkRoom.currentState?.showSnackBar(cancelPlanSnackBar(result));
+                      }
+                      if (context.mounted) Navigator.pop(context);
+                    },
+                    child: Text(AppLocalizations.of(context)!.yes)
+                  ),
+        
+          
+              TextButton(
+                onPressed: () {
+                  print('Close dialog context (no): $context'); // ダイアログ閉じる操作のcontextをログ出力
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: Text(AppLocalizations.of(context)!.no)
+              ),
+          
+            ],
+          );
+      });
+    }
+
+  Future<dynamic> makePermanentAccountShowDialog(BuildContext context) {
+    print('makePermanentAccountShowDialog called with context: $context'); // showDialogを呼び出す時のcontextをログ出力
+    return showDialog(                          
+      barrierDismissible: false,
+      context: context,
+      builder: (_) {
+        print('makePermanentAccountShowDialog context: $context'); // ダイアログのBuildContextをログ出力
+        return  Scaffold(
+          backgroundColor: Colors.transparent,
+          body: AlertDialog(
+            title: Center(
+              child: Text(AppLocalizations.of(context)!.createAccount,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            content: SingleChildScrollView(
+            child: Form(
+              // バリデーションの一括管理用のグローバルキー
+              key: formKeyTalkRoom,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+              
+                  // ■ Subtitle
+                  Text(AppLocalizations.of(context)!.requireCreateAccount,
+                    style: const TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+              
+                  // ■ E-Mailアドレス入力欄
+                  TextFormField(
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.mail),
+                      hintText: 'sample@chatbus.net',
+                      labelText: AppLocalizations.of(context)!.emailAdress,
+                    ),
+                    onChanged: (String value) {
+                      setState(() {
+                        email = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        // 以下のエラー文がTextFieldの直下に表示されます
+                        return 'enter your e-mail address';
+                      }
+                        // null means there is no error
+                        return null; 
+                    }                                      
+                  ),
+              
+                  // ■ パスワード入力欄
+                  TextFormField(
+                    obscureText: hidePassword,
+                    decoration: InputDecoration(
+                      icon: const Icon(Icons.lock),
+                      labelText: AppLocalizations.of(context)!.password,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          hidePassword ? Icons.visibility_off : Icons.visibility,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            hidePassword = !hidePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    onChanged: (String value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty || value.length < 6) {
+                        // 以下のエラー文がTextFieldの直下に表示されます
+                        return 'Password must be at least 6 characters';
+                      }
+                      // null means there is no error
+                      return null; 
+                    },
+                  ),
+                ],
+              ),
+            ), 
+            ),
+          
+            actions: [
+              TextButton(
+                onPressed: () async{
+                  // validateメソッドは
+                  // フォーム内のすべてのFormFieldのvalidatorを実行し、
+                  // 全てがパスすればtrueを、一つでも失敗すればfalseを返します。 
+                  if (formKeyTalkRoom.currentState!.validate()) {
+                    // アカウントのクリエイトメソッドの実行
+                    String? result = await FirebaseAuthentication.upgradeAccountToPermanent(
+                      email,
+                      password,
+                    );
+          
+                    if (result == 'success') {
+                      // アカウント作成できた場合は、
+                      // ① 状態変数を永久アカウントである permanent 更新して
+                      ref.read(meUserProvider.notifier).updateUserAccountStatus('permanent');
+                      // ② db上のFieldを更新して
+                      UserFirestore.updateAccountStatusFiled(
+                        meUser!.uid,
+                        'permanent',
+                        );
+                      // ③ showDialogを閉じて
+                      if (context.mounted) Navigator.pop(context);
+                      // ④ stripeの決済画面へ遷移
+                      String? result = await CloudFunctions.callCreateCheckoutSession(meUser!.uid);
+                      if (context.mounted) StripeCheckout.redirectToCheckout(context, result);
+                    } else {
+                      if (context.mounted) {
+                      print('makePermanentAccountShowDialog context (作成する): $context'); // SnackBar表示時のcontextをログ出力
+                      ScaffoldMessenger.of(context).showSnackBar(upgradeToPermanentErrorSnackBar(result));
+                      }
+                    }
+                  }
+                },
+                child: Text(AppLocalizations.of(context)!.create)
+              ),
+          
+              TextButton(
+                onPressed: () {
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: Text(AppLocalizations.of(context)!.cancel)
+              )
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  SnackBar upgradeToPermanentErrorSnackBar(String? errorResult) {
+    return SnackBar(
+      duration: const Duration(milliseconds: 2500),
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(30),
+      content: SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+             const Padding(
+              padding: EdgeInsets.only(left: 5, right: 20),
+                child: Icon(
+                  Icons.error_outline_outlined,
+                  color: Colors.white,),
+            ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(right: 10),
+                child:
+                  Text(AppLocalizations.of(context)!.errorEmailFormat,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),),
+              ),
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: const Color.fromARGB(255, 94, 94, 94),
+    );
+  }
+
+  SnackBar cancelPlanSnackBar(String? result) {
+    return SnackBar(
+      duration:  const Duration(milliseconds: 2500),
+      behavior: SnackBarBehavior.floating,
+      margin:  const EdgeInsets.all(30),
+      content: SizedBox(
+        height: 100,
+        child: Row(
+          children: [
+            const Padding(
+            padding: EdgeInsets.only(left: 5, right: 20),
+              child: Icon(
+                Icons.error_outline_outlined,
+                color: Colors.white,),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child:
+                  Text( result == "canceled"
+                    ? AppLocalizations.of(context)!.doneSwitchFreePlan
+                    : result == 'already_canceled'
+                      ? AppLocalizations.of(context)!.doneAlreadySwitchFreePlan
+                      : AppLocalizations.of(context)!.contactSupport,
+                    style:  const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      backgroundColor: const Color.fromARGB(255, 94, 94, 94),
+    );
   }
 
 
