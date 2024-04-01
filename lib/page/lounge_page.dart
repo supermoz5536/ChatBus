@@ -1351,7 +1351,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                 return Text(AppLocalizations.of(context)!.error);
               } else {
                 return StreamBuilder<QuerySnapshot>(
-                    stream: UserFirestore.streamHistoryCollection(snapshot.data!['myUid']),
+                    stream: UserFirestore.streamHistoryCollection(meUser!.uid),
                     //snapshot.data == 非同期操作における「現在の型の状態 + 変数の値」が格納されてる
                     builder: (context, snapshot) {
                       if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
