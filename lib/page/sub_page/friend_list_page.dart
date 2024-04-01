@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flag/flag_widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/user.dart';
@@ -77,11 +80,12 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                   final doc = futureFriendDetailsSnapshot.data!.docs[index];
                                   final Map<String, dynamic> talkuserFields = doc.data();
                                   User talkuserData = User(
-                                                userName: talkuserFields['user_name'],
-                                                uid: doc.id,
-                                                userImageUrl: talkuserFields['user_image_url'],
-                                                statement: talkuserFields['statement'],
-                                                );
+                                                        userName: talkuserFields['user_name'],
+                                                        uid: doc.id,
+                                                        userImageUrl: talkuserFields['user_image_url'],
+                                                        statement: talkuserFields['statement'],
+                                                        country: talkuserFields['country'],
+                                                      );
                                   
                                     return Column(
                                       children: <Widget>[
@@ -111,33 +115,81 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                                               (_) => false);
                                                         }                                              
                                                       },
-                                                      child: SizedBox(
+                                                      child: 
+                                                      SizedBox(
                                                         height: 115,
-                                                        child: Center(
-                                                          child: ListTile(
-                                                            leading: CircleAvatar(
-                                                                radius: 30,
+                                                        width: MediaQuery.of(context).size.width,
+                                                        child: Row(
+                                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                                          children: [
+                                                            
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(
+                                                                left: 15,
+                                                                right: 15,
+                                                              ),
+                                                              child: CircleAvatar(
+                                                                radius: 35,
                                                                 backgroundImage: NetworkImage(talkuserFields['user_image_url'])),
-                                                            title: Text(
-                                                              talkuserFields['user_name'],
-                                                              style: const TextStyle(
-                                                                fontSize: 20,
-                                                              ),
-                                                              ),
-                                                            subtitle: const Padding(
-                                                              padding: EdgeInsets.only(top: 8.0),
-                                                              child: Text(
-                                                                '{countryName}',
-                                                                style: TextStyle(
-                                                                  color: Color.fromARGB(255, 176, 176, 176),
-                                                                  fontSize: 15,
-                                                                ),
-                                                                ),
                                                             ),
-                                                            trailing: const Icon(Icons.remove_circle_outline),
-                                                          ),
+                                                        
+                                                            Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(top: 20),
+                                                                  child: Text(
+                                                                    talkuserFields['user_name'],
+                                                                    style: const TextStyle(
+                                                                      fontSize: 20,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                        
+                                                                Padding(
+                                                                  padding: const EdgeInsets.only(
+                                                                    top: 8,
+                                                                  ),
+                                                                  child: Container(
+                                                                    height: 30,
+                                                                    width: 45,
+                                                                    decoration: BoxDecoration(
+                                                                      border: Border.all(
+                                                                        color: Color.fromARGB(255, 138, 138, 138),
+                                                                        width: 1,
+                                                                      )
+                                                                    ),
+                                                                    child: Flag.fromString(
+                                                                      talkuserFields['country'],
+                                                                      fit:BoxFit.fill,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                        
+                                                              ],
+                                                            ),
+                                                        
+                                                                 Expanded(
+                                                                   child: Align(
+                                                                    alignment: Alignment.centerRight,
+                                                                     child: Padding(
+                                                                       padding: const EdgeInsets.only(right:30),
+                                                                       child: IconButton(
+                                                                        onPressed: () {},
+                                                                         icon: const Icon(
+                                                                          Icons.add_circle_outline,
+                                                                          color: Colors.grey,
+                                                                          size: 30,
+                                                                         ),
+                                                                         tooltip: 'Comming soon!',
+                                                                       ),
+                                                                     ),
+                                                                   ),
+                                                                 ),
+                                                          ],
                                                         ),
                                                       ),
+
                                                     ),
                                                   ),
                         
@@ -145,7 +197,7 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                                     height: 0,
                                                     // thickness: ,
                                                     color: Color.fromARGB(255, 199, 199, 199),
-                                                    indent: 63,
+                                                    indent: 99,
                                                     // endIndent: ,
                                                   ),                                        
                                       ]);

@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
 import 'package:udemy_copy/model/dm.dart';
 import 'package:udemy_copy/model/lounge.dart';
-import 'package:udemy_copy/model/lounge_back.dart';
 import 'package:udemy_copy/model/matching_progress.dart';
 import 'package:udemy_copy/model/talk_room.dart';
 import 'package:udemy_copy/model/user.dart';
 import 'package:udemy_copy/page/dm_room_page.dart';
-import 'package:udemy_copy/page/lounge_back_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/page/lounge_page.dart';
 import 'package:udemy_copy/riverpod/provider/me_user_provider.dart';
@@ -464,6 +463,29 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                 
                       const Spacer(flex: 1),
                 
+
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 8,
+                        ),
+                        child: Container(
+                          height: 50,
+                          width: 75,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Color.fromARGB(255, 138, 138, 138),
+                              width: 1,
+                            )
+                          ),
+                          child: Flag.fromString(
+                            futureFriendProfileSnapshot.data!.country!,
+                            fit:BoxFit.fill,
+                          ),
+                        ),
+                      ),
+
+                      const Spacer(flex: 1),
+
                       Text(
                         // widget.talkuserProfile!.userName!,
                         futureFriendProfileSnapshot.data!.userName!,

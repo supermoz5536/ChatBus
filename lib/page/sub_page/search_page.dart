@@ -13,7 +13,6 @@ import 'package:udemy_copy/riverpod/provider/selected_native_language_provider.d
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
-
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
@@ -96,7 +95,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                     color: Color.fromARGB(255, 75, 75, 75),
                     fontWeight: FontWeight.bold)),
               ),
-            ),        
+            ), 
 
             // const SizedBox(height: 25),
 
