@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
@@ -1496,6 +1497,28 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                                       radius: 60,
                                       ),
                                 
+                                    const Spacer(flex: 1),
+
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                      ),
+                                      child: Container(
+                                        height: 50,
+                                        width: 75,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Color.fromARGB(255, 138, 138, 138),
+                                            width: 1,
+                                          )
+                                        ),
+                                        child: Flag.fromString(
+                                          futureSnapshot.data!.country!,
+                                          fit:BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+
                                     const Spacer(flex: 1),
                                 
                                     Text(

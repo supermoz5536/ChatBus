@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
@@ -626,7 +627,29 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                       ),
                                 
                                     const Spacer(flex: 1),
+
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 8,
+                                      ),
+                                      child: Container(
+                                        height: 50,
+                                        width: 75,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Color.fromARGB(255, 138, 138, 138),
+                                            width: 1,
+                                          )
+                                        ),
+                                        child: Flag.fromString(
+                                          futureSnapshot.data!.country!,
+                                          fit:BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
                                 
+                                    const Spacer(flex: 1),
+
                                     Text(
                                       futureSnapshot.data!.userName!,
                                       style: const TextStyle(
@@ -653,52 +676,52 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                                     const Spacer(flex: 1),
 
                                     /// 友達リクエストボタン
-                                    ElevatedButton(
-                                      onPressed: isDisabledRequest! ? null : () async{
-                                        setState(() {
-                                          isDisabledRequest = true;
-                                        });
+                                    // ElevatedButton(
+                                    //   onPressed: isDisabledRequest! ? null : () async{
+                                    //     setState(() {
+                                    //       isDisabledRequest = true;
+                                    //     });
 
-                                        // uidが既にリクエスト中か確認
-                                        isFriendRequestExist = await UserFirestore.checkExistFriendRequest(
-                                                                 meUser!.uid,
-                                                                 futureSnapshot.data!.uid
-                                                               );                                    
+                                    //     // uidが既にリクエスト中か確認
+                                    //     isFriendRequestExist = await UserFirestore.checkExistFriendRequest(
+                                    //                              meUser!.uid,
+                                    //                              futureSnapshot.data!.uid
+                                    //                            );                                    
 
-                                        /// uidが既にフレンド登録済みかを確認
-                                        isFriendUidExist = await UserFirestore.checkExistFriendUid(
-                                                             meUser!.uid,
-                                                             futureSnapshot.data!.uid
-                                                           );
+                                    //     /// uidが既にフレンド登録済みかを確認
+                                    //     isFriendUidExist = await UserFirestore.checkExistFriendUid(
+                                    //                          meUser!.uid,
+                                    //                          futureSnapshot.data!.uid
+                                    //                        );
                                         
-                                        if (isFriendRequestExist == false && isFriendUidExist == false) {
-                                          // 登録済みではない場合
-                                          // 自他のfriend_requestコレクションに
-                                          // リクエストドキュメントを作成する関数を作成
+                                    //     if (isFriendRequestExist == false && isFriendUidExist == false) {
+                                    //       // 登録済みではない場合
+                                    //       // 自他のfriend_requestコレクションに
+                                    //       // リクエストドキュメントを作成する関数を作成
 
-                                          // 相手：pending 
-                                          await UserFirestore.setFriendRequestToFriend(
-                                            widget.dMRoom.talkuserUid,
-                                            meUser!.uid,
-                                          );
-                                          // 自分：waiting
-                                          await UserFirestore.setFriendRequestToMe(
-                                            meUser!.uid,
-                                            widget.dMRoom.talkuserUid,
-                                          );
+                                    //       // 相手：pending 
+                                    //       await UserFirestore.setFriendRequestToFriend(
+                                    //         widget.dMRoom.talkuserUid,
+                                    //         meUser!.uid,
+                                    //       );
+                                    //       // 自分：waiting
+                                    //       await UserFirestore.setFriendRequestToMe(
+                                    //         meUser!.uid,
+                                    //         widget.dMRoom.talkuserUid,
+                                    //       );
 
-                                          setState(() {isFriendRequestExist = true;});
+                                    //       setState(() {isFriendRequestExist = true;});
                                           
-                                        } else {
-                                          setState(() {});
-                                          }
-                                      },
-                                      child: isFriendRequestExist == false && isFriendUidExist == false
-                                        ? Text(AppLocalizations.of(context)!.addFriend)
-                                        : isFriendRequestExist == true
-                                          ? Text(AppLocalizations.of(context)!.requesting)
-                                          : Text(AppLocalizations.of(context)!.alreadyFriend)
-                                      ),
+                                    //     } else {
+                                    //       setState(() {});
+                                    //       }
+                                    //   },
+                                    //   child: isFriendRequestExist == false && isFriendUidExist == false
+                                    //     ? Text(AppLocalizations.of(context)!.addFriend)
+                                    //     : isFriendRequestExist == true
+                                    //       ? Text(AppLocalizations.of(context)!.requesting)
+                                    //       : Text(AppLocalizations.of(context)!.alreadyFriend)
+                                    //   ),
                 
                                     const Spacer(flex: 6),
                 
