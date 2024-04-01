@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -124,16 +125,21 @@ class _FriendListPageState extends ConsumerState<FriendListPage> {
                                                                 fontSize: 20,
                                                               ),
                                                               ),
-                                                            subtitle: const Padding(
-                                                              padding: EdgeInsets.only(top: 8.0),
-                                                              child: Text(
-                                                                '{countryName}',
-                                                                style: TextStyle(
-                                                                  color: Color.fromARGB(255, 176, 176, 176),
-                                                                  fontSize: 15,
-                                                                ),
-                                                                ),
-                                                            ),
+                                                            subtitle: Container(
+                                                              height: 35,
+                                                              width: 70,
+                                                              decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                  color: Colors.black,
+                                                                  width: 1,
+                                                                )
+                                                              ),
+                                                              child: Flag.fromString(
+                                                                'JP',
+                                                                height: 35,
+                                                                width: 70,
+                                                                fit:BoxFit.fill,
+                                                                )),
                                                             trailing: const Icon(Icons.remove_circle_outline),
                                                           ),
                                                         ),

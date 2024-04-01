@@ -58,6 +58,7 @@ dependencies:
   js: ^0.6.7
   just_audio: ^0.9.37
   soundpool: ^2.4.1
+  flag: ^7.0.0
 
 flutter_native_splash:
   color: '#dcfcfc'
