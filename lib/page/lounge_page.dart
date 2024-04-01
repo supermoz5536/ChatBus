@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/audio_service/just_audio.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
@@ -102,6 +103,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
     
     CustomAnalytics.logLoungePageIn();
+    // JustAudio.loadAllAudio();
 
     // ■ 初期化処理を終えていて、他のページから画面遷移してきている場合の処理
     //（main.dart と LogInPage を除いたクラスからの画面遷移）
@@ -998,6 +1000,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                         child: Column(
                           children: [
 
+                            // ■ プロフィール画面選択
                             Material(
                             color: Colors.transparent,
                             child: Ink(
@@ -1031,7 +1034,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                             ),
                           ),
 
-
+                            // ■ 名前の選択
                             Row(
                               children: [
                                 Expanded(
@@ -1102,6 +1105,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                 ), 
                             ]),
 
+                            // ■ プロフィールコメントの選択
                             Row(
                               children: [
                                 Expanded(
@@ -1168,9 +1172,10 @@ class _LoungePageState extends ConsumerState<LoungePage> {
                                   child: Text(AppLocalizations.of(context)!.change) 
                                 ), 
                             ]),
+
+                            // ■ プロフィールコメント表示欄
                             Row(
                               children: [
-
                                 Padding(
                                   padding: const EdgeInsets.only(left: 15.0),
                                   child: Container(
@@ -2536,17 +2541,21 @@ class _LoungePageState extends ConsumerState<LoungePage> {
         height: 100,
         child: Row(
           children: [
-            const Padding(
-            padding: EdgeInsets.only(left: 5, right: 20),
-              child: Icon(
-                Icons.error_outline_outlined,
-                color: Colors.white,),
+            Padding(
+              padding: EdgeInsets.only(left: 5, right: 20),
+              child: result == "canceled"
+              ? const Icon(
+                  Icons.check_circle_outline_outlined,
+                  color: Colors.white,)
+              : const Icon(
+                  Icons.error_outline_outlined,
+                  color: Colors.white,)
             ),
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child:
-                  Text( result == "canceled"
+                  Text(result == "canceled"
                     ? AppLocalizations.of(context)!.doneSwitchFreePlan
                     : result == 'already_canceled'
                       ? AppLocalizations.of(context)!.doneAlreadySwitchFreePlan
