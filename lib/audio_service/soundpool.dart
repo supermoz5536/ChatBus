@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:soundpool/soundpool.dart';
 
@@ -8,7 +7,7 @@ class SoundPool {
   static final Soundpool soundPool = 
     Soundpool.fromOptions(
       options: const SoundpoolOptions(
-        streamType: StreamType.notification));
+        streamType: StreamType.music));
 
 
   /// MatchingProgressPageでの事前の音声データのロード

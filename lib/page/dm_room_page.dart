@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:udemy_copy/audio_service/just_audio.dart';
 import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/firestore/dm_room_firestore.dart';
 import 'package:udemy_copy/firestore/user_firestore.dart';
@@ -65,10 +66,6 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     // .superは現在の子クラスの親クラスを示す → 親クラスの初期化
     isDisabled = false;
     isChatting = true;
-
-    SoundPool.loadSeMessage().then((result){
-      soundId = result;
-    });
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // db上のmyUidの未読フラグを削除
@@ -153,7 +150,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                               // messageが増えた時の値のズレを利用する
                               if (itemCount > prevItemCount! && message.isMe == false) {
                                 print('if内実行されました。');
-                                SoundPool.playSeMessage(soundId);
+                                // JustAudio.playSeMessage();
                               }
                               // 完了後は同値に戻す
                               prevItemCount = itemCount;

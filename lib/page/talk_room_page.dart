@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/audio_service/just_audio.dart';
 import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
@@ -97,9 +98,11 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
 
     CustomAnalytics.logTalkRoomPageIn();
 
-    SoundPool.loadSeMessage().then((result){
-      soundId = result;
-    });
+    // SoundPool.loadSeMessage().then((result){
+    //   soundId = result;
+    // });
+
+    // JustAudio.loadAllAudio();
 
     UserFirestore.updateChattingStatus(widget.talkRoom.myUid, true)
      .then((_) async {
@@ -1119,7 +1122,8 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                               // messageが増えた時の値のズレを利用する
                               if (itemCount > prevItemCount! && message.isMe == false) {
                                 print('if内実行されました。');
-                                SoundPool.playSeMessage(soundId);
+                                // JustAudio.playSeMessage();
+                                // SoundPool.playSeMessage(soundId);
                               }
                               // 完了後は同値に戻す
                               prevItemCount = itemCount;

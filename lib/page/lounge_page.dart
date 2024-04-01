@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/audio_service/just_audio.dart';
 import 'package:udemy_copy/authentication/auth_service.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/cloud_storage/user_storage.dart';
@@ -102,6 +103,7 @@ class _LoungePageState extends ConsumerState<LoungePage> {
     //「親クラス＝Stateクラス＝_WaitRoomPageState」のinitStateメソッドの呼び出し
     
     CustomAnalytics.logLoungePageIn();
+    // JustAudio.loadAllAudio();
 
     // ■ 初期化処理を終えていて、他のページから画面遷移してきている場合の処理
     //（main.dart と LogInPage を除いたクラスからの画面遷移）

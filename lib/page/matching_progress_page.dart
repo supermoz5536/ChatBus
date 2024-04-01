@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:udemy_copy/analytics/custom_analytics.dart';
+import 'package:udemy_copy/audio_service/just_audio.dart';
 import 'package:udemy_copy/audio_service/soundpool.dart';
 import 'package:udemy_copy/cloud_functions/functions.dart';
 import 'package:udemy_copy/firestore/room_firestore.dart';
@@ -86,6 +87,10 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
       soundId = result;
     });
 
+    // JustAudio.loadAllAudio();
+
+    // JustAudio.setSeMatch();
+
     // 起動時に1度行うmyUidを確認する処理
     UserFirestore.initForMatching(
       myUid,
@@ -152,6 +157,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
                     if (context.mounted && isTransitioned == false) {
                       print('「する場合」の画面遷移 実行');
                       isTransitioned = true;
+                      // JustAudio.playSeMatch();
                       SoundPool.playSeMatch(soundId);
                       await Navigator.pushAndRemoveUntil(
                           //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
@@ -226,6 +232,7 @@ class _MatchingProgressPageState extends ConsumerState<MatchingProgressPage> {
                   if (context.mounted && isTransitioned == false) {
                     print('「する場合」の画面遷移 実行');
                     isTransitioned = true;
+                    // JustAudio.playSeMatch();
                     SoundPool.playSeMatch(soundId);
                     await Navigator.pushAndRemoveUntil(
                         //画面遷移の定型   何やってるかの説明：https://sl.bing.net/b4piEYGC70C
