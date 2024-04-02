@@ -156,7 +156,7 @@ exports.createCheckoutSession = functions.runWith({
       // 請求項目の設定を開始します。
       line_items: [{
         // Stripeで事前に設定したプライスIDを指定します。
-        price: "price_1Owjhu02YGIp0FEBowcQVeQy",
+        price: "price_1OwjwL02YGIp0FEBw8izTxgm",
         // 購入数量を1に設定します。
         quantity: 1,
       }],
