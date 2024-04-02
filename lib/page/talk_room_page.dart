@@ -1107,7 +1107,7 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                               //これでオブジェクト型をMap<String dynamic>型に変換
                               final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; 
                               // さらに [key: value] の形式を持つtranslated_fieldをmap型に整理
-                              final translatedMessageMap = data['translated_message'] as Map<String, dynamic>; // translated_message フィールドをMapとして取得
+                              final translatedMessageMap = data['translated_message'] as Map<String, dynamic>;
                               final Message message = Message(
                                                         messageId: doc.id,
                                                         message: data['message'],

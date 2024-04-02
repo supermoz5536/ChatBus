@@ -132,12 +132,15 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (conxtext, index) {
                           final doc = snapshot.data!.docs[index]; //これでメッセージ情報が含まれてる、任意の部屋のdocデータ（ドキュメント情報）を取得してる
-                          final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
+                          //これでオブジェクト型をMap<String dynamic>型に変換
+                          final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; 
+                          // さらに [key: value] の形式を持つtranslated_fieldをmap型に整理
+                          final translatedMessageMap = data['translated_message'] as Map<String, dynamic>;
                           final Message message = Message(
                                                     message: data['message'],
-                                                    translatedMessage: data['translated_message'], 
+                                                    translatedMessage: translatedMessageMap[meUser!.uid], 
                                                     messageId: doc.id,
-                                                    isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                    isMe: meUser!.uid == data['sender_id'],
                                                     sendTime: data['send_time'],
                                                     isDivider: data['is_divider']
                                                   );
@@ -749,6 +752,7 @@ class _TalkRoomPageState extends ConsumerState<DMRoomPage> {
     await DMRoomFirestore.sendDM(
       dMRoomId: widget.dMRoom.dMRoomId,
       message: footerTextController.text,
+      myUid: meUser!.uid,
       talkuserUid: widget.dMRoom.talkuserUid,
       );
     footerTextController.clear();

@@ -652,7 +652,12 @@ class _LoungePageState extends ConsumerState<ProfilePage> {
                                   QuerySnapshot? roomMessages = await RoomFirestore.fetchRoomMessages(historyRoomId);
                                   /// fetch した roomMessages を
                                   /// create した dmroomコレクションのdmroomドキュメントのmessageサブコレクションに追加
-                                  await DMRoomFirestore.addMessagesDMRoom(dMRoomId, roomMessages);
+                                  await DMRoomFirestore.addMessagesDMRoom(
+                                    dMRoomId,
+                                    roomMessages,
+                                    meUser.uid,
+                                    widget.talkuserProfile!.uid
+                                  );
                                 } 
                                   
 
