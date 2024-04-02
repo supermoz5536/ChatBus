@@ -1687,7 +1687,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Future<void> sendMessage() async {
     await RoomFirestore.sendMessage(
         roomId: widget.talkRoom.roomId!,
-        message: footerTextController.text);
+        message: footerTextController.text,
+        myUid: meUser!.uid!,
+        talkuserUid: widget.talkRoom.talkuserUid!,
+        );
     footerTextController.clear();
     setState(() {
       isInputEmpty = true;

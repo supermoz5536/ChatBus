@@ -89,12 +89,20 @@ class RoomFirestore {
 
 
 //入力フィールドのメッセージ情報を、Firestore上のroomにpushする関数
-  static Future<void> sendMessage({required String roomId, required String message}) async {
+  static Future<void> sendMessage({
+    required String roomId,
+    required String message,
+    required String myUid,
+    required String talkuserUid,
+    }) async {
     try {
       final messageCollection = _roomCollection.doc(roomId).collection('message'); 
       await messageCollection.add({
         'message': message,
-        'translated_message': '',
+        'translated_message': {
+          myUid: '',
+          talkuserUid: '',
+        },
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
         'is_divider': false,
@@ -110,10 +118,11 @@ class RoomFirestore {
 
 
   static Future<void> updateTranslatedMessageForRoom(String? roomId, String? messageId, String? translatedMessage) async {
+    String? myUid = Shared_Prefes.fetchUid();
     try {
       final messageDoc = _roomCollection.doc(roomId).collection('message').doc(messageId); 
       await messageDoc.update({
-        'translated_message': translatedMessage
+        'translated_message.$myUid': translatedMessage
       });
     } catch (e) {
       print('メッセージ送信失敗 ===== $e');
