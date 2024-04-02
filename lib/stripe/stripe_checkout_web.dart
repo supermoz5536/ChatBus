@@ -33,7 +33,7 @@ class StripeCheckoutWebStub{
   static void redirectToCheckout(BuildContext _, String sessionId) {
     print('2 redirectToCheckout');
     // 公開鍵なので、ハードコードで記述しても安全
-    final stripe = Stripe('pk_test_51OwiwF02YGIp0FEBuakiQxnKE4QAXQoGSJpknDA5yYgB3q3uPCoP4V6a3XmBExB11V0Ap5AnW2oirFZK6Y4DKckZ00nAQ4xL7s');
+    final stripe = Stripe('pk_live_51OwiwF02YGIp0FEBBCMInNVpI7hdnICCpkFC9aDxKW9nYL9aDdt36ps0AAkhBqjWmhXOIzup5cqKIe1XFKvzZvWv000C38OwkG');
     stripe.redirectToCheckout(CheckoutOptions(
         sessionId: sessionId,
     ));
