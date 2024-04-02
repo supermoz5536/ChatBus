@@ -182,6 +182,7 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
   static Future<void> sendDM({
     required String? dMRoomId,
     required String? message,
+    required String? myUid,
     required String? talkuserUid,
     }) async {
     try {
@@ -192,7 +193,10 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
 
       await messageCollection.add({
         'message': message,
-        'translated_message': '',
+        'translated_message': {
+          myUid: '',
+          talkuserUid: '',
+        },
         'sender_id': Shared_Prefes.fetchUid(),
         'send_time': Timestamp.now(),
         'is_divider': false,
@@ -300,8 +304,12 @@ static Future<List<DMRoom>?> fetchJoinedDMRooms (String? myUid, QuerySnapshot? s
 /// addMessagesDMRoom()から取得したmessage情報を
 /// dmroomコレクション > dmroomドキュメント > messageコレクションに
 /// .addする関数です
-static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
-
+static addMessagesDMRoom(
+String? dMRoomId,
+QuerySnapshot? roomMessages,
+String? myUid,
+String? talkuserUid
+) async{
    // batchメソッドの宣言
    final batch = FirebaseFirestore.instance.batch();
    // batchの参照先を格納した変数を定義
@@ -328,7 +336,10 @@ static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
     //最新のメッセージとして、区切りメッセージの追加
     Map<String, dynamic> dividerMessageData = {
                                                 'message': '-------ここから新しいメッセージ------',
-                                                'translated_message': '', 
+                                                'translated_message': {
+                                                  myUid: '',
+                                                  talkuserUid: '',
+                                                },
                                                 'sender_id': Shared_Prefes.fetchUid(),
                                                 'send_time': Timestamp.now(),
                                                 'is_divider': true,
@@ -350,10 +361,11 @@ static addMessagesDMRoom(String? dMRoomId, QuerySnapshot? roomMessages) async{
 
 
   static Future<void> updateTranslatedMessageForDMRoom(String? roomId, String? messageId, String? translatedMessage) async {
+    String? myUid = Shared_Prefes.fetchUid();
     try {
       final messageDoc = _dMRoomCollection.doc(roomId).collection('message').doc(messageId); 
       await messageDoc.update({
-        'translated_message': translatedMessage
+        'translated_message.$myUid': translatedMessage
       });
     } catch (e) {
       print('メッセージ送信失敗 ===== $e');

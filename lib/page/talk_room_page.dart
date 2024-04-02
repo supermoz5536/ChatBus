@@ -1104,12 +1104,15 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
                               // 静的なシステムメッセージを表示するために確保したindex空間を、
                               // -1 することで差し引いてる  
                               final doc = streamSnapshot.data!.docs[index]; 
-                              final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; //これでオブジェクト型をMap<String dynamic>型に変換
+                              //これでオブジェクト型をMap<String dynamic>型に変換
+                              final Map<String, dynamic> data = doc.data() as Map<String, dynamic>; 
+                              // さらに [key: value] の形式を持つtranslated_fieldをmap型に整理
+                              final translatedMessageMap = data['translated_message'] as Map<String, dynamic>;
                               final Message message = Message(
                                                         messageId: doc.id,
                                                         message: data['message'],
-                                                        translatedMessage: data['translated_message'], 
-                                                        isMe: Shared_Prefes.fetchUid() == data['sender_id'],
+                                                        translatedMessage: translatedMessageMap[meUser!.uid], 
+                                                        isMe: meUser!.uid == data['sender_id'],
                                                         sendTime: data['send_time'],
                                                         isDivider: data['is_divider']
                                                       );
@@ -1684,7 +1687,10 @@ class _TalkRoomPageState extends ConsumerState<TalkRoomPage> {
   Future<void> sendMessage() async {
     await RoomFirestore.sendMessage(
         roomId: widget.talkRoom.roomId!,
-        message: footerTextController.text);
+        message: footerTextController.text,
+        myUid: meUser!.uid!,
+        talkuserUid: widget.talkRoom.talkuserUid!,
+        );
     footerTextController.clear();
     setState(() {
       isInputEmpty = true;
